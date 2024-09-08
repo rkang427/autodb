@@ -14,6 +14,6 @@ Then commit them to a branch and make a PR to the main branch.
 
 The JPG is best for being able to view the changes in github. The PDF is what we will eventually turn in.
 
-Brew Installation:
+# Brew Installation:
  - `brew install --cask drawio`
  - `alias drawio="/Applications/draw.io.app/Contents/MacOS/draw.io"`

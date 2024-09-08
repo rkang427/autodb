@@ -16,4 +16,4 @@ The JPG is best for being able to view the changes in github. The PDF is what we
 
 Brew Installation:
  - brew install --cask drawio
- - alias drawio="/Applications/draw.io.app/Contents/MacOS/draw.io"
+ - `alias drawio="/Applications/draw.io.app/Contents/MacOS/draw.io"`

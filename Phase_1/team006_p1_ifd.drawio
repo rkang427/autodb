@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.7.8 Chrome/128.0.6613.36 Electron/32.0.1 Safari/537.36" version="24.7.8">
   <diagram name="Page-1" id="O3VUC4EruAWj7rbk-weQ">
-    <mxGraphModel dx="1422" dy="826" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+    <mxGraphModel dx="840" dy="1502" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -18,7 +18,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="uZB3BlQuaGmwkZELH0Op-4" value="Search Vehicle" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+        <mxCell id="uZB3BlQuaGmwkZELH0Op-4" value="Search Vehicles" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="273" y="560" width="80" height="50" as="geometry" />
         </mxCell>
         <mxCell id="uZB3BlQuaGmwkZELH0Op-8" value="Login Form" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
@@ -147,7 +147,7 @@
         <mxCell id="uZB3BlQuaGmwkZELH0Op-61" value="Parts status" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="103" y="310" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="uZB3BlQuaGmwkZELH0Op-62" value="Parts Status View/Update" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+        <mxCell id="uZB3BlQuaGmwkZELH0Op-62" value="Parts Status Update" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="283" y="310" width="80" height="50" as="geometry" />
         </mxCell>
         <mxCell id="uZB3BlQuaGmwkZELH0Op-64" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="uZB3BlQuaGmwkZELH0Op-62" target="uZB3BlQuaGmwkZELH0Op-61" edge="1">
@@ -192,7 +192,7 @@
         <mxCell id="uZB3BlQuaGmwkZELH0Op-80" value="Vehicle Details Page" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="420" y="670" width="110" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="uZB3BlQuaGmwkZELH0Op-81" value="View/Edit Vehicle" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+        <mxCell id="uZB3BlQuaGmwkZELH0Op-81" value="View Vehicle" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="433" y="540" width="80" height="50" as="geometry" />
         </mxCell>
         <mxCell id="uZB3BlQuaGmwkZELH0Op-82" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.588;entryY=-0.02;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;startArrow=classic;startFill=1;" parent="1" source="uZB3BlQuaGmwkZELH0Op-1" target="uZB3BlQuaGmwkZELH0Op-81" edge="1">

@@ -1,0 +1,19 @@
+---
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:14-alpine
+    container_name: cs6400_postgres_1
+    ports:
+      - 5432:5432
+    volumes:
+      - db_data_dir:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+      - POSTGRES_USER=${POSTGRES_USER:-admin}
+      - POSTGRES_DB=${POSTGRES_DB:-main}
+
+volumes:
+  db_data_dir:
+    name: db_data_dir

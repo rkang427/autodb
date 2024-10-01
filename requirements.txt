@@ -1,0 +1,7 @@
+pytest
+psycopg
+mimesis
+black
+flake8
+isort
+sqlfluff

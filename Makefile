@@ -39,3 +39,6 @@ fix-lint:
 	black .
 	isort .
 	flake8 .
+
+connect_dealership:
+	PGPASSWORD="$(POSTGRES_PASSWORD)" psql -h 0.0.0.0 -p 5432 -U "$(POSTGRES_USER)" -d "dealership"

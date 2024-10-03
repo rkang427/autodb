@@ -31,7 +31,7 @@ sudo apt install docker docker-compose postgresql-client-14 python3.12 pip3.12 p
 brew install --cask drawio
 alias drawio="/Applications/draw.io.app/Contents/MacOS/draw.io"
 
-brew install --cask docker docker-compose
+brew install --cask docker
 brew install postgresql@14
 brew install python@3.12
 ```

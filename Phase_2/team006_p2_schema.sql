@@ -12,12 +12,20 @@ LC_CTYPE = 'en_US.utf8';
 -- Create user table -- note postgres wants all tables to be lowercase
 -- also, "user" is a protected word, can't call the table that.
 CREATE TABLE app_user (
-    email VARCHAR(250) PRIMARY KEY,
+    user_id SERIAL PRIMARY KEY,
+    email VARCHAR(250) NOT NULL,
     user_type VARCHAR(60) NOT NULL,
     password VARCHAR(120) NOT NULL,
     first_name VARCHAR(120) NOT NULL,
     last_name VARCHAR(120) NOT NULL,
-    CONSTRAINT chk_user_type CHECK (
-        user_type IN ('manager', 'owner', 'sales_person', 'inventory_clerk')
-    )
+    UNIQUE (email)
+);
+-- created vendor table 
+CREATE TABLE vendor (
+    name VARCHAR(100) PRIMARY KEY,
+    postal_code VARCHAR(250) NOT NULL,
+    street VARCHAR(250) NOT NULL,
+    city VARCHAR(120) NOT NULL,
+    phone_number VARCHAR(10) NOT NULL,
+    state VARCHAR(120) NOT NULL
 );

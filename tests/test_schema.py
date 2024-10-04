@@ -52,8 +52,6 @@ def format_delete_query(table, key, value):
 
 def assert_expected(kv_dict, result_tuple):
     """
-    Presumes the first item in the result tuple is a primary key
-
     Presumes the keys and values are in the same order as the result tuple.
     """
     for i, value in enumerate(kv_dict.values()):

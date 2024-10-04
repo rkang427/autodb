@@ -34,7 +34,9 @@ alias drawio="/Applications/draw.io.app/Contents/MacOS/draw.io"
 brew install --cask docker
 brew install postgresql@14
 brew install python@3.12
-brew services stop postgresql@14 ##to prevent local postgres from competing with docker postgres
+
+# to prevent local postgres from competing with docker postgres
+brew services stop postgresql@14
 ```
 
 Seems like you need to open up the Docker App at least once from your launcher to get everything working.
@@ -73,8 +75,16 @@ postgres database.  To run tests, create a python virtual environment with
 python3.12
 
 ```
+# remove any current .venv directory
+rm -rf .venv
+
+# create new venv
 python3.12 -m venv .venv
+
+# activate virtual environment
 source .venv/bin/activate
+
+# install dependencies
 pip install -r requirements.txt
 ```
 

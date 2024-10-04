@@ -84,3 +84,25 @@ def test_valid_app_user(dbconn, user_type):
     delete = format_delete_query(table="app_user", key="email", value=user["email"])
     result_tuple = dbconn.execute(delete).fetchone()
     assert_expected(user, result_tuple)
+
+
+def test_valid_vendor(dbconn):
+    vendor = {
+        "name": "Napa Auto Parts",
+        "postal_code": "27344",
+        "street": "123 Maple Ave",
+        "city": "Charlotte",
+        "phone_number": "919-123-7654",
+        "state": "North Carolina",
+    }
+    # Create the user
+    insert = format_insert_query(
+        table="vendor", keys=vendor.keys(), values=vendor.values()
+    )
+    result_tuple = dbconn.execute(insert).fetchone()
+    assert_expected(vendor, result_tuple)
+
+    # Now delete the user
+    delete = format_delete_query(table="vendor", key="name", value=vendor["name"])
+    result_tuple = dbconn.execute(delete).fetchone()
+    assert_expected(vendor, result_tuple)

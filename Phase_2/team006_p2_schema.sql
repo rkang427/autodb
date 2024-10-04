@@ -14,8 +14,6 @@ LC_CTYPE = 'en_US.utf8';
 
 CREATE TABLE app_user (
     email VARCHAR(250) PRIMARY KEY,
-    user_id SERIAL PRIMARY KEY,
-    email VARCHAR(250) NOT NULL,
     user_type VARCHAR(60) NOT NULL,
     password VARCHAR(120) NOT NULL,
     first_name VARCHAR(120) NOT NULL,
@@ -23,7 +21,6 @@ CREATE TABLE app_user (
     CONSTRAINT chk_user_type CHECK (
         user_type IN ('manager', 'owner', 'sales_person', 'inventory_clerk')
     )
-    UNIQUE (email)
 );
 -- created vendor table 
 CREATE TABLE vendor (
@@ -31,6 +28,6 @@ CREATE TABLE vendor (
     postal_code VARCHAR(250) NOT NULL,
     street VARCHAR(250) NOT NULL,
     city VARCHAR(120) NOT NULL,
-    phone_number VARCHAR(10) NOT NULL,
+    phone_number VARCHAR(12) NOT NULL,
     state VARCHAR(120) NOT NULL
 );

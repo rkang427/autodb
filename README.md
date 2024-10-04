@@ -34,6 +34,7 @@ alias drawio="/Applications/draw.io.app/Contents/MacOS/draw.io"
 brew install --cask docker
 brew install postgresql@14
 brew install python@3.12
+brew services stop postgresql@14 ##to prevent local postgres from competing with docker postgres
 ```
 
 Seems like you need to open up the Docker App at least once from your launcher to get everything working.

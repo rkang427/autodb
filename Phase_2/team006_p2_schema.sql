@@ -12,11 +12,12 @@ LC_CTYPE = 'en_US.utf8';
 -- Create user table -- note postgres wants all tables to be lowercase
 -- also, "user" is a protected word, can't call the table that.
 CREATE TABLE app_user (
-    user_id SERIAL PRIMARY KEY,
-    email VARCHAR(250) NOT NULL,
+    email VARCHAR(250) PRIMARY KEY,
     user_type VARCHAR(60) NOT NULL,
     password VARCHAR(120) NOT NULL,
     first_name VARCHAR(120) NOT NULL,
     last_name VARCHAR(120) NOT NULL,
-    UNIQUE (email)
+    CONSTRAINT chk_user_type CHECK (
+        user_type IN ('manager', 'owner', 'sales_person', 'inventory_clerk')
+    )
 );

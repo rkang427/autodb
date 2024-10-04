@@ -57,11 +57,11 @@ def assert_expected(kv_dict, result_tuple):
     Presumes the keys and values are in the same order as the result tuple.
     """
     for i, value in enumerate(kv_dict.values()):
-        assert value == result_tuple[i + 1]
+        assert value == result_tuple[i]
 
 
 @pytest.mark.parametrize(
-    "user_type", ["owner", "inventory_clerk", "salesperson", "manager"]
+    "user_type", ["owner", "inventory_clerk", "sales_person", "manager"]
 )
 def test_valid_app_user(dbconn, user_type):
     person = fakedata.Person()

@@ -11,7 +11,11 @@ ifd:
 	$(DRAWIO) -x -f jpg -o Phase_1/team006_p1_ifd.jpg Phase_1/team006_p1_ifd.drawio
 	$(DRAWIO) -x -f pdf -o Phase_1/team006_p1_ifd.pdf Phase_1/team006_p1_ifd.drawio
 
-diagrams: eer ifd
+eer2rel:
+	$(DRAWIO) -x -f jpg -o Phase_2/team006_p2_eer2rel.jpg Phase_2/team006_p2_eer2rel.drawio
+	$(DRAWIO) -x -f pdf -o Phase_2/team006_p2_eer2rel.pdf Phase_2/team006_p2_eer2rel.drawio
+
+diagrams: eer ifd eer2rel
 
 db_up:
 	docker-compose -f tools/docker-compose.yml up -d 

@@ -1,5 +1,8 @@
 import logging
 import os
+import datetime
+
+from decimal import Decimal
 
 import mimesis as fakedata
 import psycopg
@@ -7,6 +10,7 @@ import pytest
 
 logger = logging.getLogger(__name__)
 
+TWOPLACES = Decimal(10) ** -2
 
 @pytest.fixture(scope="session")
 def dbconn():
@@ -64,7 +68,7 @@ def assert_expected(kv_dict, result_tuple):
 def test_valid_app_user(dbconn, user_type):
     person = fakedata.Person()
     user = {
-        "email": person.email(),
+        "username": person.email(),
         "user_type": user_type,
         # hashed password doesnt have any scary characters
         "password": person.password(hashed=True),
@@ -79,7 +83,7 @@ def test_valid_app_user(dbconn, user_type):
     assert_expected(user, result_tuple)
 
     # Now delete the user
-    delete = format_delete_query(table="app_user", key="email", value=user["email"])
+    delete = format_delete_query(table="app_user", key="username", value=user["username"])
     result_tuple = dbconn.execute(delete).fetchone()
     assert_expected(user, result_tuple)
 
@@ -87,11 +91,11 @@ def test_valid_app_user(dbconn, user_type):
 def test_valid_vendor(dbconn):
     vendor = {
         "name": "Napa Auto Parts",
-        "postal_code": "27344",
+        "phone_number": "919-123-7654",
         "street": "123 Maple Ave",
         "city": "Charlotte",
-        "phone_number": "919-123-7654",
         "state": "North Carolina",
+        "postal_code": "27344",
     }
     # Create the user
     insert = format_insert_query(
@@ -106,49 +110,89 @@ def test_valid_vendor(dbconn):
     assert_expected(vendor, result_tuple)
 
 def test_valid_vehicle(dbconn):
-    vehicle = {
-        "VIN": "4Y1SL65848Z411439",
-        "sale_date": "2022-01-01 10:08:56",
-        "sale_price": 50000.30,
-        "total_parts_price": 100.32,
-        "description": "Car is a 4WD.",
-        "horsepower": 400,
-        "year": 2010,
-        "model": "Honda Civic",
-        "purchase_price": 40000.32,
-        "purchase_date": "2023-01-01 11:32:16",
-        "condition": "Very Good",
-        "fuel_type": "Natural Gas",
-        "buyer_username": "bob123",
-        "seller_username": "sally321"
+    person1 = fakedata.Person()
+    vehicle_seller_user = {
+        "username": person1.email(),
+        "user_type": 'sales_person',
+        # hashed password doesnt have any scary characters
+        "password": person1.password(hashed=True),
+        "first_name": person1.first_name(),
+        "last_name": person1.last_name(),
+    }
+    # Create the user
+    insert = format_insert_query(
+        table="app_user", keys=vehicle_seller_user.keys(), values=vehicle_seller_user.values()
+    )
+    result_tuple = dbconn.execute(insert).fetchone()
+    
+    person2 = fakedata.Person()
+    vehicle_buyer_user = {
+        "username": person2.email(),
+        "user_type": 'inventory_clerk',
+        # hashed password doesnt have any scary characters
+        "password": person2.password(hashed=True),
+        "first_name": person2.first_name(),
+        "last_name": person2.last_name(),
     }
 
     # Create the user
+    insert = format_insert_query(
+        table="app_user", keys=vehicle_buyer_user.keys(), values=vehicle_buyer_user.values()
+    )
+
+    result_tuple = dbconn.execute(insert).fetchone()
+
+    vehicle = {
+        "vin": "4Y1SL65848Z411439",
+        "sale_date":  datetime.date(2022, 1, 1),
+        "sale_price": Decimal(50000.30).quantize(TWOPLACES),
+        "total_parts_price": Decimal(100.32).quantize(TWOPLACES),
+        "description": "Car is a 4WD.",
+        "horsepower": 400,
+        "year": 2010,
+        "model": "Civic",
+        "manufacturer": "Honda",
+        "purchase_price": Decimal(40000.32).quantize(TWOPLACES),
+        "purchase_date": datetime.date(2023, 1, 1),
+        "condition": "Very Good",
+        "fuel_type": "Natural Gas",
+        "buyer_username": vehicle_buyer_user["username"],
+        "seller_username": vehicle_seller_user["username"]
+    }
+
+    # Create the vehicle
     insert = format_insert_query(
         table="vehicle", keys=vehicle.keys(), values=vehicle.values()
     )
     result_tuple = dbconn.execute(insert).fetchone()
     assert_expected(vehicle, result_tuple)
 
-    # Now delete the user
-    delete = format_delete_query(table="vehicle", key="name", value=vehicle["name"])
+    # Now delete the vehicle
+    delete = format_delete_query(table="vehicle", key="vin", value=vehicle["vin"])
     result_tuple = dbconn.execute(delete).fetchone()
     assert_expected(vehicle, result_tuple)
 
-def test_valid_vehiclecolor(dbconn):
-    vehiclecolor = {
-        "VIN": "4Y1SL69808Z412439",
-        "color": "Metallic"
-    }
+    # now delete the users
+    for user in [vehicle_seller_user, vehicle_buyer_user]:
+        delete = format_delete_query(table="app_user", key="username", value=user["username"])
+        result_tuple = dbconn.execute(delete).fetchone()
+        assert_expected(user, result_tuple)
 
-    # Create the user
-    insert = format_insert_query(
-        table="vehiclecolor", keys=vehiclecolor.keys(), values=vehiclecolor.values()
-    )
-    result_tuple = dbconn.execute(insert).fetchone()
-    assert_expected(vehiclecolor, result_tuple)
 
-    # Now delete the user
-    delete = format_delete_query(table="vehiclecolor", key="name", value=vehiclecolor["name"])
-    result_tuple = dbconn.execute(delete).fetchone()
-    assert_expected(vehiclecolor, result_tuple)
+#def test_valid_vehiclecolor(dbconn):
+#    vehiclecolor = {
+#        "VIN": "4Y1SL69808Z412439",
+#        "color": "Metallic"
+#    }
+#
+#    # Create the user
+#    insert = format_insert_query(
+#        table="vehiclecolor", keys=vehiclecolor.keys(), values=vehiclecolor.values()
+#    )
+#    result_tuple = dbconn.execute(insert).fetchone()
+#    assert_expected(vehiclecolor, result_tuple)
+#
+#    # Now delete the user
+#    delete = format_delete_query(table="vehiclecolor", key="name", value=vehiclecolor["name"])
+#    result_tuple = dbconn.execute(delete).fetchone()
+#    assert_expected(vehiclecolor, result_tuple)

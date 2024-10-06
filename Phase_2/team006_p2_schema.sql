@@ -33,29 +33,49 @@ CREATE TABLE vendor (
 );
 
 --VehicleBuyer
-CREATE TABLE vehicle_buyer (
-    username VARCHAR(120) NOT NULL UNIQUE,
-    FOREIGN KEY (username) REFERENCES app_user (username)
-);
-
---VehicleSeller
-CREATE TABLE vehicle_seller (
-    username VARCHAR(120) NOT NULL UNIQUE,
-    FOREIGN KEY (username) REFERENCES app_user (username)
-);
+--CREATE TABLE vehicle_buyer (
+--    username VARCHAR(120) NOT NULL UNIQUE,
+--    FOREIGN KEY (username) REFERENCES app_user (username)
+--);
+--
+----VehicleSeller
+--CREATE TABLE vehicle_seller (
+--    username VARCHAR(120) NOT NULL UNIQUE,
+--    FOREIGN KEY (username) REFERENCES app_user (username)
+--);
 
 -- Vehicle table
 CREATE TABLE vehicle (
     vin VARCHAR(17) PRIMARY KEY,
     sale_date DATE NULL,
-    sale_price DECIMAL(19, 4) NULL,
-    total_parts_price DECIMAL(19, 4) NULL,
+    sale_price DECIMAL(19, 2) NULL,
+    total_parts_price DECIMAL(19, 2) NULL,
     description VARCHAR(280) NULL,
     horsepower SMALLINT NOT NULL,
     year INT NOT NULL,
     model VARCHAR(120) NOT NULL,
     manufacturer VARCHAR(120) NOT NULL,
-    CHECK (condition IN (
+    purchase_price DECIMAL(19, 2) NOT NULL,
+    purchase_date DATE NOT NULL,
+    condition VARCHAR(10) NOT NULL,
+    fuel_type VARCHAR(20) NOT NULL,
+    buyer_username VARCHAR(50) NOT NULL,
+    seller_username VARCHAR(50) NULL,
+    FOREIGN KEY (seller_username) REFERENCES app_user (username),
+    FOREIGN KEY (buyer_username) REFERENCES app_user (username),
+    CONSTRAINT chk_condition CHECK (condition IN ('Excellent', 'Very Good', 'Good', 'Fair')),
+    CONSTRAINT chk_fuel_type CHECK (
+        fuel_type IN (
+            'Gas',
+            'Diesel',
+            'Natural Gas',
+            'Hybrid',
+            'Plugin Hybrid',
+            'Battery',
+            'Fuel Cell'
+        )
+    ),
+    CONSTRAINT chk_manufacturer CHECK (manufacturer IN (
         'Acura',
         'FIAT',
         'Lamborghini',
@@ -104,27 +124,9 @@ CREATE TABLE vehicle (
         'Kia',
         'Nissan',
         'XPeng'
-    )),
-    purchase_price DECIMAL(19, 4) NOT NULL,
-    purchase_date DATE NOT NULL,
-    condition VARCHAR(10) NOT NULL,
-    CHECK (condition IN ('Excellent', 'Very Good', 'Good', 'Fair')),
-    fuel_type VARCHAR(10) NOT NULL,
-    CHECK (
-        fuel_type IN (
-            'Gas',
-            'Diesel',
-            'Natural Gas',
-            'Hybrid',
-            'Plugin Hybrid',
-            'Battery',
-            'Fuel Cell'
-        )
-    ),
-    buyer_username VARCHAR(50) NOT NULL,
-    FOREIGN KEY (buyer_username) REFERENCES vehicle_buyer (username),
-    seller_username VARCHAR(50) NULL,
-    FOREIGN KEY (seller_username) REFERENCES vehicle_seller (username)
+    ))
+-- ADD CHECK THAT SELLER IS A SALESPERSON OR OWNER
+-- ADD CHECK THAT BUYER IS A SALESPERSON OR OWNER
 );
 
 -- VehicleColors

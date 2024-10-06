@@ -32,17 +32,16 @@ CREATE TABLE vendor (
     postal_code VARCHAR(5) NOT NULL
 );
 
---VehicleBuyer
---CREATE TABLE vehicle_buyer (
---    username VARCHAR(120) NOT NULL UNIQUE,
---    FOREIGN KEY (username) REFERENCES app_user (username) ON DELETE CASCADE
---);
---
-----VehicleSeller
---CREATE TABLE vehicle_seller (
---    username VARCHAR(120) NOT NULL UNIQUE,
---    FOREIGN KEY (username) REFERENCES app_user (username) ON DELETE CASCADE
---);
+CREATE TABLE vehicle_buyer (
+    username VARCHAR(120) NOT NULL UNIQUE,
+    FOREIGN KEY (username) REFERENCES app_user (username) ON DELETE CASCADE
+);
+
+--VehicleSeller
+CREATE TABLE vehicle_seller (
+    username VARCHAR(120) NOT NULL UNIQUE,
+    FOREIGN KEY (username) REFERENCES app_user (username) ON DELETE CASCADE
+);
 
 -- Vehicle table
 CREATE TABLE vehicle (
@@ -62,10 +61,10 @@ CREATE TABLE vehicle (
     fuel_type VARCHAR(20) NOT NULL,
     buyer_username VARCHAR(50) NOT NULL,
     seller_username VARCHAR(50) NULL,
-    FOREIGN KEY (seller_username) REFERENCES app_user (
+    FOREIGN KEY (seller_username) REFERENCES vehicle_seller (
         username
     ) ON DELETE SET NULL,
-    FOREIGN KEY (buyer_username) REFERENCES app_user (
+    FOREIGN KEY (buyer_username) REFERENCES vehicle_buyer (
         username
     ) ON DELETE CASCADE,
     CONSTRAINT chk_condition CHECK (
@@ -143,8 +142,6 @@ CREATE TABLE vehicle (
         'SUV',
         'Other'
     ))
-    -- ADD CHECK THAT SELLER IS A SALESPERSON OR OWNER
-    -- ADD CHECK THAT BUYER IS A SALESPERSON OR OWNER
 );
 
 -- VehicleColors

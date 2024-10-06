@@ -60,4 +60,58 @@ CREATE TABLE VehicleColors (
     color VARCHAR(10) NOT NULL,
     CHECK (color IN ('Aluminum', 'Beige','Black','Blue','Brown','Bronze','Claret','Copper','Cream','Gold','Gray','Green','Maroon','Metallic','Navy','Orange','Pink','Purple','Red','Rose','Rust','Silver','Tan','Turquoise','White','Yellow')),
     FOREIGN KEY (VIN) REFERENCES Vehicle(VIN)
-)
+);
+
+--PartsOrder
+CREATE TABLE PartsOrder (
+    Parts_Order_Number VARCHAR(100) NOT NULL,
+    FOREIGN KEY (Name) REFERENCES Vendor(Name)
+);
+
+--Part
+CREATE TABLE Part (
+    Part_Number VARCHAR(30) NOT NULL,
+    Unit_Price VARCHAR(100) NOT NULL,
+    Description VARCHAR(1000) NOT NULL,
+    Quantity INT(20) NOT NULL,
+    Status VARCHAR(200) NOT NULL,
+    FOREIGN KEY (PartsOrderNumber) REFERENCES PartsOrder(PartsOrderNumber)
+);
+
+--VehicleBuyer
+CREATE TABLE VehicleBuyer (
+    FOREIGN KEY (username) REFERENCES User(username)
+);
+
+--VehicleSeller
+CREATE TABLE VehicleSeller (
+    FOREIGN KEY (username) REFERENCES User(username)
+);
+
+--Individual
+CREATE TABLE Individual (
+    SSN VARCHAR(11) PRIMARY KEY,
+    first_name VARCHAR(200) NOT NULL,
+    last_name VARCHAR(200) NOT NULL,
+    FOREIGN KEY (Email) REFERENCES Customer(Email)
+);
+
+--Customer
+CREATE TABLE Customer (
+    Email VARCHAR(200) PRIMARY KEY,
+    PhoneNumber VARCHAR(12) NOT NULL,
+    Street VARCHAR(1000) NOT NULL,
+    City VARCHAR(50) NOT NULL,
+    State VARCHAR(4) NOT NULL,
+    Postal_Code VARCHAR(20) NOT NULL
+);
+
+--Business
+CREATE TABLE Business (
+    TIN VARCHAR(30) PRIMARY KEY,
+    FOREIGN KEY (Email) REFERENCES Customer(Email),
+    Business_Name VARCHAR(400) NOT NULL,
+    Title VARCHAR(200) NOT NULL,
+    first_name VARCHAR(200) NOT NULL,
+    last_name VARCHAR(200) NOT NULL
+);

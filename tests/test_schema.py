@@ -104,3 +104,51 @@ def test_valid_vendor(dbconn):
     delete = format_delete_query(table="vendor", key="name", value=vendor["name"])
     result_tuple = dbconn.execute(delete).fetchone()
     assert_expected(vendor, result_tuple)
+
+def test_valid_vehicle(dbconn):
+    vehicle = {
+        "VIN": "4Y1SL65848Z411439",
+        "sale_date": "2022-01-01 10:08:56",
+        "sale_price": 50000.30,
+        "total_parts_price": 100.32,
+        "description": "Car is a 4WD.",
+        "horsepower": 400,
+        "year": 2010,
+        "model": "Honda Civic",
+        "purchase_price": 40000.32,
+        "purchase_date": "2023-01-01 11:32:16",
+        "condition": "Very Good",
+        "fuel_type": "Natural Gas",
+        "buyer_username": "bob123",
+        "seller_username": "sally321"
+    }
+
+    # Create the user
+    insert = format_insert_query(
+        table="vehicle", keys=vehicle.keys(), values=vehicle.values()
+    )
+    result_tuple = dbconn.execute(insert).fetchone()
+    assert_expected(vehicle, result_tuple)
+
+    # Now delete the user
+    delete = format_delete_query(table="vehicle", key="name", value=vehicle["name"])
+    result_tuple = dbconn.execute(delete).fetchone()
+    assert_expected(vehicle, result_tuple)
+
+def test_valid_vehiclecolor(dbconn):
+    vehiclecolor = {
+        "VIN": "4Y1SL69808Z412439",
+        "color": "Metallic"
+    }
+
+    # Create the user
+    insert = format_insert_query(
+        table="vehiclecolor", keys=vehiclecolor.keys(), values=vehiclecolor.values()
+    )
+    result_tuple = dbconn.execute(insert).fetchone()
+    assert_expected(vehiclecolor, result_tuple)
+
+    # Now delete the user
+    delete = format_delete_query(table="vehiclecolor", key="name", value=vehiclecolor["name"])
+    result_tuple = dbconn.execute(delete).fetchone()
+    assert_expected(vehiclecolor, result_tuple)

@@ -28,6 +28,8 @@ db_clean:
 
 db_schema:
 	PGPASSWORD=$(POSTGRES_PASSWORD) psql -h 0.0.0.0 -p 5432 -U $(POSTGRES_USER) -d $(POSTGRES_DB) -f Phase_2/team006_p2_schema.sql
+	PGPASSWORD=$(POSTGRES_PASSWORD) psql -h 0.0.0.0 -p 5432 -U $(POSTGRES_USER) -d $(POSTGRES_DB) -f tests/load_data.sql
+
 
 test: db_schema
 	pytest -vv tests/ --log-cli-level=INFO --log-cli-format="%(message)s"

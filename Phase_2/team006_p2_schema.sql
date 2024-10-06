@@ -186,7 +186,8 @@ CREATE TABLE part (
 
 --Customer
 CREATE TABLE customer (
-    email VARCHAR(120) PRIMARY KEY,
+    tax_id VARCHAR(120) PRIMARY KEY,
+    email VARCHAR(120) NULL,
     phone_number VARCHAR(12) NOT NULL,
     street VARCHAR(120) NOT NULL,
     city VARCHAR(120) NOT NULL,
@@ -196,20 +197,20 @@ CREATE TABLE customer (
 
 --Individual
 CREATE TABLE individual (
-    ssn VARCHAR(9) PRIMARY KEY,
+    ssn VARCHAR(9) NOT NULL UNIQUE,
     first_name VARCHAR(120) NOT NULL,
     last_name VARCHAR(120) NOT NULL,
-    email VARCHAR(120) NOT NULL,
-    FOREIGN KEY (email) REFERENCES customer (email)
+    FOREIGN KEY (ssn) REFERENCES customer (tax_id)
+-- ADD CONSTRAINT that SSN not a TIN in business
 );
 
 --Business
 CREATE TABLE business (
-    tin VARCHAR(9) PRIMARY KEY,
-    email VARCHAR(120) NOT NULL,
-    FOREIGN KEY (email) REFERENCES customer (email),
+    tin VARCHAR(9) NOT NULL UNIQUE,
+    FOREIGN KEY (tin) REFERENCES customer (tax_id),
     business_name VARCHAR(120) NOT NULL,
     title VARCHAR(120) NOT NULL,
     first_name VARCHAR(120) NOT NULL,
     last_name VARCHAR(120) NOT NULL
+-- ADD CONSTRAINT that TIN not a SSN in business
 );

@@ -1,7 +1,6 @@
+import datetime
 import logging
 import os
-import datetime
-
 from decimal import Decimal
 
 import mimesis as fakedata
@@ -11,6 +10,7 @@ import pytest
 logger = logging.getLogger(__name__)
 
 TWOPLACES = Decimal(10) ** -2
+
 
 @pytest.fixture(scope="session")
 def dbconn():
@@ -83,7 +83,9 @@ def test_valid_app_user(dbconn, user_type):
     assert_expected(user, result_tuple)
 
     # Now delete the user
-    delete = format_delete_query(table="app_user", key="username", value=user["username"])
+    delete = format_delete_query(
+        table="app_user", key="username", value=user["username"]
+    )
     result_tuple = dbconn.execute(delete).fetchone()
     assert_expected(user, result_tuple)
 
@@ -109,11 +111,12 @@ def test_valid_vendor(dbconn):
     result_tuple = dbconn.execute(delete).fetchone()
     assert_expected(vendor, result_tuple)
 
+
 def test_valid_vehicle(dbconn):
     person1 = fakedata.Person()
     vehicle_seller_user = {
         "username": person1.email(),
-        "user_type": 'sales_person',
+        "user_type": "sales_person",
         # hashed password doesnt have any scary characters
         "password": person1.password(hashed=True),
         "first_name": person1.first_name(),
@@ -121,14 +124,16 @@ def test_valid_vehicle(dbconn):
     }
     # Create the user
     insert = format_insert_query(
-        table="app_user", keys=vehicle_seller_user.keys(), values=vehicle_seller_user.values()
+        table="app_user",
+        keys=vehicle_seller_user.keys(),
+        values=vehicle_seller_user.values(),
     )
     result_tuple = dbconn.execute(insert).fetchone()
-    
+
     person2 = fakedata.Person()
     vehicle_buyer_user = {
         "username": person2.email(),
-        "user_type": 'inventory_clerk',
+        "user_type": "inventory_clerk",
         # hashed password doesnt have any scary characters
         "password": person2.password(hashed=True),
         "first_name": person2.first_name(),
@@ -137,14 +142,16 @@ def test_valid_vehicle(dbconn):
 
     # Create the user
     insert = format_insert_query(
-        table="app_user", keys=vehicle_buyer_user.keys(), values=vehicle_buyer_user.values()
+        table="app_user",
+        keys=vehicle_buyer_user.keys(),
+        values=vehicle_buyer_user.values(),
     )
 
     result_tuple = dbconn.execute(insert).fetchone()
 
     vehicle = {
         "vin": "4Y1SL65848Z411439",
-        "sale_date":  datetime.date(2022, 1, 1),
+        "sale_date": datetime.date(2022, 1, 1),
         "sale_price": Decimal(50000.30).quantize(TWOPLACES),
         "total_parts_price": Decimal(100.32).quantize(TWOPLACES),
         "description": "Car is a 4WD.",
@@ -157,7 +164,7 @@ def test_valid_vehicle(dbconn):
         "condition": "Very Good",
         "fuel_type": "Natural Gas",
         "buyer_username": vehicle_buyer_user["username"],
-        "seller_username": vehicle_seller_user["username"]
+        "seller_username": vehicle_seller_user["username"],
     }
 
     # Create the vehicle
@@ -174,12 +181,14 @@ def test_valid_vehicle(dbconn):
 
     # now delete the users
     for user in [vehicle_seller_user, vehicle_buyer_user]:
-        delete = format_delete_query(table="app_user", key="username", value=user["username"])
+        delete = format_delete_query(
+            table="app_user", key="username", value=user["username"]
+        )
         result_tuple = dbconn.execute(delete).fetchone()
         assert_expected(user, result_tuple)
 
 
-#def test_valid_vehiclecolor(dbconn):
+# def test_valid_vehiclecolor(dbconn):
 #    vehiclecolor = {
 #        "VIN": "4Y1SL69808Z412439",
 #        "color": "Metallic"

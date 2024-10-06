@@ -24,7 +24,7 @@ CREATE TABLE app_user (
 );
 -- created vendor table 
 CREATE TABLE vendor (
-    name VARCHAR(100) PRIMARY KEY,
+    name VARCHAR(120) PRIMARY KEY,
     phone_number VARCHAR(12) NOT NULL,
     street VARCHAR(120) NOT NULL,
     city VARCHAR(120) NOT NULL,
@@ -35,13 +35,13 @@ CREATE TABLE vendor (
 --VehicleBuyer
 --CREATE TABLE vehicle_buyer (
 --    username VARCHAR(120) NOT NULL UNIQUE,
---    FOREIGN KEY (username) REFERENCES app_user (username)
+--    FOREIGN KEY (username) REFERENCES app_user (username) ON DELETE CASCADE
 --);
 --
 ----VehicleSeller
 --CREATE TABLE vehicle_seller (
 --    username VARCHAR(120) NOT NULL UNIQUE,
---    FOREIGN KEY (username) REFERENCES app_user (username)
+--    FOREIGN KEY (username) REFERENCES app_user (username) ON DELETE CASCADE
 --);
 
 -- Vehicle table
@@ -55,15 +55,22 @@ CREATE TABLE vehicle (
     year INT NOT NULL,
     model VARCHAR(120) NOT NULL,
     manufacturer VARCHAR(120) NOT NULL,
+    vehicle_type VARCHAR(50) NOT NULL,
     purchase_price DECIMAL(19, 2) NOT NULL,
     purchase_date DATE NOT NULL,
     condition VARCHAR(10) NOT NULL,
     fuel_type VARCHAR(20) NOT NULL,
     buyer_username VARCHAR(50) NOT NULL,
     seller_username VARCHAR(50) NULL,
-    FOREIGN KEY (seller_username) REFERENCES app_user (username),
-    FOREIGN KEY (buyer_username) REFERENCES app_user (username),
-    CONSTRAINT chk_condition CHECK (condition IN ('Excellent', 'Very Good', 'Good', 'Fair')),
+    FOREIGN KEY (seller_username) REFERENCES app_user (
+        username
+    ) ON DELETE SET NULL,
+    FOREIGN KEY (buyer_username) REFERENCES app_user (
+        username
+    ) ON DELETE CASCADE,
+    CONSTRAINT chk_condition CHECK (
+        condition IN ('Excellent', 'Very Good', 'Good', 'Fair')
+    ),
     CONSTRAINT chk_fuel_type CHECK (
         fuel_type IN (
             'Gas',
@@ -124,9 +131,20 @@ CREATE TABLE vehicle (
         'Kia',
         'Nissan',
         'XPeng'
+    )),
+    CONSTRAINT chk_vehicle_type CHECK (vehicle_type IN (
+        'Sedan',
+        'Coupe',
+        'Convertible',
+        'CUV',
+        'Truck',
+        'Van',
+        'Minivan',
+        'SUV',
+        'Other'
     ))
--- ADD CHECK THAT SELLER IS A SALESPERSON OR OWNER
--- ADD CHECK THAT BUYER IS A SALESPERSON OR OWNER
+    -- ADD CHECK THAT SELLER IS A SALESPERSON OR OWNER
+    -- ADD CHECK THAT BUYER IS A SALESPERSON OR OWNER
 );
 
 -- VehicleColors
@@ -163,25 +181,27 @@ CREATE TABLE vehicle_colors (
             'Yellow'
         )
     ),
-    FOREIGN KEY (vin) REFERENCES vehicle (vin)
+    FOREIGN KEY (vin) REFERENCES vehicle (vin) ON DELETE CASCADE
 );
 
 --PartsOrder
 CREATE TABLE parts_order (
     parts_order_number VARCHAR(120) NOT NULL UNIQUE,
     vendor_name VARCHAR(120) NOT NULL,
-    FOREIGN KEY (vendor_name) REFERENCES vendor (name)
+    FOREIGN KEY (vendor_name) REFERENCES vendor (name) ON DELETE RESTRICT
 );
 
 --Part
 CREATE TABLE part (
     part_number VARCHAR(120) NOT NULL,
-    unit_price VARCHAR(120) NOT NULL,
+    unit_price DECIMAL(19, 2) NOT NULL,
     description VARCHAR(280) NOT NULL,
     quantity INT NOT NULL,
     status VARCHAR(120) NOT NULL,
     parts_order_number VARCHAR(120) NOT NULL,
-    FOREIGN KEY (parts_order_number) REFERENCES parts_order (parts_order_number)
+    FOREIGN KEY (parts_order_number) REFERENCES parts_order (
+        parts_order_number
+    ) ON DELETE CASCADE
 );
 
 --Customer
@@ -200,14 +220,14 @@ CREATE TABLE individual (
     ssn VARCHAR(9) NOT NULL UNIQUE,
     first_name VARCHAR(120) NOT NULL,
     last_name VARCHAR(120) NOT NULL,
-    FOREIGN KEY (ssn) REFERENCES customer (tax_id)
+    FOREIGN KEY (ssn) REFERENCES customer (tax_id) ON DELETE CASCADE
 -- ADD CONSTRAINT that SSN not a TIN in business
 );
 
 --Business
 CREATE TABLE business (
     tin VARCHAR(9) NOT NULL UNIQUE,
-    FOREIGN KEY (tin) REFERENCES customer (tax_id),
+    FOREIGN KEY (tin) REFERENCES customer (tax_id) ON DELETE CASCADE,
     business_name VARCHAR(120) NOT NULL,
     title VARCHAR(120) NOT NULL,
     first_name VARCHAR(120) NOT NULL,

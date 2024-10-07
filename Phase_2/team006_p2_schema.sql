@@ -145,7 +145,7 @@ CREATE TABLE vehicle (
 );
 
 -- VehicleColors
-CREATE TABLE vehicle_colors (
+CREATE TABLE vehicle_color (
     vin VARCHAR(17) NOT NULL,
     color VARCHAR(10) NOT NULL,
     CHECK (
@@ -178,7 +178,9 @@ CREATE TABLE vehicle_colors (
             'Yellow'
         )
     ),
-    FOREIGN KEY (vin) REFERENCES vehicle (vin) ON DELETE CASCADE
+    FOREIGN KEY (vin) REFERENCES vehicle (vin) ON DELETE CASCADE,
+    UNIQUE (vin, color)
+
 );
 
 --PartsOrder

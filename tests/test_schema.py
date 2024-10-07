@@ -1,15 +1,13 @@
-import datetime
 import logging
 import os
-from decimal import Decimal
 
 import mimesis
 import psycopg
 import pytest
 
-logger = logging.getLogger(__name__)
+from .fakedata import FakeVehicle
 
-TWOPLACES = Decimal(10) ** -2
+logger = logging.getLogger(__name__)
 
 
 @pytest.fixture()
@@ -45,11 +43,23 @@ def format_insert_query(table, keys, values):
     return query
 
 
-def format_delete_query(table, key, value):
+def format_delete_query(table, keys, values):
     """
     DELETE FROM table_name WHERE key = 'value' RETURNING *;
     """
-    query = f"DELETE FROM {table} WHERE {key} = '{value}' RETURNING *;"
+    if not isinstance(keys, list):
+        keys = [keys]
+    if not isinstance(values, list):
+        values = [values]
+
+    where_clause = "WHERE "
+
+    for i, key in enumerate(keys):
+        if i > 0:
+            where_clause += " AND "
+        where_clause += f"{key} = '{values[i]}'"
+
+    query = f"DELETE FROM {table} {where_clause} RETURNING *;"
     logger.info(query)
     return query
 
@@ -93,11 +103,11 @@ def vehicle_seller(dbconn):
     yield vehicle_seller
 
     delete = format_delete_query(
-        table="vehicle_seller", key="username", value=vehicle_seller["username"]
+        table="vehicle_seller", keys="username", values=vehicle_seller["username"]
     )
     result_tuple = dbconn.execute(delete).fetchone()
     delete = format_delete_query(
-        table="app_user", key="username", value=app_user["username"]
+        table="app_user", keys="username", values=app_user["username"]
     )
     result_tuple = dbconn.execute(delete).fetchone()
 
@@ -131,13 +141,49 @@ def vehicle_buyer(dbconn):
     yield vehicle_buyer
 
     delete = format_delete_query(
-        table="vehicle_buyer", key="username", value=vehicle_buyer["username"]
+        table="vehicle_buyer", keys="username", values=vehicle_buyer["username"]
     )
     result_tuple = dbconn.execute(delete).fetchone()
     delete = format_delete_query(
-        table="app_user", key="username", value=app_user["username"]
+        table="app_user", keys="username", values=app_user["username"]
     )
     result_tuple = dbconn.execute(delete).fetchone()
+
+
+@pytest.fixture
+def vehicle(dbconn, vehicle_buyer, vehicle_seller):
+    fv = FakeVehicle()
+    vehicle = {
+        "vin": fv.vin,
+        "sale_date": fv.sale_date,
+        "sale_price": fv.sale_price,
+        "total_parts_price": fv.total_parts_price,
+        "description": fv.description,
+        "horsepower": fv.horsepower,
+        "year": fv.year,
+        "model": fv.model,
+        "manufacturer": fv.manufacturer,
+        "vehicle_type": fv.vehicle_type,
+        "purchase_price": fv.purchase_price,
+        "purchase_date": fv.purchase_date,
+        "condition": fv.condition,
+        "fuel_type": fv.fuel_type,
+        "buyer_username": vehicle_buyer["username"],
+        "seller_username": vehicle_seller["username"],
+    }
+    # Create the vehicle
+    insert = format_insert_query(
+        table="vehicle", keys=vehicle.keys(), values=vehicle.values()
+    )
+    result_tuple = dbconn.execute(insert).fetchone()
+    assert_expected(vehicle, result_tuple)
+
+    yield vehicle
+
+    # Now delete the vehicle
+    delete = format_delete_query(table="vehicle", keys="vin", values=vehicle["vin"])
+    result_tuple = dbconn.execute(delete).fetchone()
+    assert_expected(vehicle, result_tuple)
 
 
 @pytest.mark.parametrize(
@@ -162,7 +208,7 @@ def test_valid_app_user(dbconn, user_type):
 
     # Now delete the user
     delete = format_delete_query(
-        table="app_user", key="username", value=user["username"]
+        table="app_user", keys="username", values=user["username"]
     )
     result_tuple = dbconn.execute(delete).fetchone()
     assert_expected(user, result_tuple)
@@ -185,57 +231,70 @@ def test_valid_vendor(dbconn):
     assert_expected(vendor, result_tuple)
 
     # Now delete the user
-    delete = format_delete_query(table="vendor", key="name", value=vendor["name"])
+    delete = format_delete_query(table="vendor", keys="name", values=vendor["name"])
     result_tuple = dbconn.execute(delete).fetchone()
     assert_expected(vendor, result_tuple)
 
 
-def test_valid_vehicle(dbconn, vehicle_buyer, vehicle_seller):
-    vehicle = {
-        "vin": "4Y1SL65848Z411439",
-        "sale_date": datetime.date(2022, 1, 1),
-        "sale_price": Decimal(50000.30).quantize(TWOPLACES),
-        "total_parts_price": Decimal(100.32).quantize(TWOPLACES),
-        "description": "Car is a 4WD.",
-        "horsepower": 400,
-        "year": 2010,
-        "model": "Civic",
-        "manufacturer": "Honda",
-        "vehicle_type": "Sedan",
-        "purchase_price": Decimal(40000.32).quantize(TWOPLACES),
-        "purchase_date": datetime.date(2023, 1, 1),
-        "condition": "Very Good",
-        "fuel_type": "Natural Gas",
-        "buyer_username": vehicle_buyer["username"],
-        "seller_username": vehicle_seller["username"],
-    }
-    # Create the vehicle
-    insert = format_insert_query(
-        table="vehicle", keys=vehicle.keys(), values=vehicle.values()
-    )
-    result_tuple = dbconn.execute(insert).fetchone()
-    assert_expected(vehicle, result_tuple)
-
-    # Now delete the vehicle
-    delete = format_delete_query(table="vehicle", key="vin", value=vehicle["vin"])
-    result_tuple = dbconn.execute(delete).fetchone()
-    assert_expected(vehicle, result_tuple)
+def test_valid_vehicle(dbconn, vehicle):
+    db_vehicle = dbconn.execute(
+        f"SELECT * FROM vehicle WHERE vin='{vehicle['vin']}';"
+    ).fetchone()
+    assert_expected(vehicle, db_vehicle)
 
 
-# def test_valid_vehiclecolor(dbconn):
-#    vehiclecolor = {
-#        "VIN": "4Y1SL69808Z412439",
-#        "color": "Metallic"
-#    }
-#
-#    # Create the user
-#    insert = format_insert_query(
-#        table="vehiclecolor", keys=vehiclecolor.keys(), values=vehiclecolor.values()
-#    )
-#    result_tuple = dbconn.execute(insert).fetchone()
-#    assert_expected(vehiclecolor, result_tuple)
-#
-#    # Now delete the user
-#    delete = format_delete_query(table="vehiclecolor", key="name", value=vehiclecolor["name"])
-#    result_tuple = dbconn.execute(delete).fetchone()
-#    assert_expected(vehiclecolor, result_tuple)
+@pytest.mark.parametrize(
+    "colors",
+    [
+        ("Aluminum", "Beige"),
+        ("Black", "Blue", "Brown", "Bronze", "Claret"),
+        (
+            "Copper",
+            "Cream",
+            "Gold",
+            "Gray",
+            "Green",
+            "Maroon",
+            "Metallic",
+            "Navy",
+            "Orange",
+        ),
+        (
+            "Pink",
+            "Purple",
+            "Red",
+            "Rose",
+            "Rust",
+            "Silver",
+            "Tan",
+            "Turquoise",
+            "White",
+        ),
+        ("Yellow",),
+    ],
+    ids=lambda x: ",".join(x),
+)
+def test_valid_vehiclecolor(dbconn, vehicle, colors):
+
+    for color in colors:
+        vehiclecolor = {"vin": vehicle["vin"], "color": color}
+
+        # Create the color entries
+        insert = format_insert_query(
+            table="vehicle_color",
+            keys=vehiclecolor.keys(),
+            values=vehiclecolor.values(),
+        )
+        result_tuple = dbconn.execute(insert).fetchone()
+        assert_expected(vehiclecolor, result_tuple)
+
+    db_colors = [
+        t[0]
+        for t in dbconn.execute(
+            f"SELECT color FROM vehicle_color WHERE vin='{vehicle['vin']}';"
+        ).fetchall()
+    ]
+    assert set(colors) == set(db_colors)
+    # don't deal with deleting for now because SHOULD cascade delete...
+    # also, think there is some kind of gotcha for formatting delete query on table with multiple key values
+    # and I don't know how to do that yet

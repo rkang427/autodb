@@ -32,7 +32,7 @@ db_schema:
 
 
 test: db_schema
-	pytest -vv tests/ --log-cli-level=INFO --log-cli-format="%(message)s"
+	pytest -vv tests/ --log-cli-level=INFO --log-cli-format="%(message)s" -x
 
 check-lint:
 	sqlfluff lint Phase_2/team006_p2_schema.sql --dialect postgres

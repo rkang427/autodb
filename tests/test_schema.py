@@ -1,13 +1,23 @@
 import logging
 import os
+import random
 
 import mimesis
 import psycopg
 import pytest
+from mimesis.locales import Locale
 
 from .fakedata import FakeVehicle
 
 logger = logging.getLogger(__name__)
+
+
+def tax_id():
+    # Generate a random SSN/TIN in the format XXXYYZZZZ
+    area = random.randint(100, 999)
+    group = random.randint(10, 99)
+    serial = random.randint(1000, 9999)
+    return f"{area}{group}{serial}"
 
 
 @pytest.fixture()
@@ -36,9 +46,9 @@ def unpack_values(values):
 
 def format_insert_query(table, keys, values):
     """
-    INSERT INTO table_name (firstkey, secondkey) VALUE ('quoted', 'values') RETURNING *;
+    INSERT INTO table_name (firstkey, secondkey) VALUE ('quoted', 'values') RETURNING firstkey, secondkey;
     """
-    query = f"INSERT INTO {table} ({unpack_keys(keys)}) VALUES ({unpack_values(values)}) RETURNING *;"
+    query = f"INSERT INTO {table} ({unpack_keys(keys)}) VALUES ({unpack_values(values)}) RETURNING {unpack_keys(keys)};"
     logger.info(query)
     return query
 
@@ -73,8 +83,8 @@ def assert_expected(kv_dict, result_tuple):
 
 
 @pytest.fixture
-def vehicle_seller(dbconn):
-    person = mimesis.Person()
+def employee_seller(dbconn):
+    person = mimesis.Person(locale=Locale.EN)
     app_user = {
         "username": person.email(),
         "user_type": "sales_person",
@@ -83,7 +93,7 @@ def vehicle_seller(dbconn):
         "first_name": person.first_name().replace("'", ""),
         "last_name": person.last_name().replace("'", ""),
     }
-    vehicle_seller = {"username": app_user["username"]}
+    employee_seller = {"username": app_user["username"]}
 
     # Create the user
     insert = format_insert_query(
@@ -93,28 +103,19 @@ def vehicle_seller(dbconn):
     assert_expected(app_user, result_tuple)
 
     insert = format_insert_query(
-        table="vehicle_seller",
-        keys=vehicle_seller.keys(),
-        values=vehicle_seller.values(),
+        table="employee_seller",
+        keys=employee_seller.keys(),
+        values=employee_seller.values(),
     )
     result_tuple = dbconn.execute(insert).fetchone()
-    assert_expected(vehicle_seller, result_tuple)
+    assert_expected(employee_seller, result_tuple)
 
-    yield vehicle_seller
-
-    delete = format_delete_query(
-        table="vehicle_seller", keys="username", values=vehicle_seller["username"]
-    )
-    result_tuple = dbconn.execute(delete).fetchone()
-    delete = format_delete_query(
-        table="app_user", keys="username", values=app_user["username"]
-    )
-    result_tuple = dbconn.execute(delete).fetchone()
+    return employee_seller
 
 
 @pytest.fixture
-def vehicle_buyer(dbconn):
-    person = mimesis.Person()
+def employee_buyer(dbconn):
+    person = mimesis.Person(locale=Locale.EN)
     app_user = {
         "username": person.email(),
         "user_type": "inventory_clerk",
@@ -123,7 +124,7 @@ def vehicle_buyer(dbconn):
         "first_name": person.first_name().replace("'", ""),
         "last_name": person.last_name().replace("'", ""),
     }
-    vehicle_buyer = {"username": app_user["username"]}
+    employee_buyer = {"username": app_user["username"]}
 
     # Create the user
     insert = format_insert_query(
@@ -133,31 +134,116 @@ def vehicle_buyer(dbconn):
     assert_expected(app_user, result_tuple)
 
     insert = format_insert_query(
-        table="vehicle_buyer", keys=vehicle_buyer.keys(), values=vehicle_buyer.values()
+        table="employee_buyer",
+        keys=employee_buyer.keys(),
+        values=employee_buyer.values(),
     )
     result_tuple = dbconn.execute(insert).fetchone()
-    assert_expected(vehicle_buyer, result_tuple)
+    assert_expected(employee_buyer, result_tuple)
 
-    yield vehicle_buyer
-
-    delete = format_delete_query(
-        table="vehicle_buyer", keys="username", values=vehicle_buyer["username"]
-    )
-    result_tuple = dbconn.execute(delete).fetchone()
-    delete = format_delete_query(
-        table="app_user", keys="username", values=app_user["username"]
-    )
-    result_tuple = dbconn.execute(delete).fetchone()
+    return employee_buyer
 
 
 @pytest.fixture
-def vehicle(dbconn, vehicle_buyer, vehicle_seller):
+def individual(dbconn):
+    person = mimesis.Person(locale=Locale.EN)
+    address = mimesis.Address()
+
+    customer = {
+        "tax_id": tax_id(),
+        "customer_type": "i",
+        "phone_number": person.phone_number()[2:].replace("-", ""),
+        "street": address.street_name(),
+        "city": address.city(),
+        "state": address.state(),
+        "postal_code": address.postal_code(),
+    }
+    individual = {
+        "ssn": customer["tax_id"],
+        "customer_type": "i",
+        "first_name": person.first_name(),
+        "last_name": person.last_name(),
+    }
+
+    # Create the user
+    insert = format_insert_query(
+        table="customer", keys=customer.keys(), values=customer.values()
+    )
+    result_tuple = dbconn.execute(insert).fetchone()
+    assert_expected(customer, result_tuple)
+
+    insert = format_insert_query(
+        table="individual", keys=individual.keys(), values=individual.values()
+    )
+    result_tuple = dbconn.execute(insert).fetchone()
+    assert_expected(individual, result_tuple)
+
+    return individual
+
+
+@pytest.fixture
+def business(dbconn):
+    person = mimesis.Person(locale=Locale.EN)
+    address = mimesis.Address()
+
+    customer = {
+        "tax_id": tax_id(),
+        "customer_type": "b",
+        "phone_number": person.phone_number()[2:].replace("-", ""),
+        "street": address.street_name(),
+        "city": address.city(),
+        "state": address.state(),
+        "postal_code": address.postal_code(),
+    }
+    business = {
+        "tin": customer["tax_id"],
+        "customer_type": "b",
+        "title": "Manager",
+        "business_name": "{person.first_name()} Car Lot",
+        "first_name": person.first_name(),
+        "last_name": person.last_name(),
+    }
+
+    # Create the user
+    insert = format_insert_query(
+        table="customer", keys=customer.keys(), values=customer.values()
+    )
+    result_tuple = dbconn.execute(insert).fetchone()
+
+    insert = format_insert_query(
+        table="business", keys=business.keys(), values=business.values()
+    )
+    result_tuple = dbconn.execute(insert).fetchone()
+    assert_expected(business, result_tuple)
+
+    return business
+
+
+@pytest.fixture
+def vehicle(dbconn, employee_buyer, employee_seller, individual, business):
     fv = FakeVehicle()
+    """
+    vin VARCHAR(17) PRIMARY KEY,
+    description VARCHAR(280) NULL,
+    horsepower SMALLINT NOT NULL,
+    year INT NOT NULL,
+    model VARCHAR(120) NOT NULL,
+    manufacturer VARCHAR(120) NOT NULL,
+    vehicle_type VARCHAR(50) NOT NULL,
+    purchase_price DECIMAL(19, 2) NOT NULL,
+    purchase_date DATE NOT NULL,
+    condition VARCHAR(10) NOT NULL,
+    fuel_type VARCHAR(20) NOT NULL,
+    employee_buyer VARCHAR(50) NOT NULL,
+    customer_seller VARCHAR(9) NOT NULL,
+    total_parts_price DECIMAL(19, 2) NULL,
+    employee_seller VARCHAR(50) NULL,
+    customer_buyer VARCHAR(9) NULL,
+    sale_date DATE NULL,
+    sale_price DECIMAL(19, 2) NULL,
+    """
     vehicle = {
         "vin": fv.vin,
-        "sale_date": fv.sale_date,
-        "sale_price": fv.sale_price,
-        "total_parts_price": fv.total_parts_price,
         "description": fv.description,
         "horsepower": fv.horsepower,
         "year": fv.year,
@@ -168,8 +254,13 @@ def vehicle(dbconn, vehicle_buyer, vehicle_seller):
         "purchase_date": fv.purchase_date,
         "condition": fv.condition,
         "fuel_type": fv.fuel_type,
-        "buyer_username": vehicle_buyer["username"],
-        "seller_username": vehicle_seller["username"],
+        "employee_buyer": employee_buyer["username"],
+        "customer_seller": individual["ssn"],
+        "total_parts_price": fv.total_parts_price,
+        "employee_seller": employee_seller["username"],
+        "customer_buyer": business["tin"],
+        "sale_date": fv.sale_date,
+        "sale_price": fv.sale_price,
     }
     # Create the vehicle
     insert = format_insert_query(
@@ -178,19 +269,15 @@ def vehicle(dbconn, vehicle_buyer, vehicle_seller):
     result_tuple = dbconn.execute(insert).fetchone()
     assert_expected(vehicle, result_tuple)
 
-    yield vehicle
-
-    # Now delete the vehicle
-    delete = format_delete_query(table="vehicle", keys="vin", values=vehicle["vin"])
-    result_tuple = dbconn.execute(delete).fetchone()
-    assert_expected(vehicle, result_tuple)
+    return vehicle
 
 
 @pytest.mark.parametrize(
     "user_type", ["owner", "inventory_clerk", "sales_person", "manager"]
 )
 def test_valid_app_user(dbconn, user_type):
-    person = mimesis.Person()
+    person = mimesis.Person(locale=Locale.EN)
+
     user = {
         "username": person.email(),
         "user_type": user_type,

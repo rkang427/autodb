@@ -104,6 +104,7 @@ CREATE TABLE vehicle (
     employee_seller VARCHAR(50) NULL,
     customer_buyer VARCHAR(9) NULL,
     sale_date DATE NULL,
+    -- TODO: Generate sale price
     sale_price DECIMAL(19, 2) NULL,
     FOREIGN KEY (customer_seller) REFERENCES customer (
         tax_id
@@ -237,7 +238,7 @@ CREATE TABLE vehicle_color (
 CREATE TABLE parts_order (
     ordinal INTEGER,
     vin VARCHAR(17) NOT NULL,
-    parts_order_number VARCHAR(17) GENERATED ALWAYS AS (
+    parts_order_number VARCHAR(21) GENERATED ALWAYS AS (
         vin || '-' || lpad(cast(ordinal AS VARCHAR), 3, cast(0 AS VARCHAR))
     ) STORED,
     total_parts_price DECIMAL(19, 2) DEFAULT 0.00,

@@ -237,6 +237,10 @@ CREATE TABLE vehicle_color (
 -- Parts Order
 CREATE TABLE parts_order (
     ordinal INTEGER,
+    -- TODO: Generate ordinal on insert. We need to know count of parts
+    -- order for this vin until then, application will have to do 
+    -- SELECT COUNT FROM parts_order WHERE vin = $vin to calculate it
+    -- we are at least insisting that combo of vin,ordinal is unique
     vin VARCHAR(17) NOT NULL,
     parts_order_number VARCHAR(21) GENERATED ALWAYS AS (
         vin || '-' || lpad(cast(ordinal AS VARCHAR), 3, cast(0 AS VARCHAR))

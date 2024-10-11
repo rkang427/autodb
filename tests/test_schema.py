@@ -360,42 +360,42 @@ def test_valid_vehiclecolor(dbconn, vehicle, colors):
     ]
     assert set(colors) == set(db_colors)
 
-
-def test_total_parts_price(dbconn, vehicle, vendor):
-    parts_order = {"vin": vehicle["vin"], "ordinal": 1, "vendor_name": vendor["name"]}
-    parts_order_number = f"{vehicle['vin']}-001"
-    # Create the color entries
-    insert = format_insert_query(
-        table="parts_order",
-        keys=parts_order.keys(),
-        values=parts_order.values(),
-    )
-    result_tuple = dbconn.execute(insert).fetchone()
-    assert_expected(parts_order, result_tuple)
-    num_parts = 10
+@pytest.mark.parametrize("num_parts_orders,num_parts", [(1,3), (0,0), (3,3)], ids=["one","none","several"])
+def test_total_parts_price(dbconn, vehicle, vendor, num_parts_orders, num_parts):
     parts_cost = 100
     parts_quantity_each = 3
-    for i in range(num_parts):
-        part = {
-            "parts_order_number": parts_order_number,
-            "quantity": parts_quantity_each,
-            "unit_price": parts_cost,
-            "description": "Important thing for vehicle",
-            "part_number": "FOOBAR-123",
-        }
+    for i in range(num_parts_orders):
+        parts_order = {"vin": vehicle["vin"], "ordinal": i+1, "vendor_name": vendor["name"]}
+        parts_order_number = f"{vehicle['vin']}-00{i+1}"
         # Create the color entries
         insert = format_insert_query(
-            table="part",
-            keys=part.keys(),
-            values=part.values(),
+            table="parts_order",
+            keys=parts_order.keys(),
+            values=parts_order.values(),
         )
         result_tuple = dbconn.execute(insert).fetchone()
-        assert_expected(part, result_tuple)
-
+        assert_expected(parts_order, result_tuple)
+        for i in range(num_parts):
+            part = {
+                "parts_order_number": parts_order_number,
+                "quantity": parts_quantity_each,
+                "unit_price": parts_cost,
+                "description": "Important thing for vehicle",
+                "part_number": "FOOBAR-123",
+            }
+            # Create the color entries
+            insert = format_insert_query(
+                table="part",
+                keys=part.keys(),
+                values=part.values(),
+            )
+            result_tuple = dbconn.execute(insert).fetchone()
+            assert_expected(part, result_tuple)
+    
     vehicle_parts_cost = dbconn.execute(
         f"SELECT total_parts_price FROM vehicle WHERE vin='{vehicle['vin']}';"
     ).fetchone()[0]
     assert (
-        Decimal((parts_cost * num_parts * parts_quantity_each)).quantize(TWOPLACES)
+        Decimal((num_parts_orders * parts_cost * num_parts * parts_quantity_each)).quantize(TWOPLACES)
         == vehicle_parts_cost
     )

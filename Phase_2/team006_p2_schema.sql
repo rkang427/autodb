@@ -233,14 +233,16 @@ CREATE TABLE vehicle_color (
 
 );
 
---PartsOrder
+-- Parts Order
 CREATE TABLE parts_order (
     parts_order_number VARCHAR(120) NOT NULL UNIQUE,
+    total_parts_price DECIMAL(19, 2) DEFAULT 0.00,
     vendor_name VARCHAR(120) NOT NULL,
+    --    vin VARCHAR(17) NOT NULL,
     FOREIGN KEY (vendor_name) REFERENCES vendor (name) ON DELETE RESTRICT
 );
 
---Part
+-- Part
 CREATE TABLE part (
     part_number VARCHAR(120) NOT NULL,
     unit_price DECIMAL(19, 2) NOT NULL,
@@ -252,3 +254,38 @@ CREATE TABLE part (
         parts_order_number
     ) ON DELETE CASCADE
 );
+
+-- Function to calculate total_parts_price
+CREATE OR REPLACE FUNCTION calculate_total_parts_price(
+    po_number VARCHAR
+)
+RETURNS DECIMAL(19, 2) AS $$
+DECLARE
+    total_price DECIMAL(19, 2);
+BEGIN
+    SELECT SUM(unit_price * quantity) INTO total_price
+    FROM part
+    WHERE parts_order_number = po_number;
+
+    RETURN COALESCE(total_price, 0.00);
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger function to update total_parts_price
+CREATE OR REPLACE FUNCTION update_total_parts_price()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Calculate and update the total_parts_price for the associated parts order
+    UPDATE parts_order
+    SET total_parts_price = calculate_total_parts_price(NEW.parts_order_number)
+    WHERE parts_order_number = NEW.parts_order_number;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger to update total_parts_price after inserting or updating a part
+CREATE TRIGGER update_parts_order_total
+AFTER INSERT OR UPDATE ON part
+FOR EACH ROW
+EXECUTE FUNCTION update_total_parts_price();

@@ -35,8 +35,23 @@ insert into employee_seller(username) VALUES ('ownerdoe');
 -- add a vehicle (as an inventory clerk would have to do) with null sale date + associate an inventory clerk
 INSERT INTO vehicle (vin, description, horsepower, year, model, manufacturer, vehicle_type, purchase_price, purchase_date, condition, fuel_type, employee_buyer, customer_seller) VALUES ('0129381208312', 'very nice car', 1200, 1994, 'Yukon', 'Honda', 'Truck', 1000.00, '12-01-2001', 'Good', 'Gas', 'johndoe', '555223333');
 
+-- add a vendor
+INSERT INTO vendor (name, phone_number, street, city, state, postal_code) VALUES ('Best Parts Supplier', '1234567890', '123 Main St', 'Anytown', 'NY', '12345');
+
 -- add a parts order for the vehicle
+
 -- add parts to order
+INSERT INTO parts_order (parts_order_number, vendor_name)
+VALUES ('0129381208312-001', 'Best Parts Supplier');
+
+-- Insert parts associated with the parts order
+INSERT INTO part (part_number, unit_price, description, quantity, status, parts_order_number)
+VALUES
+('PART-001', 50.00, 'Brake Pads', 4, 'ordered', '0129381208312-001'),
+('PART-002', 20.00, 'Oil Filter', 2, 'ordered', '0129381208312-001'),
+('PART-003', 100.00, 'Windshield Wipers', 1, 'ordered', '0129381208312-001');
+
+SELECT * FROM parts_order;
 -- update parts status
 -- search all vehicles with parts completed and return things for search screen
 -- search all vehicles and return things for search screen

@@ -32,23 +32,62 @@ CREATE TABLE vendor (
     postal_code VARCHAR(5) NOT NULL
 );
 
-CREATE TABLE vehicle_buyer (
+CREATE TABLE employee_buyer (
     username VARCHAR(120) NOT NULL UNIQUE,
     FOREIGN KEY (username) REFERENCES app_user (username) ON DELETE CASCADE
 );
 
---VehicleSeller
-CREATE TABLE vehicle_seller (
+CREATE TABLE employee_seller (
     username VARCHAR(120) NOT NULL UNIQUE,
     FOREIGN KEY (username) REFERENCES app_user (username) ON DELETE CASCADE
+);
+
+--Customer
+CREATE TABLE customer (
+    tax_id VARCHAR(9) PRIMARY KEY,
+    customer_type CHAR(1) NOT NULL DEFAULT 'i'
+    CHECK (customer_type IN ('i', 'b')),
+    -- This unique constraint that keeps the individual
+    -- and business tables disjoint
+    -- target the tax_id *and* the type in a foreign key constraint.
+    email VARCHAR(120) NULL,
+    phone_number VARCHAR(12) NOT NULL,
+    street VARCHAR(120) NOT NULL,
+    city VARCHAR(120) NOT NULL,
+    state VARCHAR(120) NOT NULL,
+    postal_code VARCHAR(5) NOT NULL,
+    UNIQUE (tax_id, customer_type)
+);
+
+--Individual
+CREATE TABLE individual (
+    ssn VARCHAR(9) NOT NULL UNIQUE,
+    customer_type CHAR(1) DEFAULT 'i',
+    CHECK (customer_type = 'i'),
+    first_name VARCHAR(120) NOT NULL,
+    last_name VARCHAR(120) NOT NULL,
+    FOREIGN KEY (ssn, customer_type) REFERENCES customer (
+        tax_id, customer_type
+    ) ON DELETE CASCADE
+);
+
+--Business
+CREATE TABLE business (
+    tin VARCHAR(9) NOT NULL UNIQUE,
+    customer_type CHAR(1) DEFAULT 'b',
+    CHECK (customer_type = 'b'),
+    business_name VARCHAR(120) NOT NULL,
+    title VARCHAR(120) NOT NULL,
+    first_name VARCHAR(120) NOT NULL,
+    last_name VARCHAR(120) NOT NULL,
+    FOREIGN KEY (tin, customer_type) REFERENCES customer (
+        tax_id, customer_type
+    ) ON DELETE CASCADE
 );
 
 -- Vehicle table
 CREATE TABLE vehicle (
     vin VARCHAR(17) PRIMARY KEY,
-    sale_date DATE NULL,
-    sale_price DECIMAL(19, 2) NULL,
-    total_parts_price DECIMAL(19, 2) NULL,
     description VARCHAR(280) NULL,
     horsepower SMALLINT NOT NULL,
     year INT NOT NULL,
@@ -59,12 +98,23 @@ CREATE TABLE vehicle (
     purchase_date DATE NOT NULL,
     condition VARCHAR(10) NOT NULL,
     fuel_type VARCHAR(20) NOT NULL,
-    buyer_username VARCHAR(50) NOT NULL,
-    seller_username VARCHAR(50) NULL,
-    FOREIGN KEY (seller_username) REFERENCES vehicle_seller (
+    employee_buyer VARCHAR(50) NOT NULL,
+    customer_seller VARCHAR(9) NOT NULL,
+    total_parts_price DECIMAL(19, 2) NULL,
+    employee_seller VARCHAR(50) NULL,
+    customer_buyer VARCHAR(9) NULL,
+    sale_date DATE NULL,
+    sale_price DECIMAL(19, 2) NULL,
+    FOREIGN KEY (customer_seller) REFERENCES customer (
+        tax_id
+    ) ON DELETE CASCADE,
+    FOREIGN KEY (customer_buyer) REFERENCES customer (
+        tax_id
+    ) ON DELETE CASCADE,
+    FOREIGN KEY (employee_seller) REFERENCES employee_seller (
         username
-    ) ON DELETE SET NULL,
-    FOREIGN KEY (buyer_username) REFERENCES vehicle_buyer (
+    ) ON DELETE CASCADE,
+    FOREIGN KEY (employee_buyer) REFERENCES employee_buyer (
         username
     ) ON DELETE CASCADE,
     CONSTRAINT chk_condition CHECK (
@@ -201,35 +251,4 @@ CREATE TABLE part (
     FOREIGN KEY (parts_order_number) REFERENCES parts_order (
         parts_order_number
     ) ON DELETE CASCADE
-);
-
---Customer
-CREATE TABLE customer (
-    tax_id VARCHAR(120) PRIMARY KEY,
-    email VARCHAR(120) NULL,
-    phone_number VARCHAR(12) NOT NULL,
-    street VARCHAR(120) NOT NULL,
-    city VARCHAR(120) NOT NULL,
-    state VARCHAR(120) NOT NULL,
-    postal_code VARCHAR(5) NOT NULL
-);
-
---Individual
-CREATE TABLE individual (
-    ssn VARCHAR(9) NOT NULL UNIQUE,
-    first_name VARCHAR(120) NOT NULL,
-    last_name VARCHAR(120) NOT NULL,
-    FOREIGN KEY (ssn) REFERENCES customer (tax_id) ON DELETE CASCADE
--- ADD CONSTRAINT that SSN not a TIN in business
-);
-
---Business
-CREATE TABLE business (
-    tin VARCHAR(9) NOT NULL UNIQUE,
-    FOREIGN KEY (tin) REFERENCES customer (tax_id) ON DELETE CASCADE,
-    business_name VARCHAR(120) NOT NULL,
-    title VARCHAR(120) NOT NULL,
-    first_name VARCHAR(120) NOT NULL,
-    last_name VARCHAR(120) NOT NULL
--- ADD CONSTRAINT that TIN not a SSN in business
 );

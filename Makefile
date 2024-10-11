@@ -4,8 +4,8 @@ POSTGRES_DB ?= "main"
 DRAWIO ?= "/Applications/draw.io.app/Contents/MacOS/draw.io"
 
 eer: 
-	$(DRAWIO) -x -f jpg -o Phase_1/team006_p1_eer.jpg Phase_1/team006_p1_eer.drawio
-	$(DRAWIO) -x -f pdf -o Phase_1/team006_p1_eer.pdf Phase_1/team006_p1_eer.drawio
+	$(DRAWIO) -x -f jpg -o Phase_2/team006_p2_eer.jpg Phase_2/team006_p2_eer.drawio
+	$(DRAWIO) -x -f pdf -o Phase_2/team006_p2_eer.pdf Phase_2/team006_p2_eer.drawio
 
 ifd: 
 	$(DRAWIO) -x -f jpg -o Phase_1/team006_p1_ifd.jpg Phase_1/team006_p1_ifd.drawio
@@ -36,6 +36,7 @@ test: db_schema
 
 check-lint:
 	sqlfluff lint Phase_2/team006_p2_schema.sql --dialect postgres
+	sqlfluff lint tests/load_data.sql --dialect postgres
 	black --check .
 	isort --check .
 	flake8 .

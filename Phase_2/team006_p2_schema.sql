@@ -22,7 +22,7 @@ CREATE TABLE app_user (
         user_type IN ('manager', 'owner', 'sales_person', 'inventory_clerk')
     )
 );
--- created vendor table 
+-- created vendor table
 CREATE TABLE vendor (
     name VARCHAR(120) PRIMARY KEY,
     phone_number VARCHAR(12) NOT NULL,
@@ -100,7 +100,7 @@ CREATE TABLE vehicle (
     fuel_type VARCHAR(20) NOT NULL,
     employee_buyer VARCHAR(50) NOT NULL,
     customer_seller VARCHAR(9) NOT NULL,
-    total_parts_price DECIMAL(19, 2) NULL,
+    total_parts_price DECIMAL(19, 2) DEFAULT 0.0,
     employee_seller VARCHAR(50) NULL,
     customer_buyer VARCHAR(9) NULL,
     sale_date DATE NULL,
@@ -235,7 +235,7 @@ CREATE TABLE vehicle_color (
 
 -- Parts Order
 CREATE TABLE parts_order (
-    ordinal SERIAL UNIQUE,
+    ordinal INTEGER,
     vin VARCHAR(17) NOT NULL,
     parts_order_number VARCHAR(17) GENERATED ALWAYS AS (
         vin || '-' || lpad(cast(ordinal AS VARCHAR), 3, cast(0 AS VARCHAR))
@@ -290,13 +290,47 @@ BEGIN
     UPDATE parts_order
     SET total_parts_price = calculate_total_parts_price(NEW.parts_order_number)
     WHERE parts_order_number = NEW.parts_order_number;
-    
+
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
 -- Trigger to update total_parts_price after inserting or updating a part
-CREATE TRIGGER update_parts_order_total
+CREATE TRIGGER update_parts_order_total_trigger
 AFTER INSERT OR UPDATE ON part
 FOR EACH ROW
 EXECUTE FUNCTION update_total_parts_price();
+
+-- Function to calculate vehicle total_parts_price
+CREATE OR REPLACE FUNCTION calculate_vehicle_total_parts_price(
+    this_vin VARCHAR
+)
+RETURNS DECIMAL(19, 2) AS $$
+DECLARE
+    total_price DECIMAL(19, 2);
+BEGIN
+    SELECT SUM(total_parts_price) INTO total_price
+    FROM parts_order
+    WHERE vin = this_vin;
+
+    RETURN COALESCE(total_price, 0.00);
+END;
+$$ LANGUAGE plpgsql;
+
+-- Function to update vehicle total_parts_price
+CREATE OR REPLACE FUNCTION update_vehicle_total_parts_price()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE vehicle
+    SET total_parts_price = calculate_vehicle_total_parts_price((SELECT vin FROM parts_order WHERE parts_order_number = NEW.parts_order_number))
+    WHERE vin = (SELECT vin FROM parts_order WHERE parts_order_number = NEW.parts_order_number);
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger to update total_parts_price after inserting or updating a part
+CREATE TRIGGER update_vehicle_total_parts_price_trigger
+AFTER INSERT OR UPDATE ON part
+FOR EACH ROW
+EXECUTE FUNCTION update_vehicle_total_parts_price();

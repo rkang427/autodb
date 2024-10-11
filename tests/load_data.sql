@@ -53,7 +53,7 @@ VALUES
 
 -- Check total prices are updated
 SELECT * FROM parts_order;
-SELECT total_parts_price FROM vehicle;
+SELECT vin, total_parts_price, purchase_price, sale_price FROM vehicle_with_sale_price;
 
 
 -- add another parts order for the vehicle
@@ -74,7 +74,7 @@ VALUES
 
 -- Check total prices are updated
 SELECT * FROM parts_order;
-SELECT vin, total_parts_price FROM vehicle;
+SELECT vin, total_parts_price, purchase_price, sale_price FROM vehicle_with_sale_price;
 -- update parts status
 -- search all vehicles with parts completed and return things for search screen
 -- search all vehicles and return things for search screen

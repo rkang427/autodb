@@ -360,12 +360,21 @@ def test_valid_vehiclecolor(dbconn, vehicle, colors):
     ]
     assert set(colors) == set(db_colors)
 
-@pytest.mark.parametrize("num_parts_orders,num_parts", [(1,3), (0,0), (3,3)], ids=["one","none","several"])
+
+@pytest.mark.parametrize(
+    "num_parts_orders,num_parts",
+    [(1, 3), (0, 0), (3, 3)],
+    ids=["one", "none", "several"],
+)
 def test_total_parts_price(dbconn, vehicle, vendor, num_parts_orders, num_parts):
     parts_cost = 100
     parts_quantity_each = 3
     for i in range(num_parts_orders):
-        parts_order = {"vin": vehicle["vin"], "ordinal": i+1, "vendor_name": vendor["name"]}
+        parts_order = {
+            "vin": vehicle["vin"],
+            "ordinal": i + 1,
+            "vendor_name": vendor["name"],
+        }
         parts_order_number = f"{vehicle['vin']}-00{i+1}"
         # Create the color entries
         insert = format_insert_query(
@@ -391,11 +400,26 @@ def test_total_parts_price(dbconn, vehicle, vendor, num_parts_orders, num_parts)
             )
             result_tuple = dbconn.execute(insert).fetchone()
             assert_expected(part, result_tuple)
-    
+
     vehicle_parts_cost = dbconn.execute(
         f"SELECT total_parts_price FROM vehicle WHERE vin='{vehicle['vin']}';"
     ).fetchone()[0]
     assert (
-        Decimal((num_parts_orders * parts_cost * num_parts * parts_quantity_each)).quantize(TWOPLACES)
+        Decimal(
+            (num_parts_orders * parts_cost * num_parts * parts_quantity_each)
+        ).quantize(TWOPLACES)
         == vehicle_parts_cost
     )
+
+    vehicle_sale_price = dbconn.execute(
+        f"SELECT sale_price FROM vehicle_with_sale_price WHERE vin='{vehicle['vin']}';"
+    ).fetchone()[0]
+    expected_sale_price = round(
+        (
+            Decimal((num_parts_orders * parts_cost * num_parts * parts_quantity_each))
+            * Decimal(1.1)
+            + Decimal(vehicle["purchase_price"]) * Decimal(1.25)
+        ),
+        2,
+    )
+    assert expected_sale_price == vehicle_sale_price

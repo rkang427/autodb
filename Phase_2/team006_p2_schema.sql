@@ -104,8 +104,7 @@ CREATE TABLE vehicle (
     employee_seller VARCHAR(50) NULL,
     customer_buyer VARCHAR(9) NULL,
     sale_date DATE NULL,
-    -- TODO: Generate sale price
-    sale_price DECIMAL(19, 2) NULL,
+    -- calculate sale_price on vehicle_with_sale_price view
     FOREIGN KEY (customer_seller) REFERENCES customer (
         tax_id
     ) ON DELETE CASCADE,
@@ -234,6 +233,30 @@ CREATE TABLE vehicle_color (
 
 );
 
+CREATE VIEW vehicle_with_sale_price AS
+SELECT
+    vin,
+    description,
+    horsepower,
+    year,
+    model,
+    manufacturer,
+    vehicle_type,
+    purchase_price,
+    purchase_date,
+    condition,
+    fuel_type,
+    employee_buyer,
+    customer_seller,
+    total_parts_price,
+    employee_seller,
+    customer_buyer,
+    sale_date,
+    ROUND((1.25 * purchase_price) + (1.1 * total_parts_price), 2) AS sale_price
+FROM
+    vehicle;
+
+
 -- Parts Order
 CREATE TABLE parts_order (
     ordinal INTEGER,
@@ -243,7 +266,7 @@ CREATE TABLE parts_order (
     -- we are at least insisting that combo of vin,ordinal is unique
     vin VARCHAR(17) NOT NULL,
     parts_order_number VARCHAR(21) GENERATED ALWAYS AS (
-        vin || '-' || lpad(cast(ordinal AS VARCHAR), 3, cast(0 AS VARCHAR))
+        vin || '-' || LPAD(CAST(ordinal AS VARCHAR), 3, CAST(0 AS VARCHAR))
     ) STORED,
     total_parts_price DECIMAL(19, 2) DEFAULT 0.00,
     vendor_name VARCHAR(120) NOT NULL,
@@ -272,7 +295,7 @@ CREATE TABLE part (
 );
 
 -- Function to calculate total_parts_price
-CREATE OR REPLACE FUNCTION calculate_total_parts_price(
+CREATE OR REPLACE FUNCTION CALCULATE_TOTAL_PARTS_PRICE(
     po_number VARCHAR
 )
 RETURNS DECIMAL(19, 2) AS $$
@@ -288,7 +311,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Trigger function to update total_parts_price
-CREATE OR REPLACE FUNCTION update_total_parts_price()
+CREATE OR REPLACE FUNCTION UPDATE_TOTAL_PARTS_PRICE()
 RETURNS TRIGGER AS $$
 BEGIN
     -- Calculate and update the total_parts_price for the associated parts order
@@ -304,10 +327,10 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER update_parts_order_total_trigger
 AFTER INSERT OR UPDATE ON part
 FOR EACH ROW
-EXECUTE FUNCTION update_total_parts_price();
+EXECUTE FUNCTION UPDATE_TOTAL_PARTS_PRICE();
 
 -- Function to calculate vehicle total_parts_price
-CREATE OR REPLACE FUNCTION calculate_vehicle_total_parts_price(
+CREATE OR REPLACE FUNCTION CALCULATE_VEHICLE_TOTAL_PARTS_PRICE(
     this_vin VARCHAR
 )
 RETURNS DECIMAL(19, 2) AS $$
@@ -323,7 +346,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Function to update vehicle total_parts_price
-CREATE OR REPLACE FUNCTION update_vehicle_total_parts_price()
+CREATE OR REPLACE FUNCTION UPDATE_VEHICLE_TOTAL_PARTS_PRICE()
 RETURNS TRIGGER AS $$
 BEGIN
     UPDATE vehicle
@@ -338,4 +361,4 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER update_vehicle_total_parts_price_trigger
 AFTER INSERT OR UPDATE ON part
 FOR EACH ROW
-EXECUTE FUNCTION update_vehicle_total_parts_price();
+EXECUTE FUNCTION UPDATE_VEHICLE_TOTAL_PARTS_PRICE();

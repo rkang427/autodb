@@ -235,11 +235,17 @@ CREATE TABLE vehicle_color (
 
 -- Parts Order
 CREATE TABLE parts_order (
-    parts_order_number VARCHAR(120) NOT NULL UNIQUE,
+    ordinal SERIAL UNIQUE,
+    vin VARCHAR(17) NOT NULL,
+    parts_order_number VARCHAR(17) GENERATED ALWAYS AS (
+        vin || '-' || lpad(cast(ordinal AS VARCHAR), 3, cast(0 AS VARCHAR))
+    ) STORED,
     total_parts_price DECIMAL(19, 2) DEFAULT 0.00,
     vendor_name VARCHAR(120) NOT NULL,
-    --    vin VARCHAR(17) NOT NULL,
-    FOREIGN KEY (vendor_name) REFERENCES vendor (name) ON DELETE RESTRICT
+    PRIMARY KEY (vin, ordinal),
+    UNIQUE (parts_order_number),
+    FOREIGN KEY (vendor_name) REFERENCES vendor (name) ON DELETE RESTRICT,
+    FOREIGN KEY (vin) REFERENCES vehicle (vin) ON DELETE CASCADE
 );
 
 -- Part
@@ -248,11 +254,16 @@ CREATE TABLE part (
     unit_price DECIMAL(19, 2) NOT NULL,
     description VARCHAR(280) NOT NULL,
     quantity INT NOT NULL,
-    status VARCHAR(120) NOT NULL,
-    parts_order_number VARCHAR(120) NOT NULL,
+    status VARCHAR(120) NOT NULL DEFAULT 'ordered',
+    parts_order_number VARCHAR(120),
     FOREIGN KEY (parts_order_number) REFERENCES parts_order (
         parts_order_number
-    ) ON DELETE CASCADE
+    ) ON DELETE CASCADE,
+    CONSTRAINT chk_status CHECK (
+        status IN ('ordered', 'received', 'installed')
+    )
+-- TODO: check when updating that new status is allowed.
+-- have to go from ordered to received to installed
 );
 
 -- Function to calculate total_parts_price

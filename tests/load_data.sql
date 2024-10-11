@@ -16,40 +16,38 @@ insert into business (tin, customer_type, business_name, title, first_name, last
 
 -- create the dealership employee users
 insert into app_user(username, user_type, password, first_name, last_name) VALUES ('johndoe',
-'inventory_clerk', 'password', 'John', 'Doe');
-insert into employee_buyer(username) VALUES ('johndoe');
+'inventory_clerk', 'password', 'John', 'Doe') RETURNING *;
+insert into employee_buyer(username) VALUES ('johndoe') RETURNING *;
 
 insert into app_user(username, user_type, password, first_name, last_name) VALUES ('janedoe',
-'sales_person', 'password', 'Jane', 'Doe');
-insert into employee_seller(username) VALUES ('janedoe');
+'sales_person', 'password', 'Jane', 'Doe') RETURNING *;
+insert into employee_seller(username) VALUES ('janedoe') RETURNING *;
 
 insert into app_user(username, user_type, password, first_name, last_name) VALUES ('barrydoe',
-'manager', 'password', 'Barry', 'Doe');
+'manager', 'password', 'Barry', 'Doe') RETURNING *;
 
 insert into app_user(username, user_type, password, first_name, last_name) VALUES ('ownerdoe',
-'owner', 'password', 'Owner', 'Doe');
-insert into employee_buyer(username) VALUES ('ownerdoe');
-insert into employee_seller(username) VALUES ('ownerdoe');
+'owner', 'password', 'Owner', 'Doe') RETURNING *;
+insert into employee_buyer(username) VALUES ('ownerdoe') RETURNING *;
+insert into employee_seller(username) VALUES ('ownerdoe') RETURNING *;
 
 
 -- add a vehicle (as an inventory clerk would have to do) with null sale date + associate an inventory clerk
 INSERT INTO vehicle (vin, description, horsepower, year, model, manufacturer, vehicle_type, purchase_price, purchase_date, condition, fuel_type, employee_buyer, customer_seller) VALUES ('0129381208312', 'very nice car', 1200, 1994, 'Yukon', 'Honda', 'Truck', 1000.00, '12-01-2001', 'Good', 'Gas', 'johndoe', '555223333');
 
 -- add a vendor
-INSERT INTO vendor (name, phone_number, street, city, state, postal_code) VALUES ('Best Parts Supplier', '1234567890', '123 Main St', 'Anytown', 'NY', '12345');
+INSERT INTO vendor (name, phone_number, street, city, state, postal_code) VALUES ('Best Parts Supplier', '1234567890', '123 Main St', 'Anytown', 'NY', '12345') RETURNING *;
 
 -- add a parts order for the vehicle
-
--- add parts to order
-INSERT INTO parts_order (parts_order_number, vendor_name)
-VALUES ('0129381208312-001', 'Best Parts Supplier');
+INSERT INTO parts_order (vin, vendor_name)
+VALUES ('0129381208312', 'Best Parts Supplier') RETURNING *;
 
 -- Insert parts associated with the parts order
 INSERT INTO part (part_number, unit_price, description, quantity, status, parts_order_number)
 VALUES
 ('PART-001', 50.00, 'Brake Pads', 4, 'ordered', '0129381208312-001'),
 ('PART-002', 20.00, 'Oil Filter', 2, 'ordered', '0129381208312-001'),
-('PART-003', 100.00, 'Windshield Wipers', 1, 'ordered', '0129381208312-001');
+('PART-003', 100.00, 'Windshield Wipers', 1, 'ordered', '0129381208312-001') RETURNING *;
 
 SELECT * FROM parts_order;
 -- update parts status

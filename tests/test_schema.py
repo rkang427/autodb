@@ -1,13 +1,14 @@
 import logging
 import os
 import random
+from decimal import Decimal
 
 import mimesis
 import psycopg
 import pytest
 from mimesis.locales import Locale
 
-from .fakedata import FakeVehicle
+from .fakedata import TWOPLACES, FakeVehicle
 
 logger = logging.getLogger(__name__)
 
@@ -153,7 +154,7 @@ def individual(dbconn):
         "tax_id": tax_id(),
         "customer_type": "i",
         "phone_number": person.phone_number()[2:].replace("-", ""),
-        "street": address.street_name(),
+        "street": address.street_name().replace("'", ""),
         "city": address.city(),
         "state": address.state(),
         "postal_code": address.postal_code(),
@@ -161,8 +162,8 @@ def individual(dbconn):
     individual = {
         "ssn": customer["tax_id"],
         "customer_type": "i",
-        "first_name": person.first_name(),
-        "last_name": person.last_name(),
+        "first_name": person.first_name().replace("'", ""),
+        "last_name": person.last_name().replace("'", ""),
     }
 
     # Create the user
@@ -190,18 +191,19 @@ def business(dbconn):
         "tax_id": tax_id(),
         "customer_type": "b",
         "phone_number": person.phone_number()[2:].replace("-", ""),
-        "street": address.street_name(),
+        "street": address.street_name().replace("'", ""),
         "city": address.city(),
         "state": address.state(),
         "postal_code": address.postal_code(),
     }
+    first_name = person.first_name().replace("'", "")
     business = {
         "tin": customer["tax_id"],
         "customer_type": "b",
         "title": "Manager",
-        "business_name": "{person.first_name()} Car Lot",
-        "first_name": person.first_name(),
-        "last_name": person.last_name(),
+        "business_name": "Amazing World of {first_name} Car Lot",
+        "first_name": first_name,
+        "last_name": person.last_name().replace("'", ""),
     }
 
     # Create the user
@@ -222,26 +224,6 @@ def business(dbconn):
 @pytest.fixture
 def vehicle(dbconn, employee_buyer, employee_seller, individual, business):
     fv = FakeVehicle()
-    """
-    vin VARCHAR(17) PRIMARY KEY,
-    description VARCHAR(280) NULL,
-    horsepower SMALLINT NOT NULL,
-    year INT NOT NULL,
-    model VARCHAR(120) NOT NULL,
-    manufacturer VARCHAR(120) NOT NULL,
-    vehicle_type VARCHAR(50) NOT NULL,
-    purchase_price DECIMAL(19, 2) NOT NULL,
-    purchase_date DATE NOT NULL,
-    condition VARCHAR(10) NOT NULL,
-    fuel_type VARCHAR(20) NOT NULL,
-    employee_buyer VARCHAR(50) NOT NULL,
-    customer_seller VARCHAR(9) NOT NULL,
-    total_parts_price DECIMAL(19, 2) NULL,
-    employee_seller VARCHAR(50) NULL,
-    customer_buyer VARCHAR(9) NULL,
-    sale_date DATE NULL,
-    sale_price DECIMAL(19, 2) NULL,
-    """
     vehicle = {
         "vin": fv.vin,
         "description": fv.description,
@@ -256,11 +238,6 @@ def vehicle(dbconn, employee_buyer, employee_seller, individual, business):
         "fuel_type": fv.fuel_type,
         "employee_buyer": employee_buyer["username"],
         "customer_seller": individual["ssn"],
-        "total_parts_price": fv.total_parts_price,
-        "employee_seller": employee_seller["username"],
-        "customer_buyer": business["tin"],
-        "sale_date": fv.sale_date,
-        "sale_price": fv.sale_price,
     }
     # Create the vehicle
     insert = format_insert_query(
@@ -301,14 +278,18 @@ def test_valid_app_user(dbconn, user_type):
     assert_expected(user, result_tuple)
 
 
-def test_valid_vendor(dbconn):
+@pytest.fixture
+def vendor(dbconn):
+    person = mimesis.Person(locale=Locale.EN)
+    business_name = " ".join(mimesis.Text().words()).replace("'", "")
+    address = mimesis.Address()
     vendor = {
-        "name": "Napa Auto Parts",
-        "phone_number": "919-123-7654",
-        "street": "123 Maple Ave",
-        "city": "Charlotte",
-        "state": "North Carolina",
-        "postal_code": "27344",
+        "name": f"{business_name} Auto Parts",
+        "phone_number": person.phone_number()[2:].replace("-", ""),
+        "street": address.street_name().replace("'", ""),
+        "city": address.city(),
+        "state": address.state(),
+        "postal_code": address.postal_code(),
     }
     # Create the user
     insert = format_insert_query(
@@ -316,11 +297,7 @@ def test_valid_vendor(dbconn):
     )
     result_tuple = dbconn.execute(insert).fetchone()
     assert_expected(vendor, result_tuple)
-
-    # Now delete the user
-    delete = format_delete_query(table="vendor", keys="name", values=vendor["name"])
-    result_tuple = dbconn.execute(delete).fetchone()
-    assert_expected(vendor, result_tuple)
+    return vendor
 
 
 def test_valid_vehicle(dbconn, vehicle):
@@ -382,6 +359,67 @@ def test_valid_vehiclecolor(dbconn, vehicle, colors):
         ).fetchall()
     ]
     assert set(colors) == set(db_colors)
-    # don't deal with deleting for now because SHOULD cascade delete...
-    # also, think there is some kind of gotcha for formatting delete query on table with multiple key values
-    # and I don't know how to do that yet
+
+
+@pytest.mark.parametrize(
+    "num_parts_orders,num_parts",
+    [(1, 3), (0, 0), (3, 3)],
+    ids=["one", "none", "several"],
+)
+def test_total_parts_price(dbconn, vehicle, vendor, num_parts_orders, num_parts):
+    parts_cost = 100
+    parts_quantity_each = 3
+    for i in range(num_parts_orders):
+        parts_order = {
+            "vin": vehicle["vin"],
+            "ordinal": i + 1,
+            "vendor_name": vendor["name"],
+        }
+        parts_order_number = f"{vehicle['vin']}-00{i+1}"
+        # Create the color entries
+        insert = format_insert_query(
+            table="parts_order",
+            keys=parts_order.keys(),
+            values=parts_order.values(),
+        )
+        result_tuple = dbconn.execute(insert).fetchone()
+        assert_expected(parts_order, result_tuple)
+        for i in range(num_parts):
+            part = {
+                "parts_order_number": parts_order_number,
+                "quantity": parts_quantity_each,
+                "unit_price": parts_cost,
+                "description": "Important thing for vehicle",
+                "part_number": "FOOBAR-123",
+            }
+            # Create the color entries
+            insert = format_insert_query(
+                table="part",
+                keys=part.keys(),
+                values=part.values(),
+            )
+            result_tuple = dbconn.execute(insert).fetchone()
+            assert_expected(part, result_tuple)
+
+    vehicle_parts_cost = dbconn.execute(
+        f"SELECT total_parts_price FROM vehicle WHERE vin='{vehicle['vin']}';"
+    ).fetchone()[0]
+    assert (
+        Decimal(
+            (num_parts_orders * parts_cost * num_parts * parts_quantity_each)
+        ).quantize(TWOPLACES)
+        == vehicle_parts_cost
+    )
+
+    vehicle_sale_price = dbconn.execute(
+        f"SELECT sale_price FROM vehicle_with_sale_price WHERE vin='{vehicle['vin']}';"
+    ).fetchone()[0]
+    expected_sale_price = round(
+        (
+            Decimal((num_parts_orders * parts_cost * num_parts * parts_quantity_each))
+            * Decimal(1.1)
+            + Decimal(vehicle["purchase_price"]) * Decimal(1.25)
+        ),
+        2,
+    )
+    assert expected_sale_price == vehicle_sale_price

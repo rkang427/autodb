@@ -22,7 +22,7 @@ CREATE TABLE app_user (
         user_type IN ('manager', 'owner', 'sales_person', 'inventory_clerk')
     )
 );
--- created vendor table 
+-- created vendor table
 CREATE TABLE vendor (
     name VARCHAR(120) PRIMARY KEY,
     phone_number VARCHAR(12) NOT NULL,
@@ -100,11 +100,11 @@ CREATE TABLE vehicle (
     fuel_type VARCHAR(20) NOT NULL,
     employee_buyer VARCHAR(50) NOT NULL,
     customer_seller VARCHAR(9) NOT NULL,
-    total_parts_price DECIMAL(19, 2) NULL,
+    total_parts_price DECIMAL(19, 2) DEFAULT 0.0,
     employee_seller VARCHAR(50) NULL,
     customer_buyer VARCHAR(9) NULL,
     sale_date DATE NULL,
-    sale_price DECIMAL(19, 2) NULL,
+    -- calculate sale_price on vehicle_with_sale_price view
     FOREIGN KEY (customer_seller) REFERENCES customer (
         tax_id
     ) ON DELETE CASCADE,
@@ -233,22 +233,132 @@ CREATE TABLE vehicle_color (
 
 );
 
---PartsOrder
+CREATE VIEW vehicle_with_sale_price AS
+SELECT
+    vin,
+    description,
+    horsepower,
+    year,
+    model,
+    manufacturer,
+    vehicle_type,
+    purchase_price,
+    purchase_date,
+    condition,
+    fuel_type,
+    employee_buyer,
+    customer_seller,
+    total_parts_price,
+    employee_seller,
+    customer_buyer,
+    sale_date,
+    ROUND((1.25 * purchase_price) + (1.1 * total_parts_price), 2) AS sale_price
+FROM
+    vehicle;
+
+
+-- Parts Order
 CREATE TABLE parts_order (
-    parts_order_number VARCHAR(120) NOT NULL UNIQUE,
+    ordinal INTEGER,
+    -- TODO: Generate ordinal on insert. We need to know count of parts
+    -- order for this vin until then, application will have to do 
+    -- SELECT COUNT FROM parts_order WHERE vin = $vin to calculate it
+    -- we are at least insisting that combo of vin,ordinal is unique
+    vin VARCHAR(17) NOT NULL,
+    parts_order_number VARCHAR(21) GENERATED ALWAYS AS (
+        vin || '-' || LPAD(CAST(ordinal AS VARCHAR), 3, CAST(0 AS VARCHAR))
+    ) STORED,
+    total_parts_price DECIMAL(19, 2) DEFAULT 0.00,
     vendor_name VARCHAR(120) NOT NULL,
-    FOREIGN KEY (vendor_name) REFERENCES vendor (name) ON DELETE RESTRICT
+    PRIMARY KEY (vin, ordinal),
+    UNIQUE (parts_order_number),
+    FOREIGN KEY (vendor_name) REFERENCES vendor (name) ON DELETE RESTRICT,
+    FOREIGN KEY (vin) REFERENCES vehicle (vin) ON DELETE CASCADE
 );
 
---Part
+-- Part
 CREATE TABLE part (
     part_number VARCHAR(120) NOT NULL,
     unit_price DECIMAL(19, 2) NOT NULL,
     description VARCHAR(280) NOT NULL,
     quantity INT NOT NULL,
-    status VARCHAR(120) NOT NULL,
-    parts_order_number VARCHAR(120) NOT NULL,
+    status VARCHAR(120) NOT NULL DEFAULT 'ordered',
+    parts_order_number VARCHAR(120),
     FOREIGN KEY (parts_order_number) REFERENCES parts_order (
         parts_order_number
-    ) ON DELETE CASCADE
+    ) ON DELETE CASCADE,
+    CONSTRAINT chk_status CHECK (
+        status IN ('ordered', 'received', 'installed')
+    )
+-- TODO: check when updating that new status is allowed.
+-- have to go from ordered to received to installed
 );
+
+-- Function to calculate total_parts_price
+CREATE OR REPLACE FUNCTION CALCULATE_TOTAL_PARTS_PRICE(
+    po_number VARCHAR
+)
+RETURNS DECIMAL(19, 2) AS $$
+DECLARE
+    total_price DECIMAL(19, 2);
+BEGIN
+    SELECT SUM(unit_price * quantity) INTO total_price
+    FROM part
+    WHERE parts_order_number = po_number;
+
+    RETURN COALESCE(total_price, 0.00);
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger function to update total_parts_price
+CREATE OR REPLACE FUNCTION UPDATE_TOTAL_PARTS_PRICE()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Calculate and update the total_parts_price for the associated parts order
+    UPDATE parts_order
+    SET total_parts_price = calculate_total_parts_price(NEW.parts_order_number)
+    WHERE parts_order_number = NEW.parts_order_number;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger to update total_parts_price after inserting or updating a part
+CREATE TRIGGER update_parts_order_total_trigger
+AFTER INSERT OR UPDATE ON part
+FOR EACH ROW
+EXECUTE FUNCTION UPDATE_TOTAL_PARTS_PRICE();
+
+-- Function to calculate vehicle total_parts_price
+CREATE OR REPLACE FUNCTION CALCULATE_VEHICLE_TOTAL_PARTS_PRICE(
+    this_vin VARCHAR
+)
+RETURNS DECIMAL(19, 2) AS $$
+DECLARE
+    total_price DECIMAL(19, 2);
+BEGIN
+    SELECT SUM(total_parts_price) INTO total_price
+    FROM parts_order
+    WHERE vin = this_vin;
+
+    RETURN COALESCE(total_price, 0.00);
+END;
+$$ LANGUAGE plpgsql;
+
+-- Function to update vehicle total_parts_price
+CREATE OR REPLACE FUNCTION UPDATE_VEHICLE_TOTAL_PARTS_PRICE()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE vehicle
+    SET total_parts_price = calculate_vehicle_total_parts_price((SELECT vin FROM parts_order WHERE parts_order_number = NEW.parts_order_number))
+    WHERE vin = (SELECT vin FROM parts_order WHERE parts_order_number = NEW.parts_order_number);
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger to update total_parts_price after inserting or updating a part
+CREATE TRIGGER update_vehicle_total_parts_price_trigger
+AFTER INSERT OR UPDATE ON part
+FOR EACH ROW
+EXECUTE FUNCTION UPDATE_VEHICLE_TOTAL_PARTS_PRICE();

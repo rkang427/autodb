@@ -36,7 +36,8 @@ INSERT INTO employee_seller(username) VALUES ('ownerdoe') RETURNING *;
 SELECT username, user_type FROM app_user WHERE username = 'ownerdoe' AND password = 'password';
 
 -- add a vehicle (as an inventory clerk would have to do) with null sale date + associate an inventory clerk
-INSERT INTO vehicle (vin, description, horsepower, model_year, model, manufacturer, vehicle_type, purchase_price, purchase_date, condition, fuel_type, employee_buyer, customer_seller) VALUES ('1119381208312', 'very nice car', 1200, 1994, 'Yukon', 'Honda', 'Truck', 1000.00, '12-01-2001', 'Good', 'Gas', 'johndoe', '555223333') RETURNING vin;
+INSERT INTO vehicle (vin, description, horsepower, model_year, model, manufacturer, vehicle_type, purchase_price, purchase_date, condition, fuel_type, employee_buyer, customer_seller) 
+VALUES ('1119381208312', 'very nice car', 1200, 1994, 'Yukon', 'Honda', 'Truck', 1000.00, '12-01-2001', 'Good', 'Gas', 'johndoe', '555223333') RETURNING vin;
 
 INSERT INTO vehicle (vin, description, horsepower, model_year, model, manufacturer, vehicle_type, purchase_price, purchase_date, condition, fuel_type, employee_buyer, customer_seller) VALUES ('2229381208312', 'very nice car 2', 1200, 1995, 'Yukon', 'Honda', 'Truck', 1000.00, '12-01-2001', 'Good', 'Gas', 'ownerdoe', '555223333') RETURNING vin;
 
@@ -116,6 +117,25 @@ SELECT vehicle_type, AVG(DATE_PART('day', sale_date::timestamp - purchase_date::
 FROM vehicle WHERE sale_date IS NOT NULL GROUP BY vehicle_type;
 
 --View Seller's History
+
+--need to insert test cases
+INSERT INTO vehicle (vin, description, horsepower, model_year, model, manufacturer, vehicle_type, purchase_price, 
+purchase_date, condition, fuel_type, employee_buyer, customer_seller) 
+VALUES ('1119381208312', 'very nice car', 1200, 1994, 'Yukon', 'Honda', 'Truck', 1000.00, 
+'12-01-2001', 'Good', 'Gas', "yes", '123456790');
+ RETURNING vin;
+
+INSERT INTO individual 
+VALUES ('123456789', 'i', 'Bob', 'Marley'), (1111111111, 'i', 'Chuck', 'Marley');
+
+INSERT INTO business
+VALUES ('123456790', 'b', 'Goldfish', 'Fish', 'Gold', 'Fish');
+
+
+
+
+
+
 SELECT
 nameBusiness, vehicleCountSold, averagePurchasePrice, totalPartsCount, averagePartsCostPerVehiclePurchased  
 --(higlighting) 

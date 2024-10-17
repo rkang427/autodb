@@ -108,3 +108,5 @@ SET
 WHERE vehicle.vin = '1119381208312' RETURNING vin, purchase_date, purchase_price, sale_date, customer_seller, customer_buyer, employee_seller, employee_buyer; -- Specify the VIN of the vehicle you want to update
 
 -- run queries that returns each of the reports
+-- Average time in inventory grouped by vehicle type
+SELECT vehicle_type, AVG(DATE_PART('day', sale_date::timestamp - purchase_date::timestamp) + 1) AS average_time_in_inventory FROM vehicle WHERE sale_date IS NOT NULL GROUP BY vehicle_type;

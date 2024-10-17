@@ -31,6 +31,7 @@ INSERT INTO app_user(username, user_type, password, first_name, last_name) VALUE
 INSERT INTO employee_buyer(username) VALUES ('ownerdoe') RETURNING *;
 INSERT INTO employee_seller(username) VALUES ('ownerdoe') RETURNING *;
 
+
 -- sample "login" query
 SELECT username, user_type FROM app_user WHERE username = 'ownerdoe' AND password = 'password';
 
@@ -109,4 +110,50 @@ WHERE vehicle.vin = '1119381208312' RETURNING vin, purchase_date, purchase_price
 
 -- run queries that returns each of the reports
 -- Average time in inventory grouped by vehicle type
-SELECT vehicle_type, AVG(DATE_PART('day', sale_date::timestamp - purchase_date::timestamp) + 1) AS average_time_in_inventory FROM vehicle WHERE sale_date IS NOT NULL GROUP BY vehicle_type;
+SELECT vehicle_type, AVG(DATE_PART('day', sale_date::timestamp - purchase_date::timestamp) + 1) AS average_time_in_inventory 
+FROM vehicle WHERE sale_date IS NOT NULL GROUP BY vehicle_type;
+--||REPORTS||==
+--View Seller's History
+SELECT
+nameBusiness, vehicleCountSold, averagePurchasePrice, totalPartsCount, averagePartsCostPerVehiclePurchased  
+--(higlighting) 
+-- CASE WHEN ($averagePartsCostPerVehicle > 500 OR averagePartsPerVehicle > 5) THEN ‘highlight’ 
+-- ELSE ‘no-highlight’ END AS highlight_class 
+FROM  
+(
+SELECT nameBusiness,
+--cb.customer_type, b.business_name, i.first_name, i.last_name, 
+SUM(p.quantity) AS totalPartsCount, 
+SUM(a.total_parts_price) AS totalPartsPrice, 
+SUM(a.total_parts_price) / COUNT(DISTINCT a.VIN) AS averagePartsCostPerVehiclePurchased, 
+SUM(p.quantity) / COUNT(DISTINCT a.VIN) AS averagePartsPerVehicle, 
+SUM(a.purchase_price)/COUNT(DISTINCT a.VIN) as averagePurchasePrice, 
+COUNT (DISTINCT a.VIN) AS vehicleCount, 
+SUM(CASE WHEN a.customer_seller = a.tax_id THEN 1 ELSE 0 END) AS vehicleCountSold, 
+SUM(CASE WHEN a.customer_seller = a.tax_id THEN a.purchase_price ELSE 0 END) AS totalPurchasePriceSold, 
+SUM(CASE WHEN a.customer_buyer = a.tax_id THEN 1 ELSE 0 END) AS vehicleCountPurchased, 
+SUM(CASE WHEN a.customer_buyer = a.tax_id THEN a.purchase_price ELSE 0 END) AS totalPurchasePricePurchased 
+FROM 
+( 
+SELECT v.customer_seller, v.customer_buyer, v.purchase_price, v.total_parts_price, v.vin, cb.tax_id, 
+CASE WHEN 
+cb.customer_type = 'b' THEN b.business_name 
+WHEN  
+cb.customer_type = 'i' THEN CONCAT(i.first_name, ' ', i.last_name) 
+END AS nameBusiness
+FROM Vehicle v JOIN
+Customer cb ON v.customer_buyer = cb.tax_id
+JOIN individual i ON cb.tax_id = i.ssn
+JOIN business b ON b.tin = cb.tax_id --, po.ordinal
+JOIN Customer cs ON v.customer_seller = cs.tax_id
+) AS a
+JOIN  
+parts_order po ON po.vin = a.vin 
+JOIN 
+part p ON po.parts_order_number = p.parts_order_number
+
+GROUP BY a.tax_id, nameBusiness
+) 
+AS s 
+ORDER BY vehicleCountPurchased DESC, averagePurchasePrice ASC 
+

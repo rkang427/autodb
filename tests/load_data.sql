@@ -35,9 +35,9 @@ INSERT INTO employee_seller(username) VALUES ('ownerdoe') RETURNING *;
 SELECT username, user_type FROM app_user WHERE username = 'ownerdoe' AND password = 'password';
 
 -- add a vehicle (as an inventory clerk would have to do) with null sale date + associate an inventory clerk
-INSERT INTO vehicle (vin, description, horsepower, year, model, manufacturer, vehicle_type, purchase_price, purchase_date, condition, fuel_type, employee_buyer, customer_seller) VALUES ('1119381208312', 'very nice car', 1200, 1994, 'Yukon', 'Honda', 'Truck', 1000.00, '12-01-2001', 'Good', 'Gas', 'johndoe', '555223333') RETURNING vin;
+INSERT INTO vehicle (vin, description, horsepower, model_year, model, manufacturer, vehicle_type, purchase_price, purchase_date, condition, fuel_type, employee_buyer, customer_seller) VALUES ('1119381208312', 'very nice car', 1200, 1994, 'Yukon', 'Honda', 'Truck', 1000.00, '12-01-2001', 'Good', 'Gas', 'johndoe', '555223333') RETURNING vin;
 
-INSERT INTO vehicle (vin, description, horsepower, year, model, manufacturer, vehicle_type, purchase_price, purchase_date, condition, fuel_type, employee_buyer, customer_seller) VALUES ('2229381208312', 'very nice car 2', 1200, 1995, 'Yukon', 'Honda', 'Truck', 1000.00, '12-01-2001', 'Good', 'Gas', 'ownerdoe', '555223333') RETURNING vin;
+INSERT INTO vehicle (vin, description, horsepower, model_year, model, manufacturer, vehicle_type, purchase_price, purchase_date, condition, fuel_type, employee_buyer, customer_seller) VALUES ('2229381208312', 'very nice car 2', 1200, 1995, 'Yukon', 'Honda', 'Truck', 1000.00, '12-01-2001', 'Good', 'Gas', 'ownerdoe', '555223333') RETURNING vin;
 
 -- add vendors
 INSERT INTO vendor (name, phone_number, street, city, state, postal_code) VALUES ('Best Parts Supplier', '1234567890', '123 Main St', 'Anytown', 'NY', '12345') RETURNING *;
@@ -78,9 +78,33 @@ VALUES
 -- Check total prices are updated
 SELECT * FROM parts_order;
 SELECT vin, total_parts_price, purchase_price, sale_price FROM vehicle_with_sale_price;
+
 -- update parts status
+UPDATE part
+SET status = 'installed'
+WHERE parts_order_number IN (
+    SELECT parts_order_number
+    FROM parts_order
+    WHERE vin = '1119381208312'
+);
 -- search all vehicles with parts completed and return things for search screen
+SELECT vw.vin, vw.sale_price, vw.model, vw.model_year
+FROM vehicle_with_sale_price vw
+WHERE vw.vin NOT IN (
+    SELECT po.vin
+    FROM parts_order po
+    JOIN part p ON p.parts_order_number = po.parts_order_number
+    AND p.status <> 'installed'
+    WHERE po.vin = vw.vin
+);
 -- search all vehicles and return things for search screen
 -- return things for vehicle detail screen 
 -- sell the vehicle (update with customer, sales person, sale date)
+UPDATE vehicle
+SET 
+    sale_date = CURRENT_DATE,
+    customer_buyer = '111223333', -- Replace with the tax_id of the chosen seller (e.g., Fred Flintstone)
+    employee_seller = 'ownerdoe'   -- The username of the owner employee
+WHERE vehicle.vin = '1119381208312' RETURNING vin, purchase_date, purchase_price, sale_date, customer_seller, customer_buyer, employee_seller, employee_buyer; -- Specify the VIN of the vehicle you want to update
+
 -- run queries that returns each of the reports

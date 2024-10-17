@@ -16,7 +16,7 @@ class FakeVehicle:
         self.purchase_date = self._purchase_date()
         self.purchase_price = self._purchase_price()
         self.sale_date = self._sale_date()
-        self.year = self._year()
+        self.model_year = self._model_year()
         self.model = self._model()
         self.manufacturer = self._manufacturer()
         self.condition = self._condition()
@@ -40,7 +40,7 @@ class FakeVehicle:
         end = 2024
         return mimesis.Datetime().date(start=start, end=end)
 
-    def _year(self):
+    def _model_year(self):
         start = 1980
         end = self.purchase_date.year
         return mimesis.Datetime().year(minimum=start, maximum=end)

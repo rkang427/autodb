@@ -107,12 +107,14 @@ SET
     customer_buyer = '111223333', -- Replace with the tax_id of the chosen seller (e.g., Fred Flintstone)
     employee_seller = 'ownerdoe'   -- The username of the owner employee
 WHERE vehicle.vin = '1119381208312' RETURNING vin, purchase_date, purchase_price, sale_date, customer_seller, customer_buyer, employee_seller, employee_buyer; -- Specify the VIN of the vehicle you want to update
-
+--||REPORTS||==
 -- run queries that returns each of the reports
+
+
 -- Average time in inventory grouped by vehicle type
 SELECT vehicle_type, AVG(DATE_PART('day', sale_date::timestamp - purchase_date::timestamp) + 1) AS average_time_in_inventory 
 FROM vehicle WHERE sale_date IS NOT NULL GROUP BY vehicle_type;
---||REPORTS||==
+
 --View Seller's History
 SELECT
 nameBusiness, vehicleCountSold, averagePurchasePrice, totalPartsCount, averagePartsCostPerVehiclePurchased  
@@ -155,5 +157,4 @@ part p ON po.parts_order_number = p.parts_order_number
 GROUP BY a.tax_id, nameBusiness
 ) 
 AS s 
-ORDER BY vehicleCountPurchased DESC, averagePurchasePrice ASC 
-
+ORDER BY vehicleCountPurchased DESC, averagePurchasePrice ASC

@@ -1,5 +1,4 @@
 ---
-version: '3.9'
 
 services:
   postgres:
@@ -7,6 +6,17 @@ services:
     container_name: cs6400_postgres_1
     ports:
       - 5432:5432
+      #to check what's running on this port and kill it
+      #lsof -i :5432
+      #if above doesn't work
+      #sudo ss -lptn 'sport = :5432'
+      #if that also doesn't work
+      #sudo lsof -i :5432
+
+      #once you find the id that the :5432 port has
+      #kill <insert id here>
+      #if doesn't work
+      #sudo kill <insert id here - should be a string of numbers>
     volumes:
       - db_data_dir:/var/lib/postgresql/data
     environment:

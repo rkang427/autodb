@@ -42,6 +42,10 @@ CREATE TABLE employee_seller (
     FOREIGN KEY (username) REFERENCES app_user (username) ON DELETE CASCADE
 );
 
+-- IF $customer.ssn /tin/taxID NOT LIKE ‘%[0-9]%’ 
+-- AND NOT LENGTH($customer.ssn/tin/taxID) = 9 
+-- IF NOT REG_EXP LIKE($customer.phoneNumber,  ‘^\d{3}-\d{3}-\d{4}$’) 
+-- IF NOT REG_EXP LIKE($customer.email, ‘^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}’) 
 --Customer
 CREATE TABLE customer (
     tax_id VARCHAR(9) PRIMARY KEY,
@@ -68,7 +72,8 @@ CREATE TABLE individual (
     last_name VARCHAR(120) NOT NULL,
     FOREIGN KEY (ssn, customer_type) REFERENCES customer (
         tax_id, customer_type
-    ) ON DELETE CASCADE
+    ) ON DELETE CASCADE,
+    UNIQUE (ssn, customer_type)
 );
 
 --Business
@@ -82,7 +87,8 @@ CREATE TABLE business (
     last_name VARCHAR(120) NOT NULL,
     FOREIGN KEY (tin, customer_type) REFERENCES customer (
         tax_id, customer_type
-    ) ON DELETE CASCADE
+    ) ON DELETE CASCADE,
+    UNIQUE (tin, customer_type)
 );
 
 -- Vehicle table
@@ -90,7 +96,8 @@ CREATE TABLE vehicle (
     vin VARCHAR(17) PRIMARY KEY,
     description VARCHAR(280) NULL,
     horsepower SMALLINT NOT NULL,
-    year INT NOT NULL,
+    --changed so it wouldn't have an issue because year as a function exists.
+    model_year INT NOT NULL,
     model VARCHAR(120) NOT NULL,
     manufacturer VARCHAR(120) NOT NULL,
     vehicle_type VARCHAR(50) NOT NULL,
@@ -119,6 +126,10 @@ CREATE TABLE vehicle (
     ) ON DELETE CASCADE,
     CONSTRAINT chk_condition CHECK (
         condition IN ('Excellent', 'Very Good', 'Good', 'Fair')
+    ),
+    CONSTRAINT chk_model_year CHECK (
+        model_year <= EXTRACT(YEAR FROM CURRENT_DATE) + 1
+        AND model_year >= 1000 AND model_year <= 9999
     ),
     CONSTRAINT chk_fuel_type CHECK (
         fuel_type IN (
@@ -238,7 +249,7 @@ SELECT
     vin,
     description,
     horsepower,
-    year,
+    model_year,
     model,
     manufacturer,
     vehicle_type,
@@ -362,3 +373,28 @@ CREATE TRIGGER update_vehicle_total_parts_price_trigger
 AFTER INSERT OR UPDATE ON part
 FOR EACH ROW
 EXECUTE FUNCTION UPDATE_VEHICLE_TOTAL_PARTS_PRICE();
+
+-- Function to prevent updating purchase price 
+-- or total parts price after vehicle is sold
+CREATE OR REPLACE FUNCTION PURCHASE_PRICE_UPDATE_PREVENTION()
+RETURNS TRIGGER AS $$  
+BEGIN
+IF NEW.sale_date IS NOT NULL THEN  
+-- bar any more changes from total parts price and purchase price  
+    IF NEW.purchase_price (
+	IS DISTINCT FROM OLD.purchase_price 
+	OR NEW.total_parts_price IS DISTINCT FROM OLD.total_parts_price
+	)
+        THEN RAISE EXCEPTION 'Vehicle already sold';  
+        END IF;  
+    END IF;  
+    RETURN NEW;  
+END;  
+$$ LANGUAGE plpgsql;
+
+-- Trigger to call function to prevent updating purchase
+-- price or total parts price after vehicle is sold
+CREATE TRIGGER purchase_price_update_prevention_trigger
+BEFORE UPDATE ON vehicle
+FOR EACH ROW
+EXECUTE FUNCTION PURCHASE_PRICE_UPDATE_PREVENTION();

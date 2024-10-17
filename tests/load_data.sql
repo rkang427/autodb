@@ -6,43 +6,49 @@
 
 --Create Customers
 -- Fred is an individual
-insert into customer (tax_id, customer_type, phone_number, street, city, state, postal_code) VALUES ('111223333', 'i', '9198675301', '123 Maple', 'Charlotte', 'North Carolina', '27344') RETURNING *;
-insert into individual (ssn, customer_type, first_name, last_name) VALUES ('111223333', 'i', 'Fred', 'Flintstone') RETURNING *;
+INSERT INTO customer (tax_id, customer_type, phone_number, street, city, state, postal_code) VALUES ('111223333', 'i', '9198675301', '123 Maple', 'Charlotte', 'North Carolina', '27344') RETURNING *;
+INSERT INTO individual (ssn, customer_type, first_name, last_name) VALUES ('111223333', 'i', 'Fred', 'Flintstone') RETURNING *;
 
 -- Wilma represents a business
-insert into customer (tax_id, customer_type, phone_number, street, city, state, postal_code) VALUES ('555223333', 'b', '9198675302', '124 Maple', 'Charlotte', 'North Carolina', '27344') RETURNING *;
-insert into business (tin, customer_type, business_name, title, first_name, last_name) VALUES ('555223333', 'b', 'Wilma Motorsports', 'CEO', 'Wilma', 'Flintstone') RETURNING *;
+INSERT INTO customer (tax_id, customer_type, phone_number, street, city, state, postal_code) VALUES ('555223333', 'b', '9198675302', '124 Maple', 'Charlotte', 'North Carolina', '27344') RETURNING *;
+INSERT INTO business (tin, customer_type, business_name, title, first_name, last_name) VALUES ('555223333', 'b', 'Wilma Motorsports', 'CEO', 'Wilma', 'Flintstone') RETURNING *;
 
 
 -- create the dealership employee users
-insert into app_user(username, user_type, password, first_name, last_name) VALUES ('johndoe',
+INSERT INTO app_user(username, user_type, password, first_name, last_name) VALUES ('johndoe',
 'inventory_clerk', 'password', 'John', 'Doe') RETURNING *;
-insert into employee_buyer(username) VALUES ('johndoe') RETURNING *;
+INSERT INTO employee_buyer(username) VALUES ('johndoe') RETURNING *;
 
-insert into app_user(username, user_type, password, first_name, last_name) VALUES ('janedoe',
+INSERT INTO app_user(username, user_type, password, first_name, last_name) VALUES ('janedoe',
 'sales_person', 'password', 'Jane', 'Doe') RETURNING *;
-insert into employee_seller(username) VALUES ('janedoe') RETURNING *;
+INSERT INTO employee_seller(username) VALUES ('janedoe') RETURNING *;
 
-insert into app_user(username, user_type, password, first_name, last_name) VALUES ('barrydoe',
+INSERT INTO app_user(username, user_type, password, first_name, last_name) VALUES ('barrydoe',
 'manager', 'password', 'Barry', 'Doe') RETURNING *;
 
-insert into app_user(username, user_type, password, first_name, last_name) VALUES ('ownerdoe',
+INSERT INTO app_user(username, user_type, password, first_name, last_name) VALUES ('ownerdoe',
 'owner', 'password', 'Owner', 'Doe') RETURNING *;
-insert into employee_buyer(username) VALUES ('ownerdoe') RETURNING *;
-insert into employee_seller(username) VALUES ('ownerdoe') RETURNING *;
+INSERT INTO employee_buyer(username) VALUES ('ownerdoe') RETURNING *;
+INSERT INTO employee_seller(username) VALUES ('ownerdoe') RETURNING *;
 
+
+-- sample "login" query
+SELECT username, user_type FROM app_user WHERE username = 'ownerdoe' AND password = 'password';
 
 -- add a vehicle (as an inventory clerk would have to do) with null sale date + associate an inventory clerk
-INSERT INTO vehicle (vin, description, horsepower, year, model, manufacturer, vehicle_type, purchase_price, purchase_date, condition, fuel_type, employee_buyer, customer_seller) VALUES ('1119381208312', 'very nice car', 1200, 1994, 'Yukon', 'Honda', 'Truck', 1000.00, '12-01-2001', 'Good', 'Gas', 'johndoe', '555223333') RETURNING vin;
+INSERT INTO vehicle (vin, description, horsepower, model_year, model, manufacturer, vehicle_type, purchase_price, purchase_date, condition, fuel_type, employee_buyer, customer_seller) VALUES ('1119381208312', 'very nice car', 1200, 1994, 'Yukon', 'Honda', 'Truck', 1000.00, '12-01-2001', 'Good', 'Gas', 'johndoe', '555223333') RETURNING vin;
 
-INSERT INTO vehicle (vin, description, horsepower, year, model, manufacturer, vehicle_type, purchase_price, purchase_date, condition, fuel_type, employee_buyer, customer_seller) VALUES ('2229381208312', 'very nice car 2', 1200, 1995, 'Yukon', 'Honda', 'Truck', 1000.00, '12-01-2001', 'Good', 'Gas', 'ownerdoe', '555223333') RETURNING vin;
+INSERT INTO vehicle (vin, description, horsepower, model_year, model, manufacturer, vehicle_type, purchase_price, purchase_date, condition, fuel_type, employee_buyer, customer_seller) VALUES ('2229381208312', 'very nice car 2', 1200, 1995, 'Yukon', 'Honda', 'Truck', 1000.00, '12-01-2001', 'Good', 'Gas', 'ownerdoe', '555223333') RETURNING vin;
 
--- add a vendor
+-- add vendors
 INSERT INTO vendor (name, phone_number, street, city, state, postal_code) VALUES ('Best Parts Supplier', '1234567890', '123 Main St', 'Anytown', 'NY', '12345') RETURNING *;
+INSERT INTO vendor (name, phone_number, street, city, state, postal_code) VALUES ('Napa Auto Parts', '9198675309', '555 West St', 'Othertown', 'WV', '78787') RETURNING *;
+
+-- sample select vendor by name
+SELECT name, phone_number, street, city, state, postal_code FROM vendor WHERE name = 'Best Parts Supplier';
 
 -- add a parts order for the vehicle
-INSERT INTO parts_order (vin, ordinal, vendor_name)
-VALUES ('1119381208312', 1, 'Best Parts Supplier') RETURNING *;
+INSERT INTO parts_order (vin, ordinal, vendor_name) SELECT '1119381208312', COUNT(*) + 1, 'Best Parts Supplier' from parts_order WHERE vin='1119381208312' RETURNING parts_order_number;
 
 -- Insert parts associated with the parts order
 INSERT INTO part (part_number, unit_price, description, quantity, status, parts_order_number)
@@ -57,12 +63,10 @@ SELECT vin, total_parts_price, purchase_price, sale_price FROM vehicle_with_sale
 
 
 -- add another parts order for the vehicle
-INSERT INTO parts_order (vin, ordinal, vendor_name)
-VALUES ('1119381208312', 2, 'Best Parts Supplier') RETURNING *;
+INSERT INTO parts_order (vin, ordinal, vendor_name) SELECT '1119381208312', COUNT(*) + 1, 'Best Parts Supplier' from parts_order WHERE vin='1119381208312' RETURNING parts_order_number;
 
 -- add parts order for different vehicle
-INSERT INTO parts_order (vin, ordinal, vendor_name)
-VALUES ('2229381208312', 1, 'Best Parts Supplier') RETURNING *;
+INSERT INTO parts_order (vin, ordinal, vendor_name) SELECT '2229381208312', COUNT(*) + 1, 'Best Parts Supplier' from parts_order WHERE vin='2229381208312' RETURNING parts_order_number;
 
 -- Insert parts associated with the parts order
 INSERT INTO part (part_number, unit_price, description, quantity, status, parts_order_number)
@@ -75,9 +79,81 @@ VALUES
 -- Check total prices are updated
 SELECT * FROM parts_order;
 SELECT vin, total_parts_price, purchase_price, sale_price FROM vehicle_with_sale_price;
+
 -- update parts status
+UPDATE part
+SET status = 'installed'
+WHERE parts_order_number IN (
+    SELECT parts_order_number
+    FROM parts_order
+    WHERE vin = '1119381208312'
+);
 -- search all vehicles with parts completed and return things for search screen
+SELECT vw.vin, vw.sale_price, vw.model, vw.model_year
+FROM vehicle_with_sale_price vw
+WHERE vw.vin NOT IN (
+    SELECT po.vin
+    FROM parts_order po
+    JOIN part p ON p.parts_order_number = po.parts_order_number
+    AND p.status <> 'installed'
+    WHERE po.vin = vw.vin
+);
 -- search all vehicles and return things for search screen
 -- return things for vehicle detail screen 
 -- sell the vehicle (update with customer, sales person, sale date)
+UPDATE vehicle
+SET 
+    sale_date = CURRENT_DATE,
+    customer_buyer = '111223333', -- Replace with the tax_id of the chosen seller (e.g., Fred Flintstone)
+    employee_seller = 'ownerdoe'   -- The username of the owner employee
+WHERE vehicle.vin = '1119381208312' RETURNING vin, purchase_date, purchase_price, sale_date, customer_seller, customer_buyer, employee_seller, employee_buyer; -- Specify the VIN of the vehicle you want to update
+
 -- run queries that returns each of the reports
+-- Average time in inventory grouped by vehicle type
+SELECT vehicle_type, AVG(DATE_PART('day', sale_date::timestamp - purchase_date::timestamp) + 1) AS average_time_in_inventory 
+FROM vehicle WHERE sale_date IS NOT NULL GROUP BY vehicle_type;
+--||REPORTS||==
+--View Seller's History
+SELECT
+nameBusiness, vehicleCountSold, averagePurchasePrice, totalPartsCount, averagePartsCostPerVehiclePurchased  
+--(higlighting) 
+-- CASE WHEN ($averagePartsCostPerVehicle > 500 OR averagePartsPerVehicle > 5) THEN ‘highlight’ 
+-- ELSE ‘no-highlight’ END AS highlight_class 
+FROM  
+(
+SELECT nameBusiness,
+--cb.customer_type, b.business_name, i.first_name, i.last_name, 
+SUM(p.quantity) AS totalPartsCount, 
+SUM(a.total_parts_price) AS totalPartsPrice, 
+SUM(a.total_parts_price) / COUNT(DISTINCT a.VIN) AS averagePartsCostPerVehiclePurchased, 
+SUM(p.quantity) / COUNT(DISTINCT a.VIN) AS averagePartsPerVehicle, 
+SUM(a.purchase_price)/COUNT(DISTINCT a.VIN) as averagePurchasePrice, 
+COUNT (DISTINCT a.VIN) AS vehicleCount, 
+SUM(CASE WHEN a.customer_seller = a.tax_id THEN 1 ELSE 0 END) AS vehicleCountSold, 
+SUM(CASE WHEN a.customer_seller = a.tax_id THEN a.purchase_price ELSE 0 END) AS totalPurchasePriceSold, 
+SUM(CASE WHEN a.customer_buyer = a.tax_id THEN 1 ELSE 0 END) AS vehicleCountPurchased, 
+SUM(CASE WHEN a.customer_buyer = a.tax_id THEN a.purchase_price ELSE 0 END) AS totalPurchasePricePurchased 
+FROM 
+( 
+SELECT v.customer_seller, v.customer_buyer, v.purchase_price, v.total_parts_price, v.vin, cb.tax_id, 
+CASE WHEN 
+cb.customer_type = 'b' THEN b.business_name 
+WHEN  
+cb.customer_type = 'i' THEN CONCAT(i.first_name, ' ', i.last_name) 
+END AS nameBusiness
+FROM Vehicle v JOIN
+Customer cb ON v.customer_buyer = cb.tax_id
+JOIN individual i ON cb.tax_id = i.ssn
+JOIN business b ON b.tin = cb.tax_id --, po.ordinal
+JOIN Customer cs ON v.customer_seller = cs.tax_id
+) AS a
+JOIN  
+parts_order po ON po.vin = a.vin 
+JOIN 
+part p ON po.parts_order_number = p.parts_order_number
+
+GROUP BY a.tax_id, nameBusiness
+) 
+AS s 
+ORDER BY vehicleCountPurchased DESC, averagePurchasePrice ASC 
+

@@ -118,23 +118,6 @@ FROM vehicle WHERE sale_date IS NOT NULL GROUP BY vehicle_type;
 
 --View Seller's History
 
---need to insert test cases
-INSERT INTO vehicle (vin, description, horsepower, model_year, model, manufacturer, vehicle_type, purchase_price, 
-purchase_date, condition, fuel_type, employee_buyer, customer_seller) 
-VALUES ('1119381208312', 'very nice car', 1200, 1994, 'Yukon', 'Honda', 'Truck', 1000.00, 
-'12-01-2001', 'Good', 'Gas', "yes", '123456790');
- RETURNING vin;
-
-INSERT INTO individual 
-VALUES ('123456789', 'i', 'Bob', 'Marley'), (1111111111, 'i', 'Chuck', 'Marley');
-
-INSERT INTO business
-VALUES ('123456790', 'b', 'Goldfish', 'Fish', 'Gold', 'Fish');
-
-
-
-
-
 
 SELECT
 nameBusiness, vehicleCountSold, averagePurchasePrice, totalPartsCount, averagePartsCostPerVehiclePurchased  

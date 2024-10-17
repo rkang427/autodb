@@ -157,4 +157,35 @@ part p ON po.parts_order_number = p.parts_order_number
 GROUP BY a.tax_id, nameBusiness
 ) 
 AS s 
-ORDER BY vehicleCountPurchased DESC, averagePurchasePrice ASC
+ORDER BY vehicleCountPurchased DESC, averagePurchasePrice ASC;
+
+
+--Monthly Sales Report
+--P1) Monthly Summary
+SELECT date_part('year', sale_date) as yearSold, 
+date_part('month',sale_date) as monthSold, 
+numberVehicles, grossIncome, (grossIncome - totalExpense) as netIncome 
+FROM 
+(SELECT  
+COUNT(DISTINCT VIN) as numberVehicles, 
+SUM(purchase_price) as grossIncome,  
+sale_date,  
+SUM(v.total_parts_price) as totalExpense
+FROM Vehicle v
+WHERE sale_date is not NULL
+GROUP BY sale_date)a
+GROUP BY date_part('year', sale_date), date_part('month',sale_date), numberVehicles, grossIncome, totalExpense
+HAVING grossIncome > 0
+ORDER BY date_part('year', sale_date) DESC,date_part('month',sale_date)  DESC ;
+
+--P2) Drilldown Summary
+SELECT au.first_name, au.last_name, vehicleSold, totalSales
+FROM  
+(SELECT COUNT(DISTINCT v.VIN) as VehicleSold, SUM(purchase_price) AS totalSales, e.username
+FROM Vehicle v JOIN Employee_Seller e ON v.employee_seller = e.username 
+GROUP BY e.username) a
+JOIN App_User au ON a.username = au.username 
+--WHERE EXTRACT(YEAR FROM v.sale_date) = {(int type > 999)‘YEAR OF DATETIME SELECTED FOR DRILLDOWN’}  
+--AND EXTRACT(MONTH FROM v.sale_date) = {(int type>0){MONTH OF DATETIME SELECTED FOR DRILLDOWN’} 
+GROUP BY au.first_name, au.last_name, vehicleSold, totalSales
+ORDER BY vehicleSold DESC, totalSales DESC 

@@ -145,16 +145,55 @@ WHERE vehicle.vin = '1119381208312' RETURNING vin, purchase_date, purchase_price
 
 --||REPORTS||==
 -- run queries that returns each of the reports
+CREATE VIEW vehicle_customer_details AS
+SELECT 
+    v.vin,
+    v.description,
+    v.horsepower,
+    v.model_year,
+    v.model,
+    v.manufacturer,
+    v.vehicle_type,
+    v.purchase_price,
+    v.purchase_date,
+    v.condition,
+    v.fuel_type,
+    v.employee_buyer,
+    v.customer_seller,
+    v.total_parts_price,
+    v.employee_seller,
+    v.customer_buyer, 
+    v.sale_date,
+    COALESCE(CONCAT(i.first_name, ' ', i.last_name), b.business_name) AS customer_name,
+    COALESCE(i.ssn, b.tin) as customer_id, 
+    COALESCE(CONCAT(title, ' ', b.first_name, ' ', b.last_name), CONCAT(i.first_name, ' ', i.last_name)) AS customer_title,
+    cb.customer_type,
+    cb.tax_id,
+    cb.phone_number,
+    cb.email,
+    cb.street,
+    cb.city,
+    cb.state,
+    cb.postal_code
+FROM 
+    vehicle v
+JOIN 
+    customer cb ON v.customer_buyer = cb.tax_id
+LEFT JOIN 
+    individual i ON cb.tax_id = i.ssn AND cb.customer_type = 'i'
+LEFT JOIN 
+    business b ON cb.tax_id = b.tin AND cb.customer_type = 'b';
+
 
 -- REPORT 1: View Seller's History
 SELECT
-nameBusiness, vehicleCount, averagePurchasePrice, totalPartsCount, averagePartsCostPerVehiclePurchased  
+customer_name, vehicleCount, averagePurchasePrice, totalPartsCount, averagePartsCostPerVehiclePurchased  
 --(higlighting) 
 -- CASE WHEN ($averagePartsCostPerVehicle > 500 OR averagePartsPerVehicle > 5) THEN ‘highlight’ 
 -- ELSE ‘no-highlight’ END AS highlight_class 
 FROM  
 (
-SELECT nameBusiness,
+SELECT a.customer_name,
 --cb.customer_type, b.business_name, i.first_name, i.last_name, 
 SUM(p.quantity) AS totalPartsCount, 
 SUM(a.total_parts_price) AS totalPartsPrice, 
@@ -162,23 +201,12 @@ SUM(a.total_parts_price) / COUNT(DISTINCT a.VIN) AS averagePartsCostPerVehiclePu
 SUM(p.quantity) / COUNT(DISTINCT a.VIN) AS averagePartsPerVehicle, 
 SUM(a.purchase_price)/COUNT(DISTINCT a.VIN) as averagePurchasePrice, 
 COUNT (DISTINCT a.VIN) AS vehicleCount 
-FROM 
-( 
-SELECT v.customer_seller, --v.customer_buyer, 
-v.purchase_price, v.total_parts_price, v.vin, cb.tax_id, 
-COALESCE(CONCAT(i.first_name, ' ', i.last_name), b.business_name) AS nameBusiness
-FROM Vehicle v JOIN
-Customer cb ON v.customer_buyer = cb.tax_id
-LEFT JOIN individual i ON cb.tax_id = i.ssn
-LEFT JOIN business b ON cb.tax_id = b.tin --, po.ordinal
-JOIN Customer cs ON v.customer_seller = cs.tax_id
-) AS a
+FROM vehicle_customer_details a
 JOIN  
 parts_order po ON po.vin = a.vin 
 JOIN 
 part p ON po.parts_order_number = p.parts_order_number
-
-GROUP BY a.tax_id, nameBusiness
+GROUP BY a.tax_id, a.customer_name
 ) 
 AS s 
 ORDER BY vehicleCount DESC, averagePurchasePrice ASC;

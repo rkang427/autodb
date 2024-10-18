@@ -11,7 +11,10 @@ INSERT INTO individual (ssn, customer_type, first_name, last_name) VALUES ('1112
 
 -- Wilma represents a business
 INSERT INTO customer (tax_id, customer_type, phone_number, street, city, state, postal_code) VALUES ('555223333', 'b', '9198675302', '124 Maple', 'Charlotte', 'North Carolina', '27344') RETURNING *;
-INSERT INTO business (tin, customer_type, business_name, title, first_name, last_name) VALUES ('555223333', 'b', 'Wilma Motorsports', 'CEO', 'Wilma', 'Flintstone') RETURNING *;
+INSERT INTO business (tin, customer_type, business_name, title, first_name, last_name) 
+VALUES ('555223333', 'b', 'Wilma Motorsports', 'CEO', 'Wilma', 'Flintstone'),
+('555223334', 'b', 'Wilma Motorsports', 'CEO', 'Wilma', 'Flintstone')
+ RETURNING *;
 
 
 -- create the dealership employee users
@@ -77,6 +80,36 @@ VALUES
 ('PART-003', 100.00, 'Windshield Wipers', 1, 'ordered', '1119381208312-002'),
 ('PART-004', 50.00, 'Seatbelt', 1, 'ordered', '2229381208312-001') RETURNING *;
 
+
+-- |More Customers/Vehicles Bought|
+INSERT INTO customer (tax_id, customer_type, email, phone_number, street, city, state, postal_code) VALUES
+('111222333', 'i', 'alice.jones@example.com', '111-222-3333', '123 Elm St', 'CityX', 'StateX', '11111'),
+('444555666', 'b', 'contact@widgetcorp.com', '444-555-6666', '456 Oak St', 'CityY', 'StateY', '22222');
+
+INSERT INTO individual (ssn, customer_type, first_name, last_name) VALUES
+('111222333', 'i', 'Alice', 'Jones');
+
+INSERT INTO business (tin, customer_type, business_name, title, first_name, last_name) VALUES
+('444555666', 'b', 'Widget Corp', 'CEO', 'Bob', 'Smith');
+
+
+INSERT INTO vehicle (vin, description, horsepower, model_year, model, manufacturer, vehicle_type, purchase_price, purchase_date, condition, fuel_type, employee_buyer, customer_seller, total_parts_price, employee_seller, customer_buyer, sale_date) VALUES
+('1HGCM82633A123456', 'Sedan Model X', 150, 2022, 'Model X', 'Honda', 'Sedan', 22000.00, '2023-05-10', 'Excellent', 'Gas', 'employee1', '111222333', 500.00, 'employee2', '111222333', NULL), 
+('1HGCM82633A123457', 'Truck Model Y', 250, 2023, 'Model Y', 'Ford', 'Truck', 32000.00, '2023-06-15', 'Very Good', 'Gas', 'employee3', '444555666', 1000.00, 'employee4', '444555666', NULL);
+
+
+INSERT INTO parts_order (ordinal, vin, total_parts_price, vendor_name) VALUES
+(1, '1HGCM82633A123456', 500.00, 'Parts Vendor A'), 
+(1, '1HGCM82633A123457', 1000.00, 'Parts Vendor B');
+
+
+INSERT INTO part (part_number, unit_price, description, quantity, status, parts_order_number) VALUES
+('PART001', 250.00, 'Engine Part A', 1, 'installed', '1HGCM82633A123456-001'),
+('PART002', 250.00, 'Brake Part B', 1, 'installed', '1HGCM82633A123456-001'),
+('PART003', 500.00, 'Wheel Part C', 2, 'installed', '1HGCM82633A123457-001'),
+('PART004', 500.00, 'Suspension Part D', 1, 'installed', '1HGCM82633A123457-001');
+
+
 -- Check total prices are updated
 SELECT * FROM parts_order;
 SELECT vin, total_parts_price, purchase_price, sale_price FROM vehicle_with_sale_price;
@@ -117,10 +150,8 @@ SELECT vehicle_type, AVG(DATE_PART('day', sale_date::timestamp - purchase_date::
 FROM vehicle WHERE sale_date IS NOT NULL GROUP BY vehicle_type;
 
 --View Seller's History
-
-
 SELECT
-nameBusiness, vehicleCountSold, averagePurchasePrice, totalPartsCount, averagePartsCostPerVehiclePurchased  
+nameBusiness, vehicleCount, averagePurchasePrice, totalPartsCount, averagePartsCostPerVehiclePurchased  
 --(higlighting) 
 -- CASE WHEN ($averagePartsCostPerVehicle > 500 OR averagePartsPerVehicle > 5) THEN ‘highlight’ 
 -- ELSE ‘no-highlight’ END AS highlight_class 
@@ -133,23 +164,16 @@ SUM(a.total_parts_price) AS totalPartsPrice,
 SUM(a.total_parts_price) / COUNT(DISTINCT a.VIN) AS averagePartsCostPerVehiclePurchased, 
 SUM(p.quantity) / COUNT(DISTINCT a.VIN) AS averagePartsPerVehicle, 
 SUM(a.purchase_price)/COUNT(DISTINCT a.VIN) as averagePurchasePrice, 
-COUNT (DISTINCT a.VIN) AS vehicleCount, 
-SUM(CASE WHEN a.customer_seller = a.tax_id THEN 1 ELSE 0 END) AS vehicleCountSold, 
-SUM(CASE WHEN a.customer_seller = a.tax_id THEN a.purchase_price ELSE 0 END) AS totalPurchasePriceSold, 
-SUM(CASE WHEN a.customer_buyer = a.tax_id THEN 1 ELSE 0 END) AS vehicleCountPurchased, 
-SUM(CASE WHEN a.customer_buyer = a.tax_id THEN a.purchase_price ELSE 0 END) AS totalPurchasePricePurchased 
+COUNT (DISTINCT a.VIN) AS vehicleCount 
 FROM 
 ( 
-SELECT v.customer_seller, v.customer_buyer, v.purchase_price, v.total_parts_price, v.vin, cb.tax_id, 
-CASE WHEN 
-cb.customer_type = 'b' THEN b.business_name 
-WHEN  
-cb.customer_type = 'i' THEN CONCAT(i.first_name, ' ', i.last_name) 
-END AS nameBusiness
+SELECT v.customer_seller, --v.customer_buyer, 
+v.purchase_price, v.total_parts_price, v.vin, cb.tax_id, 
+COALESCE(CONCAT(i.first_name, ' ', i.last_name), b.business_name) AS nameBusiness
 FROM Vehicle v JOIN
 Customer cb ON v.customer_buyer = cb.tax_id
-JOIN individual i ON cb.tax_id = i.ssn
-JOIN business b ON b.tin = cb.tax_id --, po.ordinal
+LEFT JOIN individual i ON cb.tax_id = i.ssn
+LEFT JOIN business b ON cb.tax_id = b.tin --, po.ordinal
 JOIN Customer cs ON v.customer_seller = cs.tax_id
 ) AS a
 JOIN  
@@ -160,7 +184,7 @@ part p ON po.parts_order_number = p.parts_order_number
 GROUP BY a.tax_id, nameBusiness
 ) 
 AS s 
-ORDER BY vehicleCountPurchased DESC, averagePurchasePrice ASC;
+ORDER BY vehicleCount DESC, averagePurchasePrice ASC;
 
 
 --Monthly Sales Report

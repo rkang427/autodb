@@ -111,6 +111,7 @@ CREATE TABLE vehicle (
     employee_seller VARCHAR(50) NULL,
     customer_buyer VARCHAR(9) NULL,
     sale_date DATE NULL,
+
     -- calculate sale_price on vehicle_with_sale_price view
     FOREIGN KEY (customer_seller) REFERENCES customer (
         tax_id

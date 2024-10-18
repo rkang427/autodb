@@ -11,10 +11,7 @@ INSERT INTO individual (ssn, customer_type, first_name, last_name) VALUES ('1112
 
 -- Wilma represents a business
 INSERT INTO customer (tax_id, customer_type, phone_number, street, city, state, postal_code) VALUES ('555223333', 'b', '9198675302', '124 Maple', 'Charlotte', 'North Carolina', '27344') RETURNING *;
-INSERT INTO business (tin, customer_type, business_name, title, first_name, last_name) 
-VALUES ('555223333', 'b', 'Wilma Motorsports', 'CEO', 'Wilma', 'Flintstone'),
-('555223334', 'b', 'Wilma Motorsports', 'CEO', 'Wilma', 'Flintstone')
- RETURNING *;
+
 
 
 -- create the dealership employee users
@@ -63,7 +60,9 @@ VALUES
 
 -- Check total prices are updated
 SELECT * FROM parts_order;
-SELECT vin, total_parts_price, purchase_price, sale_price FROM vehicle_with_sale_price;
+SELECT vin, total_parts_price, purchase_price, ROUND((1.25 * purchase_price) + (1.1 * total_parts_price), 2) AS sale_price 
+FROM
+    vehicle;
 
 
 -- add another parts order for the vehicle
@@ -93,26 +92,12 @@ INSERT INTO business (tin, customer_type, business_name, title, first_name, last
 ('444555666', 'b', 'Widget Corp', 'CEO', 'Bob', 'Smith');
 
 
-INSERT INTO vehicle (vin, description, horsepower, model_year, model, manufacturer, vehicle_type, purchase_price, purchase_date, condition, fuel_type, employee_buyer, customer_seller, total_parts_price, employee_seller, customer_buyer, sale_date) VALUES
-('1HGCM82633A123456', 'Sedan Model X', 150, 2022, 'Model X', 'Honda', 'Sedan', 22000.00, '2023-05-10', 'Excellent', 'Gas', 'employee1', '111222333', 500.00, 'employee2', '111222333', NULL), 
-('1HGCM82633A123457', 'Truck Model Y', 250, 2023, 'Model Y', 'Ford', 'Truck', 32000.00, '2023-06-15', 'Very Good', 'Gas', 'employee3', '444555666', 1000.00, 'employee4', '444555666', NULL);
-
-
-INSERT INTO parts_order (ordinal, vin, total_parts_price, vendor_name) VALUES
-(1, '1HGCM82633A123456', 500.00, 'Parts Vendor A'), 
-(1, '1HGCM82633A123457', 1000.00, 'Parts Vendor B');
-
-
-INSERT INTO part (part_number, unit_price, description, quantity, status, parts_order_number) VALUES
-('PART001', 250.00, 'Engine Part A', 1, 'installed', '1HGCM82633A123456-001'),
-('PART002', 250.00, 'Brake Part B', 1, 'installed', '1HGCM82633A123456-001'),
-('PART003', 500.00, 'Wheel Part C', 2, 'installed', '1HGCM82633A123457-001'),
-('PART004', 500.00, 'Suspension Part D', 1, 'installed', '1HGCM82633A123457-001');
-
-
 -- Check total prices are updated
 SELECT * FROM parts_order;
-SELECT vin, total_parts_price, purchase_price, sale_price FROM vehicle_with_sale_price;
+SELECT vin, total_parts_price, purchase_price,
+    ROUND((1.25 * purchase_price) + (1.1 * total_parts_price), 2) AS sale_price
+FROM
+    vehicle;
 
 -- update parts status
 UPDATE part
@@ -124,7 +109,29 @@ WHERE parts_order_number IN (
 );
 -- search all vehicles with parts completed and return things for search screen
 SELECT vw.vin, vw.sale_price, vw.model, vw.model_year
-FROM vehicle_with_sale_price vw
+FROM (
+    SELECT
+    vin,
+    description,
+    horsepower,
+    model_year,
+    model,
+    manufacturer,
+    vehicle_type,
+    purchase_price,
+    purchase_date,
+    condition,
+    fuel_type,
+    employee_buyer,
+    customer_seller,
+    total_parts_price,
+    employee_seller,
+    customer_buyer,
+    sale_date,
+    ROUND((1.25 * purchase_price) + (1.1 * total_parts_price), 2) AS sale_price
+FROM
+    vehicle
+) vw
 WHERE vw.vin NOT IN (
     SELECT po.vin
     FROM parts_order po
@@ -145,12 +152,6 @@ WHERE vehicle.vin = '1119381208312' RETURNING vin, purchase_date, purchase_price
 
 --||REPORTS||==
 -- run queries that returns each of the reports
-CREATE VIEW vehicle_customer_details AS
-Vehicle v JOIN
-Customer cb ON v.customer_buyer = cb.tax_id
-LEFT JOIN individual i ON cb.tax_id = i.ssn
-LEFT JOIN business b ON cb.tax_id = b.tin --, po.ordinal
-JOIN Customer cs ON v.customer_seller = cs.tax_id;
 
 -- REPORT 1: View Seller's History
 SELECT

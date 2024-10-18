@@ -141,15 +141,12 @@ SET
     customer_buyer = '111223333', -- Replace with the tax_id of the chosen seller (e.g., Fred Flintstone)
     employee_seller = 'ownerdoe'   -- The username of the owner employee
 WHERE vehicle.vin = '1119381208312' RETURNING vin, purchase_date, purchase_price, sale_date, customer_seller, customer_buyer, employee_seller, employee_buyer; -- Specify the VIN of the vehicle you want to update
+
+
 --||REPORTS||==
 -- run queries that returns each of the reports
 
-
--- Average time in inventory grouped by vehicle type
-SELECT vehicle_type, AVG(DATE_PART('day', sale_date::timestamp - purchase_date::timestamp) + 1) AS average_time_in_inventory 
-FROM vehicle WHERE sale_date IS NOT NULL GROUP BY vehicle_type;
-
---View Seller's History
+-- REPORT 1: View Seller's History
 SELECT
 nameBusiness, vehicleCount, averagePurchasePrice, totalPartsCount, averagePartsCostPerVehiclePurchased  
 --(higlighting) 
@@ -186,8 +183,30 @@ GROUP BY a.tax_id, nameBusiness
 AS s 
 ORDER BY vehicleCount DESC, averagePurchasePrice ASC;
 
+-- REPORT 2: Average time in inventory grouped by vehicle type
+SELECT vehicle_type, AVG(DATE_PART('day', sale_date::timestamp - purchase_date::timestamp) + 1) AS average_time_in_inventory 
+FROM vehicle WHERE sale_date IS NOT NULL GROUP BY vehicle_type;
 
---Monthly Sales Report
+-- REPORT 3: View Price Per Condition
+SELECT vehicle_type,  
+SUM(CASE WHEN Condition = 'Excellent' THEN purchase_price ELSE 0 END) AS ExcellentTotalPrice, 
+SUM(CASE WHEN Condition = 'Very Good' THEN purchase_price ELSE 0 END) AS VeryGoodTotalPrice, 
+SUM(CASE WHEN Condition = 'Good' THEN purchase_price ELSE 0 END) AS GoodTotalPrice,  
+SUM(CASE WHEN Condition = 'Fair' THEN purchase_price ELSE 0 END) AS FairTotalPrice  
+FROM Vehicle  
+GROUP BY vehicle_type; 
+
+-- REPORT 4: View Parts Stats
+SELECT vendor.Name,  
+       SUM(part.Quantity) AS TotalPartsQuantity,  
+       SUM(part.Quantity * part.unit_price) AS VendorTotalExpense 
+FROM Parts_Order partsorder
+JOIN Part part ON partsorder.parts_order_number = part.parts_order_number 
+JOIN Vendor vendor ON vendor.name = partsorder.vendor_name
+GROUP BY Vendor.Name 
+ORDER BY VendorTotalExpense DESC; 
+
+--5) Monthly Sales Report
 --P1) Monthly Summary
 SELECT date_part('year', sale_date) as yearSold, 
 date_part('month',sale_date) as monthSold, 

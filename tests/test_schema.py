@@ -400,6 +400,22 @@ def test_total_parts_price(dbconn, vehicle, vendor, num_parts_orders, num_parts)
             )
             result_tuple = dbconn.execute(insert).fetchone()
             assert_expected(part, result_tuple)
+        # now update vehicle total parts price as application would do
+        dbconn.execute(
+            f"""
+           UPDATE vehicle v
+           SET
+               total_parts_price = (
+                   SELECT COALESCE(SUM(p.quantity * p.unit_price), 0)
+                   FROM part AS p
+                   INNER JOIN
+                       parts_order AS po
+                       ON p.parts_order_number = po.parts_order_number
+                   WHERE po.vin = '{vehicle["vin"]}'
+               )
+           WHERE v.vin = '{vehicle["vin"]}';
+                  """
+        )
 
     vehicle_parts_cost = dbconn.execute(
         f"SELECT total_parts_price FROM vehicle WHERE vin='{vehicle['vin']}';"
@@ -412,7 +428,7 @@ def test_total_parts_price(dbconn, vehicle, vendor, num_parts_orders, num_parts)
     )
 
     vehicle_sale_price = dbconn.execute(
-        f"SELECT sale_price FROM vehicle_with_sale_price WHERE vin='{vehicle['vin']}';"
+        f"SELECT ROUND((total_parts_price * 1.1 + purchase_price*1.25), 2)  FROM vehicle WHERE vin='{vehicle['vin']}';"
     ).fetchone()[0]
     expected_sale_price = round(
         (

@@ -243,31 +243,7 @@ CREATE TABLE vehicle_color (
     FOREIGN KEY (vin) REFERENCES vehicle (vin) ON DELETE CASCADE,
     UNIQUE (vin, color)
 
-);/* to mass comment, shift + option + A for macOS, control + K + C for windows
-
-CREATE VIEW vehicle_with_sale_price AS
-SELECT
-    vin,
-    description,
-    horsepower,
-    model_year,
-    model,
-    manufacturer,
-    vehicle_type,
-    purchase_price,
-    purchase_date,
-    condition,
-    fuel_type,
-    employee_buyer,
-    customer_seller,
-    total_parts_price,
-    employee_seller,
-    customer_buyer,
-    sale_date,
-    ROUND((1.25 * purchase_price) + (1.1 * total_parts_price), 2) AS sale_price
-FROM
-    vehicle;
- */
+);
 
 -- Parts Order
 CREATE TABLE parts_order (
@@ -280,7 +256,6 @@ CREATE TABLE parts_order (
     parts_order_number VARCHAR(21) GENERATED ALWAYS AS (
         vin || '-' || LPAD(CAST(ordinal AS VARCHAR), 3, CAST(0 AS VARCHAR))
     ) STORED,
-    total_parts_price DECIMAL(19, 2) DEFAULT 0.00,
     vendor_name VARCHAR(120) NOT NULL,
     PRIMARY KEY (vin, ordinal),
     UNIQUE (parts_order_number),

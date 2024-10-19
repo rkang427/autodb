@@ -7,43 +7,66 @@
 -- search all vehicles with parts completed and return things for search screen
 SELECT
     vw.vin,
-    vw.sale_price,
+    vw.vehicle_type,
+    vw.manufacturer,
     vw.model,
-    vw.model_year
+    vw.model_year,
+    vw.fuel_type,
+    vw.colors,
+    vw.horsepower,
+    vw.sale_price
 FROM (
     SELECT
-        vin,
-        description,
-        horsepower,
-        model_year,
-        model,
-        manufacturer,
-        vehicle_type,
-        purchase_price,
-        purchase_date,
-        condition,
-        fuel_type,
-        employee_buyer,
-        customer_seller,
-        total_parts_price,
-        employee_seller,
-        customer_buyer,
-        sale_date,
+        v.vin,
+        v.vehicle_type,
+        v.manufacturer,
+        v.model,
+        v.description,
+        v.model_year,
+        v.fuel_type,
+        v.horsepower,
+        v.purchase_price,
+        v.sale_date,
+        STRING_AGG(vc.color, ', ') AS colors,
         ROUND(
-            (1.25 * purchase_price) + (1.1 * total_parts_price), 2
+            (1.25 * v.purchase_price) + (1.1 * v.total_parts_price), 2
         ) AS sale_price
-    FROM
-        vehicle
+    FROM vehicle AS v
+    LEFT JOIN vehicle_color AS vc ON v.vin = vc.vin
+    GROUP BY
+        v.vin,
+        v.vehicle_type,
+        v.manufacturer,
+        v.model,
+        v.model_year,
+        v.fuel_type,
+        v.horsepower,
+        v.purchase_price,
+        v.sale_date
 ) AS vw
-WHERE vw.vin NOT IN (
-    SELECT po.vin
-    FROM parts_order AS po
-    INNER JOIN part AS p
-        ON
-            po.parts_order_number = p.parts_order_number
-            AND p.status <> 'installed'
-    WHERE po.vin = vw.vin
-);
+WHERE
+    vw.vin NOT IN (
+        SELECT po.vin
+        FROM parts_order AS po
+        INNER JOIN part AS p ON po.parts_order_number = p.parts_order_number
+        WHERE p.status <> 'installed'
+    )
+    AND vw.sale_date IS NULL
+    -- user defined filters
+    AND (
+        vw.vehicle_type = 'Truck'
+        AND vw.manufacturer = 'Honda'
+        AND vw.model_year = '1994'
+        AND vw.fuel_type = 'Gas'
+        AND vw.colors LIKE '%Turquoise%'
+        AND (   -- keyword search
+            vw.manufacturer ILIKE '%nice%'
+            OR vw.model ILIKE '%nice%'
+            OR vw.model_year::TEXT ILIKE '%nice%'
+            OR vw.description ILIKE '%nice%'
+        )
+    )
+ORDER BY vw.vin ASC;
 \echo '-------------------------------------------------------'
 \echo
 -- search all vehicles and return things for search screen
@@ -127,7 +150,7 @@ SELECT
     ) AS average_time_in_inventory
 FROM (
     SELECT UNNEST(ARRAY[
-	'Sedan',
+        'Sedan',
         'Coupe',
         'Convertible',
         'CUV',
@@ -172,7 +195,7 @@ SELECT
     ) AS fairtotalprice
 FROM (
     SELECT UNNEST(ARRAY[
-	'Sedan',
+        'Sedan',
         'Coupe',
         'Convertible',
         'CUV',

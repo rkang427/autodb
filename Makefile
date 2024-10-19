@@ -42,13 +42,14 @@ test: db_schema
 
 check-lint:
 	sqlfluff lint Phase_2/team006_p2_schema.sql --dialect postgres
-	sqlfluff lint tests/load_data.sql --dialect postgres
+	sqlfluff lint tests/*.sql --dialect postgres
 	black --check .
 	isort --check .
 	flake8 .
 
 fix-lint:
 	sqlfluff fix Phase_2/team006_p2_schema.sql --dialect postgres
+	sqlfluff fix tests/*.sql --dialect postgres || true
 	black .
 	isort .
 	flake8 .

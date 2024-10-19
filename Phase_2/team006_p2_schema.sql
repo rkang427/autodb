@@ -277,6 +277,5 @@ CREATE TABLE part (
     CONSTRAINT chk_status CHECK (
         status IN ('ordered', 'received', 'installed')
     )
--- TODO: check when updating that new status is allowed.
--- have to go from ordered to received to installed
+    -- use application logic to prevent changing back to previous state
 );

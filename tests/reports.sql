@@ -7,43 +7,66 @@
 -- search all vehicles with parts completed and return things for search screen
 SELECT
     vw.vin,
-    vw.sale_price,
+    vw.vehicle_type,
+    vw.manufacturer,
     vw.model,
-    vw.model_year
+    vw.model_year,
+    vw.fuel_type,
+    vw.colors,
+    vw.horsepower,
+    vw.sale_price
 FROM (
     SELECT
-        vin,
-        description,
-        horsepower,
-        model_year,
-        model,
-        manufacturer,
-        vehicle_type,
-        purchase_price,
-        purchase_date,
-        condition,
-        fuel_type,
-        employee_buyer,
-        customer_seller,
-        total_parts_price,
-        employee_seller,
-        customer_buyer,
-        sale_date,
+        v.vin,
+        v.vehicle_type,
+        v.manufacturer,
+        v.model,
+        v.description,
+        v.model_year,
+        v.fuel_type,
+        v.horsepower,
+        v.purchase_price,
+        v.sale_date,
+        STRING_AGG(vc.color, ', ') AS colors,
         ROUND(
-            (1.25 * purchase_price) + (1.1 * total_parts_price), 2
+            (1.25 * v.purchase_price) + (1.1 * v.total_parts_price), 2
         ) AS sale_price
-    FROM
-        vehicle
+    FROM vehicle AS v
+    LEFT JOIN vehicle_color AS vc ON v.vin = vc.vin
+    GROUP BY
+        v.vin,
+        v.vehicle_type,
+        v.manufacturer,
+        v.model,
+        v.model_year,
+        v.fuel_type,
+        v.horsepower,
+        v.purchase_price,
+        v.sale_date
 ) AS vw
-WHERE vw.vin NOT IN (
-    SELECT po.vin
-    FROM parts_order AS po
-    INNER JOIN part AS p
-        ON
-            po.parts_order_number = p.parts_order_number
-            AND p.status <> 'installed'
-    WHERE po.vin = vw.vin
-);
+WHERE
+    vw.vin NOT IN (
+        SELECT po.vin
+        FROM parts_order AS po
+        INNER JOIN part AS p ON po.parts_order_number = p.parts_order_number
+        WHERE p.status <> 'installed'
+    )
+    AND vw.sale_date IS NULL
+    -- user defined filters
+    AND (
+        vw.vehicle_type = 'Truck'
+        AND vw.manufacturer = 'Honda'
+        AND vw.model_year = '1994'
+        AND vw.fuel_type = 'Gas'
+        AND vw.colors LIKE '%Turquoise%'
+        AND (   -- keyword search
+            vw.manufacturer ILIKE '%nice%'
+            OR vw.model ILIKE '%nice%'
+            OR vw.model_year::TEXT ILIKE '%nice%'
+            OR vw.description ILIKE '%nice%'
+        )
+    )
+ORDER BY vw.vin ASC;
 \echo '-------------------------------------------------------'
 \echo
 -- search all vehicles and return things for search screen
@@ -58,7 +81,82 @@ WHERE vw.vin NOT IN (
 \echo
 \echo 'VEHICLE DETAIL SCREEN'
 \echo '-------------------------------------------------------'
-\echo 'TODO'
+\echo 'VEHICLE DETAIL INFO'
+SELECT
+    v.vin,
+    v.vehicle_type,
+    v.manufacturer,
+    v.model,
+    v.description,
+    v.model_year,
+    v.fuel_type,
+    v.horsepower,
+    v.purchase_price,
+    v.total_parts_price,
+    v.customer_seller,
+    v.customer_buyer,
+    v.employee_buyer,
+    v.employee_seller,
+    v.sale_date,
+    STRING_AGG(vc.color, ', ') AS colors,
+    ROUND(
+        (1.25 * v.purchase_price) + (1.1 * v.total_parts_price), 2
+    ) AS sale_price
+FROM vehicle AS v
+LEFT JOIN vehicle_color AS vc ON v.vin = vc.vin
+WHERE v.vin = '1119381208312'
+GROUP BY
+    v.vin,
+    v.vehicle_type,
+    v.manufacturer,
+    v.model,
+    v.model_year,
+    v.fuel_type,
+    v.horsepower,
+    v.purchase_price,
+    v.total_parts_price,
+    v.customer_seller,
+    v.customer_buyer,
+    v.employee_buyer,
+    v.employee_seller,
+    v.sale_date;
+\echo 'CUSTOMER BUYER/SELLER INFO (OWNERS AND MANAGERS)'
+SELECT
+    cs.phone_number,
+    CONCAT(
+        cs.street, ', ', cs.city, ', ', cs.state, ', ', cs.postal_code
+    ) AS address,
+    COALESCE(
+        CONCAT(b.title, ' ', b.first_name, ' ', b.last_name),
+        CONCAT(i.first_name, ' ', i.last_name)
+    ) AS contact,
+    COALESCE(b.business_name, NULL) AS business_name
+FROM customer AS cs
+LEFT JOIN
+    individual AS i ON cs.tax_id = i.ssn
+LEFT JOIN
+    business AS b ON cs.tax_id = b.tin
+WHERE cs.tax_id = '555223333';
+\echo 'EMPLOYEE BUYER/SELLER INFO (OWNERS AND MANAGERS)'
+SELECT
+    CONCAT(
+        eb.first_name, ' ', eb.last_name
+    ) AS name
+FROM app_user as eb
+WHERE eb.username = 'johndoe';
+\echo 'VEHICLE PARTS INFO (OWNERS AND INVENTORY CLERK)'
+SELECT
+    p.part_number,
+    p.description,
+    p.quantity,
+    p.unit_price,
+    p.status,
+    p.parts_order_number,
+    po.vendor_name
+FROM part AS p
+INNER JOIN parts_order AS po ON p.parts_order_number = po.parts_order_number
+WHERE po.vin = '1119381208312'
+ORDER BY p.parts_order_number;
 \echo '-------------------------------------------------------'
 \echo
 
@@ -127,7 +225,7 @@ SELECT
     ) AS average_time_in_inventory
 FROM (
     SELECT UNNEST(ARRAY[
-	'Sedan',
+        'Sedan',
         'Coupe',
         'Convertible',
         'CUV',
@@ -172,7 +270,7 @@ SELECT
     ) AS fairtotalprice
 FROM (
     SELECT UNNEST(ARRAY[
-	'Sedan',
+        'Sedan',
         'Coupe',
         'Convertible',
         'CUV',

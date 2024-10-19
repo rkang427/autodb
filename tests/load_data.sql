@@ -190,7 +190,7 @@ INSERT INTO vehicle (
     customer_seller
 ) VALUES (
     '4449381208312',
-    'Alice’s Sedan',
+    'Alice’s NICE Sedan',
     150,
     2018,
     'Civic',
@@ -219,7 +219,7 @@ INSERT INTO vehicle (
     customer_seller
 ) VALUES (
     'WXY9381208312',  -- New VIN
-    'Widget Corp Delivery Van',
+    'Widget Nice Corp Delivery Van',
     200,
     2022,
     'Transit',
@@ -248,7 +248,7 @@ INSERT INTO vehicle (
     customer_seller
 ) VALUES (
     '3339381208312',
-    'sporty sedan',
+    'NICE sporty sedan',
     1500,
     2020,
     'Civic',
@@ -279,7 +279,7 @@ INSERT INTO vehicle (
     customer_seller
 ) VALUES (
     'ABC9381208312',
-    'compact SUV',
+    'compact SUV very NIce',
     1600,
     2021,
     'CR-V',
@@ -309,7 +309,7 @@ INSERT INTO vehicle (
     customer_seller
 ) VALUES (
     '5559381208312',
-    'luxury sedan',
+    'luxury sedan extremely nice',
     2000,
     2022,
     'Accord',
@@ -339,7 +339,7 @@ INSERT INTO vehicle (
     customer_seller
 ) VALUES (
     '6669381208312',
-    'full-size truck',
+    'nice full-size truck',
     2500,
     2023,
     'F-150',
@@ -352,3 +352,47 @@ INSERT INTO vehicle (
     'ownerdoe',
     '333445555' -- Fred
 );
+
+-- Insert colors for VIN WXY9381208312
+INSERT INTO vehicle_color (vin, color) VALUES
+('WXY9381208312', 'Red'),
+('WXY9381208312', 'Blue');
+
+-- Insert colors for VIN 3339381208312
+INSERT INTO vehicle_color (vin, color) VALUES
+('3339381208312', 'Green'),
+('3339381208312', 'Black'),
+('3339381208312', 'Gold');
+
+-- Insert colors for VIN ABC9381208312
+INSERT INTO vehicle_color (vin, color) VALUES
+('ABC9381208312', 'Gray'),
+('ABC9381208312', 'Maroon');
+
+-- Insert colors for VIN 5559381208312
+INSERT INTO vehicle_color (vin, color) VALUES
+('5559381208312', 'Silver'),
+('5559381208312', 'Bronze'),
+('5559381208312', 'Cream');
+
+-- Insert colors for VIN 6669381208312
+INSERT INTO vehicle_color (vin, color) VALUES
+('6669381208312', 'Navy'),
+('6669381208312', 'Orange');
+
+-- Insert colors for VIN 1119381208312
+INSERT INTO vehicle_color (vin, color) VALUES
+('1119381208312', 'Turquoise'),
+('1119381208312', 'Pink'),
+('1119381208312', 'White');
+
+-- Insert colors for VIN 4449381208312
+INSERT INTO vehicle_color (vin, color) VALUES
+('4449381208312', 'Beige'),
+('4449381208312', 'Rust');
+
+-- Insert colors for VIN 2229381208312
+INSERT INTO vehicle_color (vin, color) VALUES
+('2229381208312', 'Claret'),
+('2229381208312', 'Brown'),
+('2229381208312', 'Yellow');

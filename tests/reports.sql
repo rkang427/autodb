@@ -142,7 +142,7 @@ SELECT
     CONCAT(
         eb.first_name, ' ', eb.last_name
     ) AS name
-FROM app_user as eb
+FROM app_user AS eb
 WHERE eb.username = 'johndoe';
 \echo 'VEHICLE PARTS INFO (OWNERS AND INVENTORY CLERK)'
 SELECT
@@ -311,8 +311,8 @@ ORDER BY vendortotalexpense DESC;
 SELECT
     numbervehicles,
     grossincome,
-    DATE_PART('year', sale_date) AS yearsold,
-    DATE_PART('month', sale_date) AS monthsold,
+    DATE_PART('year', sale_date) AS year_sold,
+    DATE_PART('month', sale_date) AS month_sold,
     (grossincome - totalexpense) AS netincome
 FROM
     (SELECT

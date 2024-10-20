@@ -111,6 +111,7 @@ CREATE TABLE vehicle (
     employee_seller VARCHAR(50) NULL,
     customer_buyer VARCHAR(9) NULL,
     sale_date DATE NULL,
+
     -- calculate sale_price on vehicle_with_sale_price view
     FOREIGN KEY (customer_seller) REFERENCES customer (
         tax_id
@@ -244,30 +245,6 @@ CREATE TABLE vehicle_color (
 
 );
 
-CREATE VIEW vehicle_with_sale_price AS
-SELECT
-    vin,
-    description,
-    horsepower,
-    model_year,
-    model,
-    manufacturer,
-    vehicle_type,
-    purchase_price,
-    purchase_date,
-    condition,
-    fuel_type,
-    employee_buyer,
-    customer_seller,
-    total_parts_price,
-    employee_seller,
-    customer_buyer,
-    sale_date,
-    ROUND((1.25 * purchase_price) + (1.1 * total_parts_price), 2) AS sale_price
-FROM
-    vehicle;
-
-
 -- Parts Order
 CREATE TABLE parts_order (
     ordinal INTEGER,
@@ -279,7 +256,6 @@ CREATE TABLE parts_order (
     parts_order_number VARCHAR(21) GENERATED ALWAYS AS (
         vin || '-' || LPAD(CAST(ordinal AS VARCHAR), 3, CAST(0 AS VARCHAR))
     ) STORED,
-    total_parts_price DECIMAL(19, 2) DEFAULT 0.00,
     vendor_name VARCHAR(120) NOT NULL,
     PRIMARY KEY (vin, ordinal),
     UNIQUE (parts_order_number),
@@ -301,100 +277,5 @@ CREATE TABLE part (
     CONSTRAINT chk_status CHECK (
         status IN ('ordered', 'received', 'installed')
     )
--- TODO: check when updating that new status is allowed.
--- have to go from ordered to received to installed
+    -- use application logic to prevent changing back to previous state
 );
-
--- Function to calculate total_parts_price
-CREATE OR REPLACE FUNCTION CALCULATE_TOTAL_PARTS_PRICE(
-    po_number VARCHAR
-)
-RETURNS DECIMAL(19, 2) AS $$
-DECLARE
-    total_price DECIMAL(19, 2);
-BEGIN
-    SELECT SUM(unit_price * quantity) INTO total_price
-    FROM part
-    WHERE parts_order_number = po_number;
-
-    RETURN COALESCE(total_price, 0.00);
-END;
-$$ LANGUAGE plpgsql;
-
--- Trigger function to update total_parts_price
-CREATE OR REPLACE FUNCTION UPDATE_TOTAL_PARTS_PRICE()
-RETURNS TRIGGER AS $$
-BEGIN
-    -- Calculate and update the total_parts_price for the associated parts order
-    UPDATE parts_order
-    SET total_parts_price = calculate_total_parts_price(NEW.parts_order_number)
-    WHERE parts_order_number = NEW.parts_order_number;
-
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
--- Trigger to update total_parts_price after inserting or updating a part
-CREATE TRIGGER update_parts_order_total_trigger
-AFTER INSERT OR UPDATE ON part
-FOR EACH ROW
-EXECUTE FUNCTION UPDATE_TOTAL_PARTS_PRICE();
-
--- Function to calculate vehicle total_parts_price
-CREATE OR REPLACE FUNCTION CALCULATE_VEHICLE_TOTAL_PARTS_PRICE(
-    this_vin VARCHAR
-)
-RETURNS DECIMAL(19, 2) AS $$
-DECLARE
-    total_price DECIMAL(19, 2);
-BEGIN
-    SELECT SUM(total_parts_price) INTO total_price
-    FROM parts_order
-    WHERE vin = this_vin;
-
-    RETURN COALESCE(total_price, 0.00);
-END;
-$$ LANGUAGE plpgsql;
-
--- Function to update vehicle total_parts_price
-CREATE OR REPLACE FUNCTION UPDATE_VEHICLE_TOTAL_PARTS_PRICE()
-RETURNS TRIGGER AS $$
-BEGIN
-    UPDATE vehicle
-    SET total_parts_price = calculate_vehicle_total_parts_price((SELECT vin FROM parts_order WHERE parts_order_number = NEW.parts_order_number))
-    WHERE vin = (SELECT vin FROM parts_order WHERE parts_order_number = NEW.parts_order_number);
-
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
--- Trigger to update total_parts_price after inserting or updating a part
-CREATE TRIGGER update_vehicle_total_parts_price_trigger
-AFTER INSERT OR UPDATE ON part
-FOR EACH ROW
-EXECUTE FUNCTION UPDATE_VEHICLE_TOTAL_PARTS_PRICE();
-
--- Function to prevent updating purchase price 
--- or total parts price after vehicle is sold
-CREATE OR REPLACE FUNCTION PURCHASE_PRICE_UPDATE_PREVENTION()
-RETURNS TRIGGER AS $$  
-BEGIN
-IF NEW.sale_date IS NOT NULL THEN  
--- bar any more changes from total parts price and purchase price  
-    IF NEW.purchase_price (
-	IS DISTINCT FROM OLD.purchase_price 
-	OR NEW.total_parts_price IS DISTINCT FROM OLD.total_parts_price
-	)
-        THEN RAISE EXCEPTION 'Vehicle already sold';  
-        END IF;  
-    END IF;  
-    RETURN NEW;  
-END;  
-$$ LANGUAGE plpgsql;
-
--- Trigger to call function to prevent updating purchase
--- price or total parts price after vehicle is sold
-CREATE TRIGGER purchase_price_update_prevention_trigger
-BEFORE UPDATE ON vehicle
-FOR EACH ROW
-EXECUTE FUNCTION PURCHASE_PRICE_UPDATE_PREVENTION();

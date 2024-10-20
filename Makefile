@@ -26,9 +26,15 @@ db_down:
 db_clean:
 	docker-compose -f tools/docker-compose.yml down -v
 
-db_schema:
+load_data:
 	PGPASSWORD=$(POSTGRES_PASSWORD) psql -h 0.0.0.0 -p 5432 -U $(POSTGRES_USER) -d $(POSTGRES_DB) -f Phase_2/team006_p2_schema.sql
 	PGPASSWORD=$(POSTGRES_PASSWORD) psql -h 0.0.0.0 -p 5432 -U $(POSTGRES_USER) -d $(POSTGRES_DB) -f tests/load_data.sql
+	PGPASSWORD=$(POSTGRES_PASSWORD) psql -h 0.0.0.0 -p 5432 -U $(POSTGRES_USER) -d $(POSTGRES_DB) -f tests/update_vehicles.sql
+
+reports:
+	PGPASSWORD=$(POSTGRES_PASSWORD) psql -h 0.0.0.0 -p 5432 -U $(POSTGRES_USER) -d $(POSTGRES_DB) -f tests/reports.sql
+
+db_schema: load_data reports
 
 
 test: db_schema
@@ -36,13 +42,14 @@ test: db_schema
 
 check-lint:
 	sqlfluff lint Phase_2/team006_p2_schema.sql --dialect postgres
-	sqlfluff lint tests/load_data.sql --dialect postgres
+	sqlfluff lint tests/*.sql --dialect postgres
 	black --check .
 	isort --check .
 	flake8 .
 
 fix-lint:
 	sqlfluff fix Phase_2/team006_p2_schema.sql --dialect postgres
+	sqlfluff fix tests/*.sql --dialect postgres || true
 	black .
 	isort .
 	flake8 .

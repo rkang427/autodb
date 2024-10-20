@@ -309,28 +309,24 @@ ORDER BY vendortotalexpense DESC;
 \echo P1) Monthly Summary
 \echo '-------------------------------------------------------'
 SELECT
-    numbervehicles,
-    grossincome,
-    DATE_PART('year', sale_date) AS year_sold,
-    DATE_PART('month', sale_date) AS month_sold,
-    (grossincome - totalexpense) AS netincome
-FROM
-    (SELECT
-        v.sale_date,
-        COUNT(DISTINCT v.vin) AS numbervehicles,
-        SUM(v.purchase_price) AS grossincome,
-        SUM(v.total_parts_price) AS totalexpense
-    FROM vehicle AS v
-    WHERE v.sale_date IS NOT NULL
-    GROUP BY v.sale_date) AS a
+    DATE_PART('year', v.sale_date) AS year_sold,
+    DATE_PART('month', v.sale_date) AS month_sold,
+    COUNT(DISTINCT v.vin) AS numbervehicles,
+    SUM(
+        ROUND((1.25 * v.purchase_price) + (1.1 * v.total_parts_price), 2)
+    ) AS grossincome,
+    (
+        SUM(ROUND((1.25 * v.purchase_price) + (1.1 * v.total_parts_price), 2))
+        - SUM(v.total_parts_price)
+    ) AS netincome
+FROM vehicle AS v
+WHERE v.sale_date IS NOT NULL
 GROUP BY
-    DATE_PART('year', sale_date),
-    DATE_PART('month', sale_date),
-    numbervehicles,
-    grossincome,
-    totalexpense
-HAVING grossincome > 0
-ORDER BY DATE_PART('year', sale_date) DESC, DATE_PART('month', sale_date) DESC;
+    DATE_PART('year', v.sale_date),
+    DATE_PART('month', v.sale_date)
+HAVING
+    SUM(ROUND((1.25 * v.purchase_price) + (1.1 * v.total_parts_price), 2)) > 0
+ORDER BY year_sold DESC, month_sold DESC;
 \echo '-------------------------------------------------------'
 \echo
 
@@ -351,7 +347,7 @@ FROM
                 ROUND(
                     (1.25 * v.purchase_price) + (1.1 * v.total_parts_price), 2
                 )
-	    ) AS totalsales
+            ) AS totalsales
         FROM vehicle AS v
         INNER JOIN employee_seller AS e ON v.employee_seller = e.username
         WHERE

@@ -353,6 +353,43 @@ INSERT INTO vehicle (
     '333445555' -- Fred
 );
 
+-- another one like above 
+INSERT INTO vehicle (
+    vin,
+    description,
+    horsepower,
+    model_year,
+    model,
+    manufacturer,
+    vehicle_type,
+    purchase_price,
+    purchase_date,
+    condition,
+    fuel_type,
+    employee_buyer,
+    customer_seller,
+    employee_seller,
+    customer_buyer,
+    sale_date
+) VALUES (
+    '7779381208312',
+    'nice full-size truck',
+    2500,
+    2023,
+    'F-150',
+    'Ford',
+    'Truck',
+    30000.00,
+    '03-04-2024',
+    'Good',
+    'Gas',
+    'ownerdoe',
+    '333445555', -- Fred
+    'ownerdoe',
+    '333445555', -- Fred
+    '04-04-2024'
+);
+
 -- Insert colors for VIN WXY9381208312
 INSERT INTO vehicle_color (vin, color) VALUES
 ('WXY9381208312', 'Red'),

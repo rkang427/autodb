@@ -347,7 +347,11 @@ FROM
         SELECT
             e.username,
             COUNT(DISTINCT v.vin) AS vehiclesold,
-            SUM(purchase_price) AS totalsales
+            SUM(
+                ROUND(
+                    (1.25 * v.purchase_price) + (1.1 * v.total_parts_price), 2
+                )
+	    ) AS totalsales
         FROM vehicle AS v
         INNER JOIN employee_seller AS e ON v.employee_seller = e.username
         WHERE

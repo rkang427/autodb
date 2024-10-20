@@ -216,3 +216,17 @@ customer_seller,
 customer_buyer,
 employee_seller,
 employee_buyer;
+
+UPDATE vehicle
+SET
+    sale_date = DATE '2024-09-17',
+    customer_buyer = '333445555',
+    employee_seller = 'janedoe'
+WHERE vehicle.vin = '1119381208312' RETURNING vin,
+purchase_date,
+purchase_price,
+sale_date,
+customer_seller,
+customer_buyer,
+employee_seller,
+employee_buyer;

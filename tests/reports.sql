@@ -1,6 +1,12 @@
 -- connect to db
 \c dealership
 
+
+\echo 'SEARCH CUSTOMER'
+\echo '-------------------------------------------------------'
+SELECT tax_id FROM customer WHERE tax_id = '333445555';
+\echo '-------------------------------------------------------'
+\echo
 -- PUBLIC SEARCH SCREEN
 \echo 'PUBLIC SEARCH SCREEN'
 \echo '-------------------------------------------------------'

@@ -55,12 +55,14 @@ CREATE TABLE customer (
     -- and business tables disjoint
     -- target the tax_id *and* the type in a foreign key constraint.
     email VARCHAR(120) NULL,
-    phone_number VARCHAR(12) NOT NULL,
+    phone_number VARCHAR(10) NOT NULL,
     street VARCHAR(120) NOT NULL,
     city VARCHAR(120) NOT NULL,
     state VARCHAR(120) NOT NULL,
     postal_code VARCHAR(5) NOT NULL,
-    UNIQUE (tax_id, customer_type)
+    UNIQUE (tax_id, customer_type),
+    CONSTRAINT tax_id_regexp CHECK (tax_id ~ '^\d{9}$'),
+    CONSTRAINT phone_regexp CHECK (phone_number ~ '^\d{10}$')
 );
 
 --Individual

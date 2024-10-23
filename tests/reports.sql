@@ -1,10 +1,49 @@
 -- connect to db
 \c dealership
 
+
+\echo 'SEARCH CUSTOMER'
+\echo '-------------------------------------------------------'
+SELECT tax_id FROM customer WHERE tax_id = '333445555';
+\echo '-------------------------------------------------------'
+\echo
 -- PUBLIC SEARCH SCREEN
 \echo 'PUBLIC SEARCH SCREEN'
 \echo '-------------------------------------------------------'
+-- Display total number of cars available for sale (cars without pending parts) 
+\echo 'Number of Vehicles Ready'
+WITH po_not_installed AS (
+    SELECT po.vin
+    FROM parts_order AS po
+    INNER JOIN part AS p ON po.parts_order_number = p.parts_order_number
+    WHERE p.status <> 'installed'
+)
+SELECT COUNT(*)
+FROM vehicle AS v
+LEFT JOIN po_not_installed ON v.vin = po_not_installed.vin
+WHERE
+    po_not_installed.vin IS NULL
+    AND v.sale_date IS NULL;
+\echo '-------------------------------------------------------'
+\echo 'PENDING Number of Vehicles'
+-- Display total number of cars parts pending, not sold.
+WITH po_not_installed AS (
+    SELECT po.vin
+    FROM parts_order AS po
+    INNER JOIN part AS p ON po.parts_order_number = p.parts_order_number
+    WHERE p.status <> 'installed'
+)
+SELECT COUNT(*)
+FROM vehicle AS v
+LEFT JOIN po_not_installed ON v.vin = po_not_installed.vin
+WHERE
+    po_not_installed.vin IS NOT NULL
+    AND v.sale_date IS NULL;
+
 -- search all vehicles with parts completed and return things for search screen
+
+
+-- old one, but the good one
 SELECT
     vw.vin,
     vw.vehicle_type,
@@ -51,22 +90,30 @@ WHERE
         INNER JOIN part AS p ON po.parts_order_number = p.parts_order_number
         WHERE p.status <> 'installed'
     )
-    AND vw.sale_date IS NULL
-    -- user defined filters
     AND (
-        vw.vehicle_type = 'Truck'
-        AND vw.manufacturer = 'Honda'
-        AND vw.model_year = '1994'
-        AND vw.fuel_type = 'Gas'
-        AND vw.colors LIKE '%Turquoise%'
-        AND (   -- keyword search
-            vw.manufacturer ILIKE '%nice%'
-            OR vw.model ILIKE '%nice%'
-            OR vw.model_year::TEXT ILIKE '%nice%'
-            OR vw.description ILIKE '%nice%'
-        )
+        (vw.sale_date IS NULL AND 'unsold' = 'unsold')   -- Only unsold vehicles
+        -- Only sold vehicles
+        OR (vw.sale_date IS NOT NULL AND 'unsold' = 'sold')
+        OR ('unsold' = 'both')  -- Both sold and unsold
+    )
+
+    -- user defined filters
+    AND (vw.vehicle_type = 'Truck' OR 'Truck' IS NULL)
+    AND (vw.manufacturer = 'Ford' OR 'Ford' IS NULL)
+    AND (vw.model_year = '2023' OR '2023' IS NULL)
+    AND (vw.fuel_type = 'Gas' OR 'Gas' IS NULL)
+    AND (vw.colors LIKE NULL OR NULL IS NULL)
+    AND (vw.vin IS NULL OR NULL IS NULL)
+    AND (
+        (vw.manufacturer ILIKE '%nice%' OR '%nice%' IS NULL)
+        OR (vw.model ILIKE '%nice%' OR '%nice%' IS NULL)
+        OR (vw.model_year::TEXT ILIKE '%nice%' OR '%nice%' IS NULL)
+        OR (vw.description ILIKE '%nice%' OR '%nice%' IS NULL)
     )
 ORDER BY vw.vin ASC;
+-- 
+
+
 \echo '-------------------------------------------------------'
 \echo
 -- search all vehicles and return things for search screen

@@ -106,6 +106,15 @@ SELECT
 FROM parts_order
 WHERE vin = '4449381208312' RETURNING parts_order_number;
 
+-- this will be used for not installed parts in the test:
+INSERT INTO parts_order (vin, ordinal, vendor_name)
+SELECT
+    '5559381208312',
+    COUNT(*) + 1,
+    'Napa Auto Parts'
+FROM parts_order
+WHERE vin = '5559381208312' RETURNING parts_order_number;
+
 -- Insert parts associated with the parts orders
 INSERT INTO part (
     part_number, unit_price, description, quantity, status, parts_order_number
@@ -116,6 +125,7 @@ VALUES
 ('PART-003', 100.00, 'Windshield Wipers', 1, 'ordered', '1119381208312-002'),
 ('PART-004', 50.00, 'Seatbelt', 1, 'ordered', '2229381208312-001'),
 ('PART-003', 100.00, 'Windshield Wipers', 1, 'ordered', '4449381208312-001'),
+('PART-003', 100.00, 'Windshield Wipers', 1, 'ordered', '5559381208312-001'),
 ('PART-004', 50.00, 'Seatbelt', 1, 'ordered', '4449381208312-001') RETURNING *;
 -- update total prats price on vehicle
 -- first vehicle
@@ -155,6 +165,19 @@ SET
     )
 WHERE v.vin = '4449381208312';
 
+-- fourth vehicle
+UPDATE vehicle v
+SET
+    total_parts_price = (
+        SELECT COALESCE(SUM(p.quantity * p.unit_price), 0)
+        FROM part AS p
+        INNER JOIN
+            parts_order AS po
+            ON p.parts_order_number = po.parts_order_number
+        WHERE po.vin = '5559381208312'
+    )
+WHERE v.vin = '5559381208312';
+
 -- Check total prices are updated
 SELECT * FROM parts_order;
 SELECT
@@ -185,6 +208,11 @@ SET status = 'installed'
 WHERE
     parts_order_number = '4449381208312-001' AND part_number IN (SELECT part_number FROM part WHERE parts_order_number = '4449381208312-001');
 
+UPDATE part
+SET status = 'received'
+WHERE
+    parts_order_number = '5559381208312-001' AND part_number IN (SELECT part_number FROM part WHERE parts_order_number = '5559381208312-001');
+
 -- show parts status now
 SELECT * FROM part;
 
@@ -194,21 +222,24 @@ SET
     sale_date = CURRENT_DATE,
     customer_buyer = '333445555',
     employee_seller = 'ownerdoe'
-WHERE vehicle.vin = '4449381208312' RETURNING vin,
-purchase_date,
-purchase_price,
-sale_date,
-customer_seller,
-customer_buyer,
-employee_seller,
-employee_buyer;
+WHERE vehicle.vin = '4449381208312'
+RETURNING
+    vin,
+    purchase_date,
+    purchase_price,
+    sale_date,
+    customer_seller,
+    customer_buyer,
+    employee_seller,
+    employee_buyer;
 
 UPDATE vehicle
 SET
     sale_date = DATE '2024-09-15',
     customer_buyer = '555223333',
     employee_seller = 'janedoe'
-WHERE vehicle.vin = '2229381208312' RETURNING vin,
+WHERE
+    vehicle.vin = '2229381208312' RETURNING vin,
 purchase_date,
 purchase_price,
 sale_date,
@@ -222,7 +253,8 @@ SET
     sale_date = DATE '2024-09-17',
     customer_buyer = '333445555',
     employee_seller = 'janedoe'
-WHERE vehicle.vin = '1119381208312' RETURNING vin,
+WHERE
+    vehicle.vin = '1119381208312' RETURNING vin,
 purchase_date,
 purchase_price,
 sale_date,

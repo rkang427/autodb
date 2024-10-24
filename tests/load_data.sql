@@ -80,14 +80,14 @@ INSERT INTO app_user (
     'johndoe',
     'inventory_clerk', 'password', 'John', 'Doe'
 ) RETURNING *;
-INSERT INTO employee_buyer (username) VALUES ('johndoe') RETURNING *;
+INSERT INTO inventory_clerk (username) VALUES ('johndoe') RETURNING *;
 
 INSERT INTO app_user (
     username, user_type, password, first_name, last_name) VALUES (
     'janedoe',
     'sales_person', 'password', 'Jane', 'Doe'
 ) RETURNING *;
-INSERT INTO employee_seller (username) VALUES ('janedoe') RETURNING *;
+INSERT INTO salesperson (username) VALUES ('janedoe') RETURNING *;
 
 INSERT INTO app_user (
     username, user_type, password, first_name, last_name) VALUES (
@@ -100,8 +100,8 @@ INSERT INTO app_user (
     'ownerdoe',
     'owner', 'password', 'Owner', 'Doe'
 ) RETURNING *;
-INSERT INTO employee_buyer (username) VALUES ('ownerdoe') RETURNING *;
-INSERT INTO employee_seller (username) VALUES ('ownerdoe') RETURNING *;
+INSERT INTO inventory_clerk (username) VALUES ('ownerdoe') RETURNING *;
+INSERT INTO salesperson (username) VALUES ('ownerdoe') RETURNING *;
 
 
 -- sample "login" query
@@ -125,7 +125,7 @@ INSERT INTO vehicle (
     purchase_date,
     condition,
     fuel_type,
-    employee_buyer,
+    inventory_clerk,
     customer_seller
 )
 VALUES (
@@ -156,7 +156,7 @@ INSERT INTO vehicle (
     purchase_date,
     condition,
     fuel_type,
-    employee_buyer,
+    inventory_clerk,
     customer_seller
 ) VALUES (
     '2229381208312',
@@ -186,7 +186,7 @@ INSERT INTO vehicle (
     purchase_date,
     condition,
     fuel_type,
-    employee_buyer,
+    inventory_clerk,
     customer_seller
 ) VALUES (
     '4449381208312',
@@ -215,7 +215,7 @@ INSERT INTO vehicle (
     purchase_date,
     condition,
     fuel_type,
-    employee_buyer,
+    inventory_clerk,
     customer_seller
 ) VALUES (
     'WXY9381208312',  -- New VIN
@@ -244,7 +244,7 @@ INSERT INTO vehicle (
     purchase_date,
     condition,
     fuel_type,
-    employee_buyer,
+    inventory_clerk,
     customer_seller
 ) VALUES (
     '3339381208312',
@@ -262,7 +262,7 @@ INSERT INTO vehicle (
     '333445555'
 );
 
--- Adding vehicles for Alice Jones (customer_seller: 111222333, employee_seller: ownerdoe)
+-- Adding vehicles for Alice Jones (customer_seller: 111222333, salesperson: ownerdoe)
 INSERT INTO vehicle (
     vin,
     description,
@@ -275,7 +275,7 @@ INSERT INTO vehicle (
     purchase_date,
     condition,
     fuel_type,
-    employee_buyer,
+    inventory_clerk,
     customer_seller
 ) VALUES (
     'ABC9381208312',
@@ -305,7 +305,7 @@ INSERT INTO vehicle (
     purchase_date,
     condition,
     fuel_type,
-    employee_buyer,
+    inventory_clerk,
     customer_seller
 ) VALUES (
     '5559381208312',
@@ -335,7 +335,7 @@ INSERT INTO vehicle (
     purchase_date,
     condition,
     fuel_type,
-    employee_buyer,
+    inventory_clerk,
     customer_seller
 ) VALUES (
     '6669381208312',
@@ -366,9 +366,9 @@ INSERT INTO vehicle (
     purchase_date,
     condition,
     fuel_type,
-    employee_buyer,
+    inventory_clerk,
     customer_seller,
-    employee_seller,
+    salesperson,
     customer_buyer,
     sale_date
 ) VALUES (

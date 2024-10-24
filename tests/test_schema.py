@@ -84,7 +84,7 @@ def assert_expected(kv_dict, result_tuple):
 
 
 @pytest.fixture
-def employee_seller(dbconn):
+def salesperson(dbconn):
     person = mimesis.Person(locale=Locale.EN)
     app_user = {
         "username": person.email(),
@@ -94,7 +94,7 @@ def employee_seller(dbconn):
         "first_name": person.first_name().replace("'", ""),
         "last_name": person.last_name().replace("'", ""),
     }
-    employee_seller = {"username": app_user["username"]}
+    salesperson = {"username": app_user["username"]}
 
     # Create the user
     insert = format_insert_query(
@@ -104,18 +104,18 @@ def employee_seller(dbconn):
     assert_expected(app_user, result_tuple)
 
     insert = format_insert_query(
-        table="employee_seller",
-        keys=employee_seller.keys(),
-        values=employee_seller.values(),
+        table="salesperson",
+        keys=salesperson.keys(),
+        values=salesperson.values(),
     )
     result_tuple = dbconn.execute(insert).fetchone()
-    assert_expected(employee_seller, result_tuple)
+    assert_expected(salesperson, result_tuple)
 
-    return employee_seller
+    return salesperson
 
 
 @pytest.fixture
-def employee_buyer(dbconn):
+def inventory_clerk(dbconn):
     person = mimesis.Person(locale=Locale.EN)
     app_user = {
         "username": person.email(),
@@ -125,7 +125,7 @@ def employee_buyer(dbconn):
         "first_name": person.first_name().replace("'", ""),
         "last_name": person.last_name().replace("'", ""),
     }
-    employee_buyer = {"username": app_user["username"]}
+    inventory_clerk = {"username": app_user["username"]}
 
     # Create the user
     insert = format_insert_query(
@@ -135,14 +135,14 @@ def employee_buyer(dbconn):
     assert_expected(app_user, result_tuple)
 
     insert = format_insert_query(
-        table="employee_buyer",
-        keys=employee_buyer.keys(),
-        values=employee_buyer.values(),
+        table="inventory_clerk",
+        keys=inventory_clerk.keys(),
+        values=inventory_clerk.values(),
     )
     result_tuple = dbconn.execute(insert).fetchone()
-    assert_expected(employee_buyer, result_tuple)
+    assert_expected(inventory_clerk, result_tuple)
 
-    return employee_buyer
+    return inventory_clerk
 
 
 @pytest.fixture
@@ -222,7 +222,7 @@ def business(dbconn):
 
 
 @pytest.fixture
-def vehicle(dbconn, employee_buyer, employee_seller, individual, business):
+def vehicle(dbconn, inventory_clerk, salesperson, individual, business):
     fv = FakeVehicle()
     vehicle = {
         "vin": fv.vin,
@@ -236,7 +236,7 @@ def vehicle(dbconn, employee_buyer, employee_seller, individual, business):
         "purchase_date": fv.purchase_date,
         "condition": fv.condition,
         "fuel_type": fv.fuel_type,
-        "employee_buyer": employee_buyer["username"],
+        "inventory_clerk": inventory_clerk["username"],
         "customer_seller": individual["ssn"],
     }
     # Create the vehicle

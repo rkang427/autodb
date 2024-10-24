@@ -144,8 +144,8 @@ SELECT
     v.total_parts_price,
     v.customer_seller,
     v.customer_buyer,
-    v.employee_buyer,
-    v.employee_seller,
+    v.inventory_clerk,
+    v.salesperson,
     v.sale_date,
     STRING_AGG(vc.color, ', ') AS colors,
     ROUND(
@@ -166,8 +166,8 @@ GROUP BY
     v.total_parts_price,
     v.customer_seller,
     v.customer_buyer,
-    v.employee_buyer,
-    v.employee_seller,
+    v.inventory_clerk,
+    v.salesperson,
     v.sale_date;
 \echo 'CUSTOMER BUYER/SELLER INFO (OWNERS AND MANAGERS)'
 SELECT
@@ -398,7 +398,7 @@ FROM
                 )
             ) AS totalsales
         FROM vehicle AS v
-        INNER JOIN employee_seller AS e ON v.employee_seller = e.username
+        INNER JOIN salesperson AS e ON v.salesperson = e.username
         WHERE
             EXTRACT(YEAR FROM v.sale_date) = 2024
             AND EXTRACT(MONTH FROM v.sale_date) = 9

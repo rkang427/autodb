@@ -18,6 +18,7 @@ WITH po_not_installed AS (
     INNER JOIN part AS p ON po.parts_order_number = p.parts_order_number
     WHERE p.status <> 'installed'
 )
+
 SELECT COUNT(*)
 FROM vehicle AS v
 LEFT JOIN po_not_installed ON v.vin = po_not_installed.vin
@@ -33,6 +34,7 @@ WITH po_not_installed AS (
     INNER JOIN part AS p ON po.parts_order_number = p.parts_order_number
     WHERE p.status <> 'installed'
 )
+
 SELECT COUNT(*)
 FROM vehicle AS v
 LEFT JOIN po_not_installed ON v.vin = po_not_installed.vin

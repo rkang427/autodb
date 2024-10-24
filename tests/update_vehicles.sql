@@ -222,7 +222,7 @@ SET
     sale_date = CURRENT_DATE,
     customer_buyer = '333445555',
     employee_seller = 'ownerdoe'
-WHERE vehicle.vin = '4449381208312'
+WHERE vehicle.vin = '4449381208312' AND sale_date IS NULL
 RETURNING
     vin,
     purchase_date,
@@ -239,14 +239,16 @@ SET
     customer_buyer = '555223333',
     employee_seller = 'janedoe'
 WHERE
-    vehicle.vin = '2229381208312' RETURNING vin,
-purchase_date,
-purchase_price,
-sale_date,
-customer_seller,
-customer_buyer,
-employee_seller,
-employee_buyer;
+    vehicle.vin = '2229381208312' AND sale_date IS NULL
+RETURNING
+    vin,
+    purchase_date,
+    purchase_price,
+    sale_date,
+    customer_seller,
+    customer_buyer,
+    employee_seller,
+    employee_buyer;
 
 UPDATE vehicle
 SET
@@ -254,11 +256,13 @@ SET
     customer_buyer = '333445555',
     employee_seller = 'janedoe'
 WHERE
-    vehicle.vin = '1119381208312' RETURNING vin,
-purchase_date,
-purchase_price,
-sale_date,
-customer_seller,
-customer_buyer,
-employee_seller,
-employee_buyer;
+    vehicle.vin = '1119381208312' AND sale_date IS NULL
+RETURNING
+    vin,
+    purchase_date,
+    purchase_price,
+    sale_date,
+    customer_seller,
+    customer_buyer,
+    employee_seller,
+    employee_buyer;

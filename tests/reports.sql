@@ -172,13 +172,8 @@ GROUP BY
 \echo 'CUSTOMER BUYER/SELLER INFO (OWNERS AND MANAGERS)'
 SELECT
     cs.phone_number,
-    CONCAT(
-        cs.street, ', ', cs.city, ', ', cs.state, ', ', cs.postal_code
-    ) AS address,
-    COALESCE(
-        CONCAT(b.title, ' ', b.first_name, ' ', b.last_name),
-        CONCAT(i.first_name, ' ', i.last_name)
-    ) AS contact,
+    CONCAT(cs.street, ', ', cs.city, ', ', cs.state, ', ', cs.postal_code) AS address,
+    TRIM(COALESCE(CONCAT(b.title, ' ', b.first_name, ' ', b.last_name, ' ', i.first_name, ' ', i.last_name), '')) AS contact,
     COALESCE(b.business_name, NULL) AS business_name
 FROM customer AS cs
 LEFT JOIN

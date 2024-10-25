@@ -1,10 +1,6 @@
-<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.7.8 Chrome/128.0.6613.36 Electron/32.0.1 Safari/537.36" version="24.7.8">
+<mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.7.8 Chrome/128.0.6613.36 Electron/32.0.1 Safari/537.36" version="24.7.8">
   <diagram name="Page-1" id="-4UtWJJOfgUsc_9yNbab">
-<<<<<<< Updated upstream
-    <mxGraphModel dx="2762" dy="922" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
-=======
-    <mxGraphModel dx="2687" dy="897" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
->>>>>>> Stashed changes
+    <mxGraphModel dx="2044" dy="583" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -39,30 +35,7 @@
             <mxRectangle width="70" height="40" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
-<<<<<<< Updated upstream
-        <mxCell id="wjsZOd1Ye_hqDT3On4Ij-8" value="Salesperson" style="shape=table;startSize=30;container=1;collapsible=0;childLayout=tableLayout;" parent="1" vertex="1">
-          <mxGeometry x="-390" y="170" width="340" height="110" as="geometry" />
-        </mxCell>
-        <mxCell id="wjsZOd1Ye_hqDT3On4Ij-9" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=inherit;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="wjsZOd1Ye_hqDT3On4Ij-8" vertex="1">
-          <mxGeometry y="30" width="340" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="wjsZOd1Ye_hqDT3On4Ij-10" value="&lt;u&gt;Username&lt;/u&gt;" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;" parent="wjsZOd1Ye_hqDT3On4Ij-9" vertex="1">
-          <mxGeometry width="340" height="40" as="geometry">
-            <mxRectangle width="340" height="40" as="alternateBounds" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="fB4wuoA-GwbCkH97Dtny-259" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=inherit;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="wjsZOd1Ye_hqDT3On4Ij-8" vertex="1">
-          <mxGeometry y="70" width="340" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="fB4wuoA-GwbCkH97Dtny-260" value="&lt;u&gt;Username&lt;/u&gt;" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;" parent="fB4wuoA-GwbCkH97Dtny-259" vertex="1">
-          <mxGeometry width="340" height="40" as="geometry">
-            <mxRectangle width="340" height="40" as="alternateBounds" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="wjsZOd1Ye_hqDT3On4Ij-11" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.124;entryY=1.025;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="wjsZOd1Ye_hqDT3On4Ij-9" target="wjsZOd1Ye_hqDT3On4Ij-2" edge="1">
-=======
         <mxCell id="wjsZOd1Ye_hqDT3On4Ij-11" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.174;entryY=1.017;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="UTyVAlGforLkL0j_-5aD-3" target="wjsZOd1Ye_hqDT3On4Ij-2" edge="1">
->>>>>>> Stashed changes
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="-750" y="150" as="sourcePoint" />
             <mxPoint x="-768" y="80" as="targetPoint" />
@@ -72,13 +45,8 @@
             </Array>
           </mxGeometry>
         </mxCell>
-<<<<<<< Updated upstream
-        <mxCell id="wjsZOd1Ye_hqDT3On4Ij-12" value="InventoryClerk" style="shape=table;startSize=30;container=1;collapsible=0;childLayout=tableLayout;" parent="1" vertex="1">
-          <mxGeometry x="-390" y="250" width="340" height="70" as="geometry" />
-=======
         <mxCell id="wjsZOd1Ye_hqDT3On4Ij-12" value="Salesperson" style="shape=table;startSize=30;container=1;collapsible=0;childLayout=tableLayout;" parent="1" vertex="1">
           <mxGeometry x="-770" y="100" width="250" height="60" as="geometry" />
->>>>>>> Stashed changes
         </mxCell>
         <mxCell id="wjsZOd1Ye_hqDT3On4Ij-13" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=inherit;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="wjsZOd1Ye_hqDT3On4Ij-12" vertex="1">
           <mxGeometry y="30" width="250" height="30" as="geometry" />
@@ -88,7 +56,7 @@
             <mxRectangle width="250" height="30" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="fB4wuoA-GwbCkH97Dtny-1" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.088;entryY=1.061;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="wjsZOd1Ye_hqDT3On4Ij-13" edge="1" target="wjsZOd1Ye_hqDT3On4Ij-2">
+        <mxCell id="fB4wuoA-GwbCkH97Dtny-1" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.088;entryY=1.061;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="wjsZOd1Ye_hqDT3On4Ij-13" target="wjsZOd1Ye_hqDT3On4Ij-2" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="-375" y="280" as="sourcePoint" />
             <mxPoint x="-620" y="130" as="targetPoint" />
@@ -242,7 +210,7 @@
             <mxRectangle width="63" height="40" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="fB4wuoA-GwbCkH97Dtny-258" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.318;exitY=1.042;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.195;entryY=1.016;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="fB4wuoA-GwbCkH97Dtny-251" edge="1" target="rGiIY_UlJ2DJofCt2blp-27">
+        <mxCell id="fB4wuoA-GwbCkH97Dtny-258" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.318;exitY=1.042;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.195;entryY=1.016;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="fB4wuoA-GwbCkH97Dtny-251" target="rGiIY_UlJ2DJofCt2blp-27" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="-633" y="1030" />
@@ -251,11 +219,7 @@
             <mxPoint x="-240" y="950" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-<<<<<<< Updated upstream
-        <mxCell id="zgHn_-PmZQucNy31a7lp-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.703;exitY=0.967;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.006;entryY=0.9;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="fB4wuoA-GwbCkH97Dtny-280" target="wjsZOd1Ye_hqDT3On4Ij-2" edge="1">
-=======
         <mxCell id="zgHn_-PmZQucNy31a7lp-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.703;exitY=1.004;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.015;entryY=0.992;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="fB4wuoA-GwbCkH97Dtny-280" target="wjsZOd1Ye_hqDT3On4Ij-2" edge="1">
->>>>>>> Stashed changes
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="-810" y="120" as="targetPoint" />
             <mxPoint x="559.5149999999998" y="421.67999999999984" as="sourcePoint" />
@@ -266,7 +230,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="zgHn_-PmZQucNy31a7lp-27" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=0.878;exitY=1.037;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" target="fB4wuoA-GwbCkH97Dtny-190" edge="1" source="fB4wuoA-GwbCkH97Dtny-280">
+        <mxCell id="zgHn_-PmZQucNy31a7lp-27" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=0.878;exitY=1.037;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="fB4wuoA-GwbCkH97Dtny-280" target="fB4wuoA-GwbCkH97Dtny-190" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="-610" y="610" as="targetPoint" />
             <Array as="points">
@@ -401,11 +365,7 @@
             <mxPoint x="-595" y="380.0322580645161" as="sourcePoint" />
           </mxGeometry>
         </mxCell>
-<<<<<<< Updated upstream
-        <mxCell id="zgHn_-PmZQucNy31a7lp-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=0.8;exitY=0.967;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="fB4wuoA-GwbCkH97Dtny-280" target="wjsZOd1Ye_hqDT3On4Ij-2" edge="1">
-=======
         <mxCell id="zgHn_-PmZQucNy31a7lp-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" target="wjsZOd1Ye_hqDT3On4Ij-2" edge="1">
->>>>>>> Stashed changes
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="-410" y="110" as="targetPoint" />
             <mxPoint x="-180" y="390" as="sourcePoint" />
@@ -479,7 +439,7 @@
             <mxRectangle width="140" height="40" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="zgHn_-PmZQucNy31a7lp-69" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Helvetica;fontSize=12;fontColor=default;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.04;entryY=1.045;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="zgHn_-PmZQucNy31a7lp-56" edge="1" target="fB4wuoA-GwbCkH97Dtny-190">
+        <mxCell id="zgHn_-PmZQucNy31a7lp-69" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Helvetica;fontSize=12;fontColor=default;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.04;entryY=1.045;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="zgHn_-PmZQucNy31a7lp-56" target="fB4wuoA-GwbCkH97Dtny-190" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="-650" y="640" />
@@ -556,7 +516,7 @@
             <mxRectangle width="99" height="50" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="rGiIY_UlJ2DJofCt2blp-35" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Helvetica;fontSize=12;fontColor=default;exitX=0.651;exitY=1.02;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.013;entryY=1.013;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" target="fB4wuoA-GwbCkH97Dtny-280" edge="1" source="rGiIY_UlJ2DJofCt2blp-27">
+        <mxCell id="rGiIY_UlJ2DJofCt2blp-35" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Helvetica;fontSize=12;fontColor=default;exitX=0.651;exitY=1.02;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.013;entryY=1.013;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="rGiIY_UlJ2DJofCt2blp-27" target="fB4wuoA-GwbCkH97Dtny-280" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="-800" y="393" as="targetPoint" />
             <Array as="points">
@@ -573,54 +533,31 @@
             <mxPoint x="-270" y="1340" as="sourcePoint" />
           </mxGeometry>
         </mxCell>
-<<<<<<< Updated upstream
-        <mxCell id="x2o1deznB_zGX_wjmS0s-1" value="Manager" style="shape=table;startSize=30;container=1;collapsible=0;childLayout=tableLayout;" vertex="1" parent="1">
-          <mxGeometry x="-20" y="170" width="340" height="70" as="geometry" />
-        </mxCell>
-        <mxCell id="x2o1deznB_zGX_wjmS0s-2" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=inherit;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="x2o1deznB_zGX_wjmS0s-1">
-          <mxGeometry y="30" width="340" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="x2o1deznB_zGX_wjmS0s-3" value="&lt;u&gt;Username&lt;/u&gt;" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;" vertex="1" parent="x2o1deznB_zGX_wjmS0s-2">
-=======
-        <mxCell id="UTyVAlGforLkL0j_-5aD-2" value="Manager" style="shape=table;startSize=30;container=1;collapsible=0;childLayout=tableLayout;" vertex="1" parent="1">
+        <mxCell id="UTyVAlGforLkL0j_-5aD-2" value="Manager" style="shape=table;startSize=30;container=1;collapsible=0;childLayout=tableLayout;" parent="1" vertex="1">
           <mxGeometry x="-425" y="40" width="340" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="UTyVAlGforLkL0j_-5aD-3" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=inherit;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="UTyVAlGforLkL0j_-5aD-2">
+        <mxCell id="UTyVAlGforLkL0j_-5aD-3" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=inherit;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="UTyVAlGforLkL0j_-5aD-2" vertex="1">
           <mxGeometry y="30" width="340" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="UTyVAlGforLkL0j_-5aD-4" value="&lt;u&gt;Username&lt;/u&gt;" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;" vertex="1" parent="UTyVAlGforLkL0j_-5aD-3">
->>>>>>> Stashed changes
+        <mxCell id="UTyVAlGforLkL0j_-5aD-4" value="&lt;u&gt;Username&lt;/u&gt;" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;" parent="UTyVAlGforLkL0j_-5aD-3" vertex="1">
           <mxGeometry width="340" height="40" as="geometry">
             <mxRectangle width="340" height="40" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
-<<<<<<< Updated upstream
-        <mxCell id="x2o1deznB_zGX_wjmS0s-6" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.147;entryY=1.1;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" target="wjsZOd1Ye_hqDT3On4Ij-2">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="-20" y="218" as="sourcePoint" />
-            <mxPoint x="22" y="129" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="-30" y="220" />
-              <mxPoint x="-30" y="158" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-=======
-        <mxCell id="UTyVAlGforLkL0j_-5aD-7" value="InventoryClerk" style="shape=table;startSize=30;container=1;collapsible=0;childLayout=tableLayout;" vertex="1" parent="1">
+        <mxCell id="UTyVAlGforLkL0j_-5aD-7" value="InventoryClerk" style="shape=table;startSize=30;container=1;collapsible=0;childLayout=tableLayout;" parent="1" vertex="1">
           <mxGeometry x="-770" y="170" width="250" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="UTyVAlGforLkL0j_-5aD-8" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=inherit;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="UTyVAlGforLkL0j_-5aD-7">
+        <mxCell id="UTyVAlGforLkL0j_-5aD-8" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=inherit;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="UTyVAlGforLkL0j_-5aD-7" vertex="1">
           <mxGeometry y="30" width="250" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="UTyVAlGforLkL0j_-5aD-9" value="&lt;u&gt;Username&lt;/u&gt;" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;" vertex="1" parent="UTyVAlGforLkL0j_-5aD-8">
+        <mxCell id="UTyVAlGforLkL0j_-5aD-9" value="&lt;u&gt;Username&lt;/u&gt;" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;" parent="UTyVAlGforLkL0j_-5aD-8" vertex="1">
           <mxGeometry width="250" height="30" as="geometry">
             <mxRectangle width="250" height="30" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="UTyVAlGforLkL0j_-5aD-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.029;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="UTyVAlGforLkL0j_-5aD-8" target="wjsZOd1Ye_hqDT3On4Ij-2">
+        <mxCell id="UTyVAlGforLkL0j_-5aD-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.029;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="UTyVAlGforLkL0j_-5aD-8" target="wjsZOd1Ye_hqDT3On4Ij-2" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
->>>>>>> Stashed changes
       </root>
     </mxGraphModel>
   </diagram>

@@ -353,6 +353,37 @@ INSERT INTO vehicle (
     '333445555' -- Fred
 );
 
+-- another identical BUT will have parts pending
+INSERT INTO vehicle (
+    vin,
+    description,
+    horsepower,
+    model_year,
+    model,
+    manufacturer,
+    vehicle_type,
+    purchase_price,
+    purchase_date,
+    condition,
+    fuel_type,
+    inventory_clerk,
+    customer_seller
+) VALUES (
+    '8889381208312',
+    'nice full-size truck',
+    2500,
+    2023,
+    'F-150',
+    'Ford',
+    'Truck',
+    30000.00,
+    '03-04-2024',
+    'Good',
+    'Gas',
+    'ownerdoe',
+    '333445555' -- Fred
+);
+
 -- another one like above 
 INSERT INTO vehicle (
     vin,

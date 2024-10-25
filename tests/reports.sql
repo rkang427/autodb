@@ -26,7 +26,7 @@ WHERE
     po_not_installed.vin IS NULL
     AND v.sale_date IS NULL;
 \echo '-------------------------------------------------------'
-\echo 'PENDING Number of Vehicles'
+\echo 'PENDING parts Number of Vehicles'
 -- Display total number of cars parts pending, not sold.
 WITH po_not_installed AS (
     SELECT po.vin
@@ -45,7 +45,9 @@ WHERE
 -- search all vehicles with parts completed and return things for search screen
 
 
--- old one, but the good one
+\echo '-------------------------------------------------------'
+\echo Unsold and ready with filters only matches 1 
+\echo '-------------------------------------------------------'
 SELECT
     vw.vin,
     vw.vehicle_type,
@@ -86,17 +88,16 @@ FROM (
         v.sale_date
 ) AS vw
 WHERE
-    vw.vin NOT IN (
+    (vw.vin NOT IN (
         SELECT po.vin
         FROM parts_order AS po
         INNER JOIN part AS p ON po.parts_order_number = p.parts_order_number
         WHERE p.status <> 'installed'
-    )
+    ) OR FALSE)
     AND (
-        (vw.sale_date IS NULL AND 'unsold' = 'unsold')   -- Only unsold vehicles
-        -- Only sold vehicles
+        (vw.sale_date IS NULL AND 'unsold' = 'unsold')
         OR (vw.sale_date IS NOT NULL AND 'unsold' = 'sold')
-        OR ('unsold' = 'both')  -- Both sold and unsold
+        OR ('unsold' = 'both')
     )
 
     -- user defined filters
@@ -105,7 +106,7 @@ WHERE
     AND (vw.model_year = '2023' OR '2023' IS NULL)
     AND (vw.fuel_type = 'Gas' OR 'Gas' IS NULL)
     AND (vw.colors LIKE NULL OR NULL IS NULL)
-    AND (vw.vin IS NULL OR NULL IS NULL)
+    AND (LOWER(vw.vin) = LOWER(NULL) OR NULL IS NULL)
     AND (
         (vw.manufacturer ILIKE '%nice%' OR '%nice%' IS NULL)
         OR (vw.model ILIKE '%nice%' OR '%nice%' IS NULL)
@@ -113,7 +114,147 @@ WHERE
         OR (vw.description ILIKE '%nice%' OR '%nice%' IS NULL)
     )
 ORDER BY vw.vin ASC;
--- 
+
+\echo '-------------------------------------------------------'
+\echo Unsold and both ready and unready with filters will match 2
+\echo '-------------------------------------------------------'
+
+SELECT
+    vw.vin,
+    vw.vehicle_type,
+    vw.manufacturer,
+    vw.model,
+    vw.model_year,
+    vw.fuel_type,
+    vw.colors,
+    vw.horsepower,
+    vw.sale_price
+FROM (
+    SELECT
+        v.vin,
+        v.vehicle_type,
+        v.manufacturer,
+        v.model,
+        v.description,
+        v.model_year,
+        v.fuel_type,
+        v.horsepower,
+        v.purchase_price,
+        v.sale_date,
+        STRING_AGG(vc.color, ', ') AS colors,
+        ROUND(
+            (1.25 * v.purchase_price) + (1.1 * v.total_parts_price), 2
+        ) AS sale_price
+    FROM vehicle AS v
+    LEFT JOIN vehicle_color AS vc ON v.vin = vc.vin
+    GROUP BY
+        v.vin,
+        v.vehicle_type,
+        v.manufacturer,
+        v.model,
+        v.model_year,
+        v.fuel_type,
+        v.horsepower,
+        v.purchase_price,
+        v.sale_date
+) AS vw
+WHERE
+    (vw.vin NOT IN (
+        SELECT po.vin
+        FROM parts_order AS po
+        INNER JOIN part AS p ON po.parts_order_number = p.parts_order_number
+        WHERE p.status <> 'installed'
+    ) OR TRUE)
+    AND (
+        (vw.sale_date IS NULL AND 'unsold' = 'unsold')
+        OR (vw.sale_date IS NOT NULL AND 'unsold' = 'sold')
+        OR ('unsold' = 'both')
+    )
+
+    -- user defined filters
+    AND (vw.vehicle_type = 'Truck' OR 'Truck' IS NULL)
+    AND (vw.manufacturer = 'Ford' OR 'Ford' IS NULL)
+    AND (vw.model_year = '2023' OR '2023' IS NULL)
+    AND (vw.fuel_type = 'Gas' OR 'Gas' IS NULL)
+    AND (vw.colors LIKE NULL OR NULL IS NULL)
+    AND (vw.vin ILIKE NULL OR NULL IS NULL)
+    AND (LOWER(vw.vin) = LOWER(NULL) OR NULL IS NULL)
+    AND (
+        (vw.manufacturer ILIKE '%nice%' OR '%nice%' IS NULL)
+        OR (vw.model ILIKE '%nice%' OR '%nice%' IS NULL)
+        OR (vw.model_year::TEXT ILIKE '%nice%' OR '%nice%' IS NULL)
+        OR (vw.description ILIKE '%nice%' OR '%nice%' IS NULL)
+    )
+ORDER BY vw.vin ASC;
+
+
+\echo '-------------------------------------------------------'
+\echo 'both' and only ready with filters and vin search only matches 1 
+\echo '-------------------------------------------------------'
+SELECT
+    vw.vin,
+    vw.vehicle_type,
+    vw.manufacturer,
+    vw.model,
+    vw.model_year,
+    vw.fuel_type,
+    vw.colors,
+    vw.horsepower,
+    vw.sale_price
+FROM (
+    SELECT
+        v.vin,
+        v.vehicle_type,
+        v.manufacturer,
+        v.model,
+        v.description,
+        v.model_year,
+        v.fuel_type,
+        v.horsepower,
+        v.purchase_price,
+        v.sale_date,
+        STRING_AGG(vc.color, ', ') AS colors,
+        ROUND(
+            (1.25 * v.purchase_price) + (1.1 * v.total_parts_price), 2
+        ) AS sale_price
+    FROM vehicle AS v
+    LEFT JOIN vehicle_color AS vc ON v.vin = vc.vin
+    GROUP BY
+        v.vin,
+        v.vehicle_type,
+        v.manufacturer,
+        v.model,
+        v.model_year,
+        v.fuel_type,
+        v.horsepower,
+        v.purchase_price,
+        v.sale_date
+) AS vw
+WHERE
+    (vw.vin NOT IN (
+        SELECT po.vin
+        FROM parts_order AS po
+        INNER JOIN part AS p ON po.parts_order_number = p.parts_order_number
+        WHERE p.status <> 'installed'
+    ) OR FALSE)
+    AND (
+        (vw.sale_date IS NULL AND 'both' = 'unsold')
+        OR (vw.sale_date IS NOT NULL AND 'both' = 'sold')
+        OR ('both' = 'both')
+    )
+    AND (vw.vehicle_type = 'Truck' OR 'Truck' IS NULL)
+    AND (vw.manufacturer = 'Ford' OR 'Ford' IS NULL)
+    AND (vw.model_year = '2023' OR '2023' IS NULL)
+    AND (vw.fuel_type = 'Gas' OR 'Gas' IS NULL)
+    AND (vw.colors LIKE NULL OR NULL IS NULL)
+    AND (LOWER(vw.vin) = LOWER('7779381208312') OR '7779381208312' IS NULL)
+    AND (
+        (vw.manufacturer ILIKE '%%' OR '%%' = '%%')
+        OR (vw.model ILIKE '%%' OR '%%' = '%%')
+        OR (vw.model_year::TEXT ILIKE '%%' OR '%%' = '%%')
+        OR (vw.description ILIKE '%%' OR '%%' = '%%')
+    )
+ORDER BY vw.vin ASC;
 
 
 \echo '-------------------------------------------------------'
@@ -172,8 +313,25 @@ GROUP BY
 \echo 'CUSTOMER BUYER/SELLER INFO (OWNERS AND MANAGERS)'
 SELECT
     cs.phone_number,
-    CONCAT(cs.street, ', ', cs.city, ', ', cs.state, ', ', cs.postal_code) AS address,
-    TRIM(COALESCE(CONCAT(b.title, ' ', b.first_name, ' ', b.last_name, ' ', i.first_name, ' ', i.last_name), '')) AS contact,
+    CONCAT(
+        cs.street, ', ', cs.city, ', ', cs.state, ', ', cs.postal_code
+    ) AS address,
+    TRIM(
+        COALESCE(
+            CONCAT(
+                b.title,
+                ' ',
+                b.first_name,
+                ' ',
+                b.last_name,
+                ' ',
+                i.first_name,
+                ' ',
+                i.last_name
+            ),
+            ''
+        )
+    ) AS contact,
     COALESCE(b.business_name, NULL) AS business_name
 FROM customer AS cs
 LEFT JOIN

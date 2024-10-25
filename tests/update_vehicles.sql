@@ -221,7 +221,7 @@ UPDATE vehicle
 SET
     sale_date = CURRENT_DATE,
     customer_buyer = '333445555',
-    employee_seller = 'ownerdoe'
+    salesperson = 'ownerdoe'
 WHERE vehicle.vin = '4449381208312' AND sale_date IS NULL
 RETURNING
     vin,
@@ -230,14 +230,14 @@ RETURNING
     sale_date,
     customer_seller,
     customer_buyer,
-    employee_seller,
-    employee_buyer;
+    salesperson,
+    inventory_clerk;
 
 UPDATE vehicle
 SET
     sale_date = DATE '2024-09-15',
     customer_buyer = '555223333',
-    employee_seller = 'janedoe'
+    salesperson = 'janedoe'
 WHERE
     vehicle.vin = '2229381208312' AND sale_date IS NULL
 RETURNING
@@ -247,14 +247,14 @@ RETURNING
     sale_date,
     customer_seller,
     customer_buyer,
-    employee_seller,
-    employee_buyer;
+    salesperson,
+    inventory_clerk;
 
 UPDATE vehicle
 SET
     sale_date = DATE '2024-09-17',
     customer_buyer = '333445555',
-    employee_seller = 'janedoe'
+    salesperson = 'janedoe'
 WHERE
     vehicle.vin = '1119381208312' AND sale_date IS NULL
 RETURNING
@@ -264,5 +264,5 @@ RETURNING
     sale_date,
     customer_seller,
     customer_buyer,
-    employee_seller,
-    employee_buyer;
+    salesperson,
+    inventory_clerk;

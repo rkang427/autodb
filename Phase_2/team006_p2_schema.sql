@@ -32,12 +32,17 @@ CREATE TABLE vendor (
     postal_code VARCHAR(5) NOT NULL
 );
 
-CREATE TABLE employee_buyer (
+CREATE TABLE inventory_clerk (
     username VARCHAR(120) NOT NULL UNIQUE,
     FOREIGN KEY (username) REFERENCES app_user (username) ON DELETE CASCADE
 );
 
-CREATE TABLE employee_seller (
+CREATE TABLE manager (
+    username VARCHAR(120) NOT NULL UNIQUE,
+    FOREIGN KEY (username) REFERENCES app_user (username) ON DELETE CASCADE
+);
+
+CREATE TABLE salesperson (
     username VARCHAR(120) NOT NULL UNIQUE,
     FOREIGN KEY (username) REFERENCES app_user (username) ON DELETE CASCADE
 );
@@ -107,10 +112,10 @@ CREATE TABLE vehicle (
     purchase_date DATE NOT NULL,
     condition VARCHAR(10) NOT NULL,
     fuel_type VARCHAR(20) NOT NULL,
-    employee_buyer VARCHAR(50) NOT NULL,
+    inventory_clerk VARCHAR(50) NOT NULL,
     customer_seller VARCHAR(9) NOT NULL,
     total_parts_price DECIMAL(19, 2) DEFAULT 0.0,
-    employee_seller VARCHAR(50) NULL,
+    salesperson VARCHAR(50) NULL,
     customer_buyer VARCHAR(9) NULL,
     sale_date DATE NULL,
 
@@ -121,10 +126,10 @@ CREATE TABLE vehicle (
     FOREIGN KEY (customer_buyer) REFERENCES customer (
         tax_id
     ) ON DELETE CASCADE,
-    FOREIGN KEY (employee_seller) REFERENCES employee_seller (
+    FOREIGN KEY (salesperson) REFERENCES salesperson (
         username
     ) ON DELETE CASCADE,
-    FOREIGN KEY (employee_buyer) REFERENCES employee_buyer (
+    FOREIGN KEY (inventory_clerk) REFERENCES inventory_clerk (
         username
     ) ON DELETE CASCADE,
     CONSTRAINT chk_condition CHECK (

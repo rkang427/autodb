@@ -158,7 +158,12 @@ cd Phase_3/backend
 npm test
 ```
 
-It will print information at end about code coverage and what tests passed/failed
+Alternatively, from root of repository, run
+```
+make test_backend
+```
+
+Either way, it will print information at end about code coverage and what tests passed/failed
 
 
 ## Examples of how to interact with endpoints

@@ -40,8 +40,11 @@ reports:
 db_schema: load_data reports
 
 
-test: db_schema
+test_schema: db_schema
 	pytest -vv tests/ --log-cli-level=INFO --log-cli-format="%(message)s" -x
+
+test_backend: db_up schema_only
+	cd Phase_3/backend && npm test
 
 check-lint:
 	sqlfluff lint Phase_2/team006_p2_schema.sql --dialect postgres

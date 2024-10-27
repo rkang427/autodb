@@ -10,7 +10,8 @@ LC_CTYPE = 'en_US.utf8';
 \c dealership;
 
 
-SET datestyle ='ISO, YMD'; --this enforces YYYY-MM-DD style 
+-- this enforces YYYY-MM-DD style
+SET datestyle = 'ISO, YMD';
 -- Create user table -- note postgres wants all tables to be lowercase
 -- also, "user" is a protected word, can't call the table that.
 
@@ -49,10 +50,6 @@ CREATE TABLE salesperson (
     FOREIGN KEY (username) REFERENCES app_user (username) ON DELETE CASCADE
 );
 
--- IF $customer.ssn /tin/taxID NOT LIKE ‘%[0-9]%’ 
--- AND NOT LENGTH($customer.ssn/tin/taxID) = 9 
--- IF NOT REG_EXP LIKE($customer.phoneNumber,  ‘^\d{3}-\d{3}-\d{4}$’) 
--- IF NOT REG_EXP LIKE($customer.email, ‘^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}’) 
 --Customer
 CREATE TABLE customer (
     tax_id VARCHAR(9) PRIMARY KEY,
@@ -105,7 +102,7 @@ CREATE TABLE vehicle (
     vin VARCHAR(17) PRIMARY KEY,
     description VARCHAR(280) NULL,
     horsepower SMALLINT NOT NULL,
-    --changed so it wouldn't have an issue because year as a function exists.
+    -- YEAR is a function in postgresql, so make different to be clear
     model_year INT NOT NULL,
     model VARCHAR(120) NOT NULL,
     manufacturer VARCHAR(120) NOT NULL,
@@ -121,7 +118,7 @@ CREATE TABLE vehicle (
     customer_buyer VARCHAR(9) NULL,
     sale_date DATE NULL,
 
-    -- calculate sale_price on vehicle_with_sale_price view
+    -- calculate sale_price when we query the vehicle table
     FOREIGN KEY (customer_seller) REFERENCES customer (
         tax_id
     ) ON DELETE CASCADE,
@@ -258,11 +255,8 @@ CREATE TABLE vehicle_color (
 
 -- Parts Order
 CREATE TABLE parts_order (
+    -- Generate ordinal when we insert into table by looking at current count with same VIN
     ordinal INTEGER,
-    -- TODO: Generate ordinal on insert. We need to know count of parts
-    -- order for this vin until then, application will have to do 
-    -- SELECT COUNT FROM parts_order WHERE vin = $vin to calculate it
-    -- we are at least insisting that combo of vin,ordinal is unique
     vin VARCHAR(17) NOT NULL,
     parts_order_number VARCHAR(21) GENERATED ALWAYS AS (
         vin || '-' || LPAD(CAST(ordinal AS VARCHAR), 3, CAST(0 AS VARCHAR))

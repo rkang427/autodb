@@ -12,7 +12,7 @@ INSERT INTO customer (
     '333445555',
     'i',
     '9198675301',
-    '123 Maple',
+    '123 ƒMaple',
     'Charlotte',
     'North Carolina',
     '27344'
@@ -464,3 +464,122 @@ INSERT INTO vehicle_color (vin, color) VALUES
 ('22293812083121111', 'Claret'),
 ('22293812083121111', 'Brown'),
 ('22293812083121111', 'Yellow');
+
+
+
+
+
+
+
+-- New customer email and phone number for Widget Corp
+INSERT INTO customer (
+    tax_id, customer_type, email, phone_number, street, city, state, postal_code
+) VALUES
+(
+    '444555676',
+    'b',
+    'contact@widgetcorp.com',
+    '4445556666',
+    '456 Oak St',
+    'CityY',
+    'StateY',
+    '22222'
+);
+
+-- Additional vehicles for Alice and Widget Corp
+INSERT INTO vehicle (
+    vin,
+    description,
+    horsepower,
+    model_year,
+    model,
+    manufacturer,
+    vehicle_type,
+    purchase_price,
+    purchase_date,
+    condition,
+    fuel_type,
+    inventory_clerk,
+    customer_seller
+) VALUES (
+    'ABC93812083123456',  -- Adjusted VIN length
+    'compact SUV very NIce',
+    1600,
+    2021,
+    'CR-V',
+    'Honda',
+    'SUV',
+    25000.00,
+    '2024-03-02',
+    'Very Good',
+    'Gas',
+    'ownerdoe',
+    '111222333'
+);
+
+INSERT INTO vehicle (
+    vin,
+    description,
+    horsepower,
+    model_year,
+    model,
+    manufacturer,
+    vehicle_type,
+    purchase_price,
+    purchase_date,
+    condition,
+    fuel_type,
+    inventory_clerk,
+    customer_seller
+) VALUES (
+    '55593812083123456',  -- Adjusted VIN length
+    'luxury sedan extremely nice',
+    2000,
+    2022,
+    'Accord',
+    'Honda',
+    'Sedan',
+    35000.00,
+    '2024-03-03',
+    'Excellent',
+    'Gas',
+    'johndoe',
+    '444555666' -- Widget
+);
+
+INSERT INTO vehicle (
+    vin,
+    description,
+    horsepower,
+    model_year,
+    model,
+    manufacturer,
+    vehicle_type,
+    purchase_price,
+    purchase_date,
+    condition,
+    fuel_type,
+    inventory_clerk,
+    customer_seller
+) VALUES (
+    '66693812083123456',  -- Adjusted VIN length
+    'nice full-size truck',
+    2500,
+    2023,
+    'F-150',
+    'Ford',
+    'Truck',
+    40000.00,
+    '2024-03-04',
+    'Excellent',
+    'Gas',
+    'ownerdoe',
+    '555223333'
+);
+
+-- Create vehicle colors for additional VINs
+INSERT INTO vehicle_color (
+    vin,
+    color
+) VALUES
+('ABC93812083123456', 'Silver');

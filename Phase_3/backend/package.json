@@ -4,8 +4,9 @@
   "main": "index.js",
   "scripts": {
     "format": "prettier --write .",
-    "start": "node app.js",
-    "dev": "nodemon app.js"
+    "start": "node index.js",
+    "test": "jest --detectOpenHandles",
+    "dev": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
@@ -17,7 +18,10 @@
     "pg": "^8.13.1"
   },
   "devDependencies": {
+    "faker": "^5.5.3",
+    "jest": "^29.7.0",
     "nodemon": "^3.1.7",
-    "prettier": "^3.3.3"
+    "prettier": "^3.3.3",
+    "supertest": "^7.0.0"
   }
 }

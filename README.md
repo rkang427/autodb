@@ -127,19 +127,26 @@ Note: there may be some problems that need manual intervention, especially if sy
 
 ## Run backend
 
-### Dependencies
+### System Dependencies
 
 Install node `v22.9.0`
+For Mac,
+```
+brew install node@22.9.0
+brew link --force --overwrite node@22.9.0
+```
 
+### Node dependencies
 ```
 cd Phase_3/backend
 npm install
 ```
 
-To run the backend code run the following; this will run the backend with nodemon
-which will restart the server every time you save the code.
+### Run dev server
+Once you have database running with `make db_up`
 
 ```
+cd Phase_3/backend
 npm run dev
 ```
 

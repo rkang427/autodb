@@ -21,6 +21,10 @@ describe('Customer API', () => {
 
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty('tax_id');
+    const response2 = await request(server).get(
+      `/customer?tax_id=${customerData.tax_id}`
+    );
+    expect(response2.status).toBe(200);
   });
 
   it('should create a new business customer', async () => {
@@ -30,5 +34,31 @@ describe('Customer API', () => {
     const response = await request(server).post('/customer').send(customerData);
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty('tax_id');
+    const response2 = await request(server).get(
+      `/customer?tax_id=${customerData.tax_id}`
+    );
+    expect(response2.status).toBe(200);
+  });
+
+  it('should NOT create a duplicate business customer', async () => {
+    const customerData = generateCustomerData('b'); // Business customer
+    expect(customerData.business_name).not.toBe(null);
+    expect(customerData.title).not.toBe(null);
+    const response = await request(server).post('/customer').send(customerData);
+    expect(response.status).toBe(201);
+    expect(response.body).toHaveProperty('tax_id');
+    const response2 = await request(server)
+      .post('/customer')
+      .send(customerData);
+    expect(response2.status).toBe(409);
+    const response3 = await request(server).get(
+      `/customer?tax_id=${customerData.tax_id}`
+    );
+    expect(response3.status).toBe(200);
+  });
+
+  it('should NOT create a customer missing feilds', async () => {
+    const response = await request(server).post('/customer').send({});
+    expect(response.status).toBe(400);
   });
 });

@@ -169,6 +169,11 @@ router.post('/', async (req, res) => {
         .status(409)
         .json({ error: 'Error: Customer with tax_id already exists.' });
     }
+    if (error.code === PG_ERROR_CODES.LENGTH_VIOLATION) {
+      return res
+        .status(400)
+        .send('Error: One or more fields exceed the maximum length.');
+    }
     res.status(500).json({ error: 'Error connecting to the database' });
   } finally {
     client.release(); // Release the client back to the pool

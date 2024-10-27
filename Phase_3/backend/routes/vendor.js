@@ -106,7 +106,7 @@ router.post('/', async (req, res) => {
     }
     if (error.code === PG_ERROR_CODES.LENGTH_VIOLATION) {
       return res
-        .status(422)
+        .status(400)
         .send('Error: One or more fields exceed the maximum length.');
     }
     console.error('Database connection error:', error);

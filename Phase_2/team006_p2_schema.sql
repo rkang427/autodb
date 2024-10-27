@@ -210,7 +210,9 @@ CREATE TABLE vehicle (
         'Minivan',
         'SUV',
         'Other'
-    ))
+    )),
+    CONSTRAINT vin_length CHECK (LENGTH(vin) = 17)
+
 );
 
 -- VehicleColors

@@ -247,7 +247,7 @@ WHERE
     AND (vw.model_year = '2023' OR '2023' IS NULL)
     AND (vw.fuel_type = 'Gas' OR 'Gas' IS NULL)
     AND (vw.colors LIKE NULL OR NULL IS NULL)
-    AND (LOWER(vw.vin) = LOWER('7779381208312') OR '7779381208312' IS NULL)
+    AND (LOWER(vw.vin) = LOWER('77793812083121111') OR '77793812083121111' IS NULL)
     AND (
         (vw.manufacturer ILIKE '%%' OR '%%' = '%%')
         OR (vw.model ILIKE '%%' OR '%%' = '%%')
@@ -294,7 +294,7 @@ SELECT
     ) AS sale_price
 FROM vehicle AS v
 LEFT JOIN vehicle_color AS vc ON v.vin = vc.vin
-WHERE v.vin = '1119381208312'
+WHERE v.vin = '11193812083121111'
 GROUP BY
     v.vin,
     v.vehicle_type,
@@ -357,7 +357,7 @@ SELECT
     po.vendor_name
 FROM part AS p
 INNER JOIN parts_order AS po ON p.parts_order_number = po.parts_order_number
-WHERE po.vin = '1119381208312'
+WHERE po.vin = '11193812083121111'
 ORDER BY p.parts_order_number;
 \echo '-------------------------------------------------------'
 \echo

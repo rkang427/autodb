@@ -27,7 +27,7 @@ WHERE name = 'Best Parts Supplier';
 -- add a parts order for the vehicle
 INSERT INTO parts_order (vin, ordinal, vendor_name)
 SELECT
-    '1119381208312',
+    '11193812083121111',
     COUNT(*) + 1,
     'Best Parts Supplier'
 FROM parts_order
@@ -38,10 +38,10 @@ INSERT INTO part (
     part_number, unit_price, description, quantity, status, parts_order_number
 )
 VALUES
-('PART-001', 50.00, 'Brake Pads', 4, 'ordered', '1119381208312-001'),
-('PART-002', 20.00, 'Oil Filter', 2, 'ordered', '1119381208312-001'),
+('PART-001', 50.00, 'Brake Pads', 4, 'ordered', '11193812083121111-001'),
+('PART-002', 20.00, 'Oil Filter', 2, 'ordered', '11193812083121111-001'),
 (
-    'PART-003', 100.00, 'Windshield Wipers', 1, 'ordered', '1119381208312-001'
+    'PART-003', 100.00, 'Windshield Wipers', 1, 'ordered', '11193812083121111-001'
 ) RETURNING *;
 -- update total parts price on vehicle
 -- first vehicle
@@ -53,9 +53,9 @@ SET
         INNER JOIN
             parts_order AS po
             ON p.parts_order_number = po.parts_order_number
-        WHERE po.vin = '1119381208312'
+        WHERE po.vin = '11193812083121111'
     )
-WHERE v.vin = '1119381208312';
+WHERE v.vin = '11193812083121111';
 -- second vehicle
 UPDATE vehicle v
 SET
@@ -65,9 +65,9 @@ SET
         INNER JOIN
             parts_order AS po
             ON p.parts_order_number = po.parts_order_number
-        WHERE po.vin = '2229381208312'
+        WHERE po.vin = '22293812083121111'
     )
-WHERE v.vin = '2229381208312';
+WHERE v.vin = '22293812083121111';
 
 -- Check total prices are updated
 SELECT * FROM parts_order;
@@ -83,50 +83,50 @@ FROM
 -- add another parts order for the vehicle
 INSERT INTO parts_order (vin, ordinal, vendor_name)
 SELECT
-    '1119381208312',
+    '11193812083121111',
     COUNT(*) + 1,
     'Best Parts Supplier'
 FROM parts_order
-WHERE vin = '1119381208312' RETURNING parts_order_number;
+WHERE vin = '11193812083121111' RETURNING parts_order_number;
 
 -- add parts order for different vehicles
 INSERT INTO parts_order (vin, ordinal, vendor_name)
 SELECT
-    '2229381208312',
+    '22293812083121111',
     COUNT(*) + 1,
     'Napa Auto Parts'
 FROM parts_order
-WHERE vin = '2229381208312' RETURNING parts_order_number;
+WHERE vin = '22293812083121111' RETURNING parts_order_number;
 
 INSERT INTO parts_order (vin, ordinal, vendor_name)
 SELECT
-    '4449381208312',
+    '44493812083121111',
     COUNT(*) + 1,
     'Napa Auto Parts'
 FROM parts_order
-WHERE vin = '4449381208312' RETURNING parts_order_number;
+WHERE vin = '44493812083121111' RETURNING parts_order_number;
 
 -- this will be used for not installed parts in the test:
 INSERT INTO parts_order (vin, ordinal, vendor_name)
 SELECT
-    '8889381208312',
+    '88893812083121111',
     COUNT(*) + 1,
     'Napa Auto Parts'
 FROM parts_order
-WHERE vin = '8889381208312' RETURNING parts_order_number;
+WHERE vin = '88893812083121111' RETURNING parts_order_number;
 
 -- Insert parts associated with the parts orders
 INSERT INTO part (
     part_number, unit_price, description, quantity, status, parts_order_number
 )
 VALUES
-('PART-001', 50.00, 'Brake Pads', 4, 'ordered', '1119381208312-002'),
-('PART-002', 20.00, 'Oil Filter', 2, 'ordered', '1119381208312-002'),
-('PART-003', 100.00, 'Windshield Wipers', 1, 'ordered', '1119381208312-002'),
-('PART-004', 50.00, 'Seatbelt', 1, 'ordered', '2229381208312-001'),
-('PART-003', 100.00, 'Windshield Wipers', 1, 'ordered', '4449381208312-001'),
-('PART-003', 100.00, 'Windshield Wipers', 1, 'ordered', '8889381208312-001'),
-('PART-004', 50.00, 'Seatbelt', 1, 'ordered', '4449381208312-001') RETURNING *;
+('PART-001', 50.00, 'Brake Pads', 4, 'ordered', '11193812083121111-002'),
+('PART-002', 20.00, 'Oil Filter', 2, 'ordered', '11193812083121111-002'),
+('PART-003', 100.00, 'Windshield Wipers', 1, 'ordered', '11193812083121111-002'),
+('PART-004', 50.00, 'Seatbelt', 1, 'ordered', '22293812083121111-001'),
+('PART-003', 100.00, 'Windshield Wipers', 1, 'ordered', '44493812083121111-001'),
+('PART-003', 100.00, 'Windshield Wipers', 1, 'ordered', '88893812083121111-001'),
+('PART-004', 50.00, 'Seatbelt', 1, 'ordered', '44493812083121111-001') RETURNING *;
 -- update total prats price on vehicle
 -- first vehicle
 UPDATE vehicle v
@@ -137,9 +137,9 @@ SET
         INNER JOIN
             parts_order AS po
             ON p.parts_order_number = po.parts_order_number
-        WHERE po.vin = '1119381208312'
+        WHERE po.vin = '11193812083121111'
     )
-WHERE v.vin = '1119381208312';
+WHERE v.vin = '11193812083121111';
 -- second vehicle
 UPDATE vehicle v
 SET
@@ -149,9 +149,9 @@ SET
         INNER JOIN
             parts_order AS po
             ON p.parts_order_number = po.parts_order_number
-        WHERE po.vin = '2229381208312'
+        WHERE po.vin = '22293812083121111'
     )
-WHERE v.vin = '2229381208312';
+WHERE v.vin = '22293812083121111';
 -- third vehicle
 UPDATE vehicle v
 SET
@@ -161,9 +161,9 @@ SET
         INNER JOIN
             parts_order AS po
             ON p.parts_order_number = po.parts_order_number
-        WHERE po.vin = '4449381208312'
+        WHERE po.vin = '44493812083121111'
     )
-WHERE v.vin = '4449381208312';
+WHERE v.vin = '44493812083121111';
 
 -- fourth vehicle
 UPDATE vehicle v
@@ -174,9 +174,9 @@ SET
         INNER JOIN
             parts_order AS po
             ON p.parts_order_number = po.parts_order_number
-        WHERE po.vin = '8889381208312'
+        WHERE po.vin = '88893812083121111'
     )
-WHERE v.vin = '8889381208312';
+WHERE v.vin = '88893812083121111';
 
 -- Check total prices are updated
 SELECT * FROM parts_order;
@@ -194,24 +194,24 @@ FROM
 UPDATE part
 SET status = 'installed'
 WHERE
-    parts_order_number = '1119381208312-001' AND part_number IN (SELECT part_number FROM part WHERE parts_order_number = '1119381208312-001');
+    parts_order_number = '11193812083121111-001' AND part_number IN (SELECT part_number FROM part WHERE parts_order_number = '11193812083121111-001');
 UPDATE part
 SET status = 'installed'
 WHERE
-    parts_order_number = '1119381208312-002' AND part_number IN (SELECT part_number FROM part WHERE parts_order_number = '1119381208312-002');
+    parts_order_number = '11193812083121111-002' AND part_number IN (SELECT part_number FROM part WHERE parts_order_number = '11193812083121111-002');
 UPDATE part
 SET status = 'installed'
 WHERE
-    parts_order_number = '2229381208312-001' AND part_number IN (SELECT part_number FROM part WHERE parts_order_number = '2229381208312-001');
+    parts_order_number = '22293812083121111-001' AND part_number IN (SELECT part_number FROM part WHERE parts_order_number = '22293812083121111-001');
 UPDATE part
 SET status = 'installed'
 WHERE
-    parts_order_number = '4449381208312-001' AND part_number IN (SELECT part_number FROM part WHERE parts_order_number = '4449381208312-001');
+    parts_order_number = '44493812083121111-001' AND part_number IN (SELECT part_number FROM part WHERE parts_order_number = '4449381208311111-001');
 
 UPDATE part
 SET status = 'received'
 WHERE
-    parts_order_number = '8889381208312-001' AND part_number IN (SELECT part_number FROM part WHERE parts_order_number = '8889381208312-001');
+    parts_order_number = '88893812083121111-001' AND part_number IN (SELECT part_number FROM part WHERE parts_order_number = '88893812083121111-001');
 
 -- show parts status now
 SELECT * FROM part;
@@ -222,7 +222,7 @@ SET
     sale_date = CURRENT_DATE,
     customer_buyer = '333445555',
     salesperson = 'ownerdoe'
-WHERE vehicle.vin = '4449381208312' AND sale_date IS NULL
+WHERE vehicle.vin = '44493812083121111' AND sale_date IS NULL
 RETURNING
 vin,
 purchase_date,
@@ -239,7 +239,7 @@ SET
     customer_buyer = '555223333',
     salesperson = 'janedoe'
 WHERE
-    vehicle.vin = '2229381208312' AND sale_date IS NULL
+    vehicle.vin = '22293812083121111' AND sale_date IS NULL
 RETURNING
 vin,
 purchase_date,
@@ -256,7 +256,7 @@ SET
     customer_buyer = '333445555',
     salesperson = 'janedoe'
 WHERE
-    vehicle.vin = '1119381208312' AND sale_date IS NULL
+    vehicle.vin = '11193812083121111' AND sale_date IS NULL
 RETURNING
 vin,
 purchase_date,

@@ -1,6 +1,7 @@
 const express = require('express');
 const customerRoutes = require('./routes/customer');
 const vendorRoutes = require('./routes/vendor');
+const reportsRoutes = require('./routes/reports');
 const pool = require('./config/db'); // Import your pool configuration
 require('dotenv').config();
 
@@ -8,6 +9,7 @@ const app = express();
 app.use(express.json());
 app.use('/customer', customerRoutes);
 app.use('/vendor', vendorRoutes);
+app.use('/reports', reportsRoutes);
 
 const startServer = (port) => {
   return new Promise((resolve, reject) => {

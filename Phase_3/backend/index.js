@@ -1,7 +1,7 @@
 const { startServer, stopServer } = require('./server'); // Adjust path as necessary
 const port = process.env.PORT || 3000;
 
-startServer(PORT)
+startServer(port)
   .then((server) => {
     process.on('SIGINT', async () => {
       console.log('Received SIGINT. Closing server...');

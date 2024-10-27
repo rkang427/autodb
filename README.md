@@ -165,6 +165,21 @@ It will print information at end about code coverage and what tests passed/faile
 
 
 ### POST requests -- for creating records
+Vendor
+```
+curl -X POST http://localhost:3000/vendor \
+-H "Content-Type: application/json" \
+-d '{
+  "name": "Vendor Name",
+  "phone_number": "1234567890",
+  "street": "123 Vendor St",
+  "city": "Vendor City",
+  "state": "Vendor State",
+  "postal_code": "12345"
+}'
+```
+
+Customer
 ```
 curl -X POST http://localhost:3000/customer \
 -H "Content-Type: application/json" \
@@ -188,6 +203,22 @@ curl -X POST http://localhost:3000/customer \
 ### GET requests -- for fetching records
 To experiment with GET requests that are for reading data (with potential filters), do
 
+Vendor
+```
+curl -X GET "http://localhost:3000/vendor?name=Vendor%20Name"
+```
+
+Customer
 ```
 curl -X GET "http://localhost:3000/customer?tax_id=123456789"
+```
+
+Part Statistics Report
+```
+curl -X GET "http://localhost:3000/reports/part_statistics"
+```
+
+Price Per Condition Report
+```
+curl -X GET "http://localhost:3000/reports/price_condition"
 ```

@@ -127,9 +127,12 @@ Note: there may be some problems that need manual intervention, especially if sy
 
 ## Run backend
 
-After pull the backend folder run the following to install dependencies
+### Dependencies
+
+Install node `v22.9.0`
 
 ```
+cd Phase_3/backend
 npm install
 ```
 
@@ -138,4 +141,36 @@ which will restart the server every time you save the code.
 
 ```
 npm run dev
+```
+
+
+## Examples of how to interact with endpoints
+
+
+### POST requests -- for creating records
+```
+curl -X POST http://localhost:3000/customer \
+-H "Content-Type: application/json" \
+-d '{
+  "tax_id": "123456789",
+  "phone_number": "5551234567",
+  "first_name": "John",
+  "last_name": "Doe",
+  "street": "123 Elm St",
+  "city": "Springfield",
+  "state": "IL",
+  "postal_code": "62701",
+  "business_name": "Doe Enterprises",
+  "title": "CEO",
+  "customer_type": "b",
+  "email": "john.doe@example.com"
+}'
+
+```
+
+### GET requests -- for fetching records
+To experiment with GET requests that are for reading data (with potential filters), do
+
+```
+curl -X GET "http://localhost:3000/customer?tax_id=123456789"
 ```

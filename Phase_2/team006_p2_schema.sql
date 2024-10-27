@@ -9,6 +9,8 @@ LC_CTYPE = 'en_US.utf8';
 -- Connect to database
 \c dealership;
 
+
+SET datestyle ='ISO, YMD'; --this enforces YYYY-MM-DD style 
 -- Create user table -- note postgres wants all tables to be lowercase
 -- also, "user" is a protected word, can't call the table that.
 

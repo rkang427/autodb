@@ -236,7 +236,7 @@ WHERE
         FROM parts_order AS po
         INNER JOIN part AS p ON po.parts_order_number = p.parts_order_number
         WHERE p.status <> 'installed'
-    ) OR FALSE)
+    ) OR FALSE ) -- this will be a variable name
     AND (
         (vw.sale_date IS NULL AND 'both' = 'unsold')
         OR (vw.sale_date IS NOT NULL AND 'both' = 'sold')

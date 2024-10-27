@@ -12,7 +12,7 @@ INSERT INTO customer (
     '333445555',
     'i',
     '9198675301',
-    '123 ƒMaple',
+    '123 Maple',
     'Charlotte',
     'North Carolina',
     '27344'

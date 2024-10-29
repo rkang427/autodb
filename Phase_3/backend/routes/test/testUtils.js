@@ -1,7 +1,7 @@
 const faker = require('faker');
 
 function generatePhoneNumber() {
-  return faker.phone.phoneNumber('##########'); // Generates a 10-digit phone number
+  return faker.datatype.number({ min: 1000000000, max: 9998999999 }).toString(); // Generates a 10 digit phone number
 }
 
 function generateTaxId() {

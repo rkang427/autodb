@@ -1,16 +1,20 @@
 const express = require('express');
-const router = express.Router();
+const { validationResult } = require('express-validator');
+const { vendorGetValidator, vendorPostValidator } = require('./validators');
 const pool = require('../config/db');
 const PG_ERROR_CODES = require('../config/constants');
 
+const router = express.Router();
+
 // GET endpoint to retrieve a vendor by name
-router.get('/', async (req, res) => {
+router.get('/', vendorGetValidator, async (req, res) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
   try {
     const vendorName = req.query.name;
-
-    if (!vendorName) {
-      return res.status(400).send('Error: name query parameter is required.');
-    }
 
     const query = `
       SELECT name, phone_number, street, city, state, postal_code
@@ -32,49 +36,13 @@ router.get('/', async (req, res) => {
 });
 
 // POST endpoint to create a new vendor
-router.post('/', async (req, res) => {
+router.post('/', vendorPostValidator, async (req, res) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
   const { name, phone_number, street, city, state, postal_code } = req.body;
-
-  // Validate required fields
-  if (!name || !phone_number || !street || !city || !state || !postal_code) {
-    return res.status(400).send('Error: All fields are required.');
-  }
-
-  // Validate lengths of fields
-  if (name.length > 120) {
-    return res.status(400).send('Error: name must be 120 characters or fewer.');
-  }
-  if (phone_number.length !== 10) {
-    return res
-      .status(400)
-      .send('Error: phone_number must be exactly 10 digits long.');
-  }
-  if (street.length > 120) {
-    return res
-      .status(400)
-      .send('Error: street must be 120 characters or fewer.');
-  }
-  if (city.length > 120) {
-    return res.status(400).send('Error: city must be 120 characters or fewer.');
-  }
-  if (state.length > 120) {
-    return res
-      .status(400)
-      .send('Error: state must be 120 characters or fewer.');
-  }
-  if (postal_code.length !== 5) {
-    return res
-      .status(400)
-      .send('Error: postal_code must be exactly 5 digits long.');
-  }
-
-  // Validate phone_number format
-  const phoneRegex = /^\d{10}$/;
-  if (!phoneRegex.test(phone_number)) {
-    return res
-      .status(400)
-      .send('Error: phone_number must be 10 digits long without dashes.');
-  }
 
   const client = await pool.connect();
 

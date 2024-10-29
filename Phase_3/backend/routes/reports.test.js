@@ -23,4 +23,10 @@ describe('Reports API', () => {
     const response = await request(server).get('/reports/price_condition');
     expect(response.status).toBe(200);
   });
+  it('should return avg time in inventory report', async () => {
+    const response = await request(server).get(
+      '/reports/avg_time_in_inventory'
+    );
+    expect(response.status).toBe(200);
+  });
 });

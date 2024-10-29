@@ -102,7 +102,7 @@ router.post('/', customerPostValidator, async (req, res) => {
       .json({ tax_id: newTaxId, message: 'Customer created successfully' });
   } catch (error) {
     await client.query('ROLLBACK');
-    console.error('Database error:', error);
+    console.error('Database error:', error); //in order to debug, logging an error to server console for what was wrong
     if (error.code === PG_ERROR_CODES.UNIQUE_VIOLATION) {
       return res
         .status(409)

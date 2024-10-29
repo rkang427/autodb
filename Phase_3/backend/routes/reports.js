@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../config/db');
 const PG_ERROR_CODES = require('../config/constants');
-
+//make test_backend from cs6400....
 // Route to get part statistics
 router.get('/part_statistics', async (req, res) => {
   const query = `
@@ -61,6 +61,49 @@ router.get('/price_condition', async (req, res) => {
   } catch (error) {
     console.error('Error executing query:', error);
     res.status(500).send('Error retrieving price per condition report');
+  }
+});
+
+// Route to get Average Time in Inventory
+router.get('/avg_time_in_inventory', async (req, res) => {
+  const query = `
+  SELECT
+    vt.vehicle_type,
+    COALESCE(
+        AVG(
+            DATE_PART(
+                'day', v.sale_date::TIMESTAMP - v.purchase_date::TIMESTAMP
+            )
+            + 1
+        )::VARCHAR,
+        'N/A'
+    ) AS average_time_in_inventory
+FROM (
+    SELECT UNNEST(ARRAY[
+        'Sedan',
+        'Coupe',
+        'Convertible',
+        'CUV',
+        'Truck',
+        'Van',
+        'Minivan',
+        'SUV',
+        'Other'
+    ]) AS vehicle_type
+) AS vt
+LEFT JOIN
+    vehicle AS v
+    ON vt.vehicle_type = v.vehicle_type AND v.sale_date IS NOT NULL
+GROUP BY vt.vehicle_type
+ORDER BY vt.vehicle_type;
+  `;
+
+  try {
+    const result = await pool.query(query);
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error('Error executing query:', error);
+    res.status(500).send('Error retrieving avg time in inventory');
   }
 });
 

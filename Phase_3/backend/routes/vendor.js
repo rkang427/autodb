@@ -2,7 +2,7 @@ const express = require('express');
 const { validationResult } = require('express-validator');
 const { vendorGetValidator, vendorPostValidator } = require('./validators');
 const pool = require('../config/db');
-const PG_ERROR_CODES = require('../config/constants');
+const { PG_ERROR_CODES } = require('../config/constants');
 
 const router = express.Router();
 

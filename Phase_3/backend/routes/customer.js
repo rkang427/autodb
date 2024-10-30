@@ -3,7 +3,7 @@ const { validationResult } = require('express-validator');
 const router = express.Router();
 const pool = require('../config/db');
 const { customerGetValidator, customerPostValidator } = require('./validators');
-const PG_ERROR_CODES = require('../config/constants');
+const { PG_ERROR_CODES } = require('../config/constants');
 
 // GET endpoint to check if customer exists by tax_id
 router.get('/', customerGetValidator, async (req, res) => {

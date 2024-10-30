@@ -1,7 +1,7 @@
 const express = require('express');
 const { validationResult } = require('express-validator');
 const pool = require('../config/db');
-const { vehicleGetValidator } = require('./validators');
+const { vehicleGetValidator, vehiclePostValidator } = require('./validators');
 const PG_ERROR_CODES = require('../config/constants');
 
 const router = express.Router();
@@ -72,82 +72,110 @@ router.get('/', vehicleGetValidator, async (req, res) => {
 });
 
 // POST endpoint to create a new vehicle
-//router.post('/', vehiclePostValidator, async (req, res) => {
-//  const errors = validationResult(req);
-//
-//  if (!errors.isEmpty()) {
-//    return res.status(400).json({ errors: errors.array() });
-//  }
-//
-//  const {
-//    vin,
-//  } = req.body;
-//
-//  const client = await pool.connect();
-//  try {
-//    await client.query('BEGIN'); // Start transaction
-//
-//    // Insert into the customer table
-//    const customerQuery = `
-//      INSERT INTO customer (tax_id, street, city, state, postal_code, customer_type, email, phone_number)
-//      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-//      RETURNING tax_id`;
-//
-//    const customerValues = [
-//      tax_id,
-//      street,
-//      city,
-//      state,
-//      postal_code,
-//      customer_type,
-//      email,
-//      phone_number,
-//    ];
-//
-//    const customerResult = await client.query(customerQuery, customerValues);
-//    const newTaxId = customerResult.rows[0].tax_id;
-//
-//    // Insert into individual or business table based on customer_type
-//    if (customer_type === 'i') {
-//      await client.query(
-//        `
-//        INSERT INTO individual (ssn, first_name, last_name, customer_type)
-//        VALUES ($1, $2, $3, $4)`,
-//        [tax_id, first_name, last_name, customer_type]
-//      );
-//    } else {
-//      await client.query(
-//        `
-//        INSERT INTO business (tin, business_name, title, first_name, last_name, customer_type)
-//        VALUES ($1, $2, $3, $4, $5, $6)`,
-//        [tax_id, business_name, title, first_name, last_name, customer_type]
-//      );
-//    }
-//
-//    await client.query('COMMIT'); // Commit transaction
-//
-//    res
-//      .status(201)
-//      .json({ tax_id: newTaxId, message: 'Customer created successfully' });
-//  } catch (error) {
-//    await client.query('ROLLBACK');
-//    console.error('Database error:', error); //in order to debug, logging an error to server console for what was wrong
-//    if (error.code === PG_ERROR_CODES.UNIQUE_VIOLATION) {
-//      return res
-//        .status(409)
-//        .json({ error: 'Error: Customer with tax_id already exists.' });
-//    }
-//    if (error.code === PG_ERROR_CODES.LENGTH_VIOLATION) {
-//      return res
-//        .status(400)
-//        .send('Error: One or more fields exceed the maximum length.');
-//    }
-//    res.status(500).json({ error: 'Error connecting to the database' });
-//  } finally {
-//    client.release(); // Release the client back to the pool
-//  }
-//});
-//
+router.post('/', vehiclePostValidator, async (req, res) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const {
+    vin,
+    description,
+    horsepower,
+    model_year,
+    model,
+    manufacturer,
+    vehicle_type,
+    purchase_price,
+    condition,
+    fuel_type,
+    inventory_clerk,
+    customer_seller,
+    colors,
+  } = req.body;
+
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN'); // Start transaction
+
+    // Insert into the vehicle table
+    const vehicleQuery = `
+        INSERT INTO vehicle (
+        vin,
+        description,
+        horsepower,
+        model_year,
+        model,
+        manufacturer,
+        vehicle_type,
+        purchase_price,
+        purchase_date,
+        condition,
+        fuel_type,
+        inventory_clerk,
+        customer_seller
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_DATE, $9, $10, $11, $12)`;
+
+    const vehicleValues = [
+      vin,
+      description,
+      horsepower,
+      model_year,
+      model,
+      manufacturer,
+      vehicle_type,
+      purchase_price,
+      condition,
+      fuel_type,
+      inventory_clerk,
+      customer_seller,
+    ];
+    await client.query(vehicleQuery, vehicleValues);
+
+    // Insert into the vehicle_color table any colors for this vehicle
+    if (colors && colors.length > 0) {
+      const colorInsertQuery = `
+          INSERT INTO vehicle_color (vin, color)
+          VALUES ${colors.map((color, index) => `($1, $${index + 2})`).join(', ')}`;
+
+      const colorValues = [vin, ...colors];
+      await client.query(colorInsertQuery, colorValues);
+    }
+
+    await client.query('COMMIT'); // Commit transaction
+
+    res.status(201).json({
+      vin,
+      description,
+      horsepower,
+      model_year,
+      model,
+      manufacturer,
+      vehicle_type,
+      purchase_price,
+      condition,
+      fuel_type,
+      inventory_clerk,
+      customer_seller,
+    });
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Database error:', error);
+    if (error.code === PG_ERROR_CODES.UNIQUE_VIOLATION) {
+      return res.status(409).json({ error: 'Error: Vehicle already exists.' });
+    }
+    if (error.code === PG_ERROR_CODES.LENGTH_VIOLATION) {
+      return res
+        .status(400)
+        .send('Error: One or more fields exceed the maximum length.');
+    }
+    res.status(500).json({ error: 'Error connecting to the database' });
+  } finally {
+    client.release(); // Release the client back to the pool
+  }
+});
 
 module.exports = router;
 

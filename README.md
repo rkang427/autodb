@@ -203,6 +203,20 @@ curl -X POST http://localhost:3000/customer \
   "email": "john.doe@example.com"
 }'
 
+
+
+```
+Post Parts Order
+```
+
+curl -X POST http://localhost:3000/partsorder \
+-H "Content-Type: application/json" \
+-d '{
+  "vin": "WXY93812083121111",
+  "vendor_name": "Vendor Name"
+}'
+
+
 ```
 
 ### GET requests -- for fetching records
@@ -227,3 +241,6 @@ Price Per Condition Report
 ```
 curl -X GET "http://localhost:3000/reports/price_condition"
 ```
+
+
+### post:

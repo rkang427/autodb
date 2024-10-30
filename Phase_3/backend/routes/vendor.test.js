@@ -42,3 +42,23 @@ describe('Vendor API', () => {
     expect(response.status).toBe(400);
   });
 });
+
+//TODO: Once we have Vehicle API, create/generate vehicle instead of hardcode vin :)
+describe('Parts Order API', () => {
+  it('should create a Parts Order and Vendor', async () => {
+    const vendorData = generateVendorData();
+    const response = await request(server).post('/vendor').send(vendorData);
+    expect(response.status).toBe(201);
+    expect(response.body).toHaveProperty('name');
+    const vin = 'WXY93812083121111';
+    const partsOrderData = { vin: vin, vendor_name: vendorData.name };
+
+    const response2 = await request(server)
+      .post(`/partsorder`)
+      .send(partsOrderData);
+    expect(response2.status).toBe(201);
+  });
+});
+
+//200: I got your thing
+//201: I created thing

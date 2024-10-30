@@ -52,9 +52,15 @@ const vendorPostValidator = [
     .isLength({ min: 5, max: 5 }),
 ];
 
+const partsOrderPostValidator = [
+  body('vin', 'Invalid vin').isLength({ min: 17, max: 17 }),
+  body('vendor_name', 'Invalid Vendor').isLength({ min: 1, max: 120 }),
+];
+
 module.exports = {
   customerGetValidator,
   vendorGetValidator,
   customerPostValidator,
   vendorPostValidator,
+  partsOrderPostValidator,
 };

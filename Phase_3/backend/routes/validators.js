@@ -1,4 +1,11 @@
 const { body, query } = require('express-validator');
+const {
+  MANUFACTURERS,
+  COLORS,
+  VEHICLE_TYPES,
+  FUEL_TYPES,
+  CONDITIONS,
+} = require('../config/constants');
 
 const customerGetValidator = [
   query('tax_id')
@@ -70,6 +77,30 @@ const partsOrderPostValidator = [
   body('vendor_name', 'Invalid Vendor').isLength({ min: 1, max: 120 }),
 ];
 
+function isArrayOfColors(value) {
+  return Array.isArray(value) && value.every((item) => COLORS.includes(item));
+}
+
+const vehiclePostValidator = [
+  body('vin')
+    .isLength({ min: 17, max: 17 })
+    .withMessage('VIN must be 17 characters long')
+    .matches(/^[^\s]+$/)
+    .withMessage('Field cannot contain spaces'),
+  body('description').optional().isString().isLength({ max: 280 }),
+  body('horsepower').isInt({ min: 0, max: 32767 }),
+  body('model_year').isInt({ min: 1000, max: new Date().getFullYear() + 1 }),
+  body('model').isString().isLength({ min: 1, max: 120 }),
+  body('manufacturer').isString().isIn(MANUFACTURERS),
+  body('vehicle_type').isString().isIn(VEHICLE_TYPES),
+  body('fuel_type').isString().isIn(FUEL_TYPES),
+  body('purchase_price').isDecimal(),
+  body('condition').isString().isIn(CONDITIONS),
+  body('inventory_clerk').isString().isLength({ min: 1, max: 120 }),
+  body('customer_seller').isInt().isLength({ min: 9, max: 9 }),
+  body('colors').isArray({ min: 1 }).custom(isArrayOfColors),
+];
+
 module.exports = {
   customerGetValidator,
   vehicleGetValidator,
@@ -77,4 +108,5 @@ module.exports = {
   customerPostValidator,
   vendorPostValidator,
   partsOrderPostValidator,
+  vehiclePostValidator,
 };

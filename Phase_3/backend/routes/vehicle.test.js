@@ -1,7 +1,10 @@
 const request = require('supertest');
 const faker = require('faker');
 
-const { generateVendorData } = require('./test/testUtils');
+const {
+  generateVehicleData,
+  generateCustomerData,
+} = require('./test/testUtils');
 
 const { startServer, stopServer } = require('../server'); // Adjust the path as necessary
 
@@ -16,6 +19,41 @@ afterAll(async () => {
 });
 
 describe('Vehicle API', () => {
+  it('should create a vehicle', async () => {
+    // Corrected placement of async function
+    const customerData = generateCustomerData(); // Assuming you generate customer data
+    const response = await request(server).post('/customer').send(customerData);
+
+    try {
+      expect(response.status).toBe(201);
+      expect(response.body).toHaveProperty('tax_id');
+    } catch (error) {
+      console.error('Error in individual customer creation:', {
+        status: response.status,
+        body: JSON.stringify(response.body),
+        error: error.message,
+        customerData: customerData,
+      });
+      throw error; // Re-throw the error to fail the test
+    }
+
+    const vehicleData = generateVehicleData(customerData.tax_id, 'ownerdoe');
+    const response2 = await request(server).post('/vehicle').send(vehicleData);
+
+    try {
+      expect(response2.status).toBe(201);
+      expect(response2.body).toHaveProperty('vin');
+    } catch (error) {
+      console.error('Error in vehicle creation:', {
+        status: response2.status,
+        body: JSON.stringify(response2.body),
+        error: error.message,
+        vehicleData: vehicleData,
+      });
+      throw error; // Re-throw the error to fail the test
+    }
+  });
+
   it('should get a vehicle by vin', async () => {
     const knownVehicle = {
       vin: 'WXY93812083121111',
@@ -50,6 +88,7 @@ describe('Vehicle API', () => {
       expect(responseBody[key]).toEqual(value);
     }
   });
+
   it('should reject a too short vin', async () => {
     const knownVehicle = {
       vin: '2111',
@@ -59,6 +98,7 @@ describe('Vehicle API', () => {
     );
     expect(response.status).toBe(400);
   });
+
   it('should reject a too long vin', async () => {
     const knownVehicle = {
       vin: '211aasdfsdsssssasdfdsssssdsfaasdffdd1',
@@ -68,6 +108,7 @@ describe('Vehicle API', () => {
     );
     expect(response.status).toBe(400);
   });
+
   it('should reject a vin with spaces', async () => {
     const knownVehicle = {
       vin: 'WXY93812 83121111',
@@ -78,6 +119,3 @@ describe('Vehicle API', () => {
     expect(response.status).toBe(400);
   });
 });
-
-//200: I got your thing
-//201: I created thing

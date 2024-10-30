@@ -3,7 +3,17 @@ const { body, query } = require('express-validator');
 const customerGetValidator = [
   query('tax_id')
     .isLength({ min: 9, max: 9 })
-    .withMessage('tax_id must be 9 digits long'),
+    .withMessage('tax_id must be 9 digits long')
+    .matches(/^[^\s]+$/)
+    .withMessage('Field cannot contain spaces'),
+];
+
+const vehicleGetValidator = [
+  query('vin')
+    .isLength({ min: 17, max: 17 })
+    .withMessage('vin must be 17 characters long')
+    .matches(/^[^\s]+$/)
+    .withMessage('Field cannot contain spaces'),
 ];
 
 const vendorGetValidator = [query('name').isLength({ min: 1, max: 120 })];
@@ -53,12 +63,16 @@ const vendorPostValidator = [
 ];
 
 const partsOrderPostValidator = [
-  body('vin', 'Invalid vin').isLength({ min: 17, max: 17 }),
+  body('vin', 'Invalid vin')
+    .isLength({ min: 17, max: 17 })
+    .matches(/^[^\s]+$/)
+    .withMessage('Field cannot contain spaces'),
   body('vendor_name', 'Invalid Vendor').isLength({ min: 1, max: 120 }),
 ];
 
 module.exports = {
   customerGetValidator,
+  vehicleGetValidator,
   vendorGetValidator,
   customerPostValidator,
   vendorPostValidator,

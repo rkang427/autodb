@@ -43,7 +43,7 @@ db_schema: load_data reports
 test_schema: db_schema
 	pytest -vv tests/ --log-cli-level=INFO --log-cli-format="%(message)s" -x
 
-test_backend: db_up schema_only
+test_backend: db_up load_data
 	cd Phase_3/backend && npm test
 
 check-lint:

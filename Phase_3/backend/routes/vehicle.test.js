@@ -18,6 +18,26 @@ afterAll(async () => {
   await stopServer(server);
 });
 
+const KNOWN_VEHICLE = {
+  vin: 'WXY93812083121111',
+  vehicle_type: 'Van',
+  manufacturer: 'Ford',
+  model: 'Transit',
+  description: 'Widget Nice Corp Delivery Van',
+  model_year: 2022,
+  fuel_type: 'Gas',
+  horsepower: 200,
+  purchase_price: '35000.00',
+  total_parts_price: '0.00',
+  customer_seller: '444555666',
+  customer_buyer: null,
+  inventory_clerk: 'ownerdoe',
+  salesperson: null,
+  sale_date: null,
+  colors: 'Red, Blue',
+  sale_price: '43750.00',
+};
+
 describe('Vehicle API', () => {
   it('should create a vehicle', async () => {
     // Corrected placement of async function
@@ -55,28 +75,8 @@ describe('Vehicle API', () => {
   });
 
   it('should get a vehicle by vin', async () => {
-    const knownVehicle = {
-      vin: 'WXY93812083121111',
-      vehicle_type: 'Van',
-      manufacturer: 'Ford',
-      model: 'Transit',
-      description: 'Widget Nice Corp Delivery Van',
-      model_year: 2022,
-      fuel_type: 'Gas',
-      horsepower: 200,
-      purchase_price: '35000.00',
-      total_parts_price: '0.00',
-      customer_seller: '444555666',
-      customer_buyer: null,
-      inventory_clerk: 'ownerdoe',
-      salesperson: null,
-      sale_date: null,
-      colors: 'Red, Blue',
-      sale_price: '43750.00',
-    };
-
     const response = await request(server).get(
-      `/vehicle?vin=${knownVehicle.vin}`
+      `/vehicle?vin=${KNOWN_VEHICLE.vin}`
     );
 
     expect(response.status).toBe(200);
@@ -84,38 +84,103 @@ describe('Vehicle API', () => {
     // Assert that the response body matches the known vehicle data
     const responseBody = response.body;
 
-    for (const [key, value] of Object.entries(knownVehicle)) {
+    for (const [key, value] of Object.entries(KNOWN_VEHICLE)) {
       expect(responseBody[key]).toEqual(value);
     }
   });
 
   it('should reject a too short vin', async () => {
-    const knownVehicle = {
+    const KNOWN_VEHICLE = {
       vin: '2111',
     };
     const response = await request(server).get(
-      `/vehicle?vin=${knownVehicle.vin}`
+      `/vehicle?vin=${KNOWN_VEHICLE.vin}`
     );
     expect(response.status).toBe(400);
   });
 
   it('should reject a too long vin', async () => {
-    const knownVehicle = {
+    const KNOWN_VEHICLE = {
       vin: '211aasdfsdsssssasdfdsssssdsfaasdffdd1',
     };
     const response = await request(server).get(
-      `/vehicle?vin=${knownVehicle.vin}`
+      `/vehicle?vin=${KNOWN_VEHICLE.vin}`
     );
     expect(response.status).toBe(400);
   });
 
   it('should reject a vin with spaces', async () => {
-    const knownVehicle = {
+    const KNOWN_VEHICLE = {
       vin: 'WXY93812 83121111',
     };
     const response = await request(server).get(
-      `/vehicle?vin=${knownVehicle.vin}`
+      `/vehicle?vin=${KNOWN_VEHICLE.vin}`
     );
     expect(response.status).toBe(400);
   });
+});
+
+describe('Vehicle Search API', () => {
+  it('should get a vehicle by vin', async () => {
+    const response = await request(server).get(
+      `/vehicle/search?vin=${KNOWN_VEHICLE.vin}`
+    );
+
+    expect(response.status).toBe(200);
+
+    const matchedVehicle = response.body[0];
+
+    const expectedKeys = [
+      'vin',
+      'vehicle_type',
+      'manufacturer',
+      'model',
+      'model_year',
+      'fuel_type',
+      'horsepower',
+      'sale_price',
+    ];
+    // TODO: Assert on colors too
+    for (const key of expectedKeys) {
+      console.log(
+        key,
+        'found:',
+        matchedVehicle[key],
+        'expected:',
+        KNOWN_VEHICLE[key]
+      );
+      expect(matchedVehicle[key]).toEqual(KNOWN_VEHICLE[key]);
+    }
+  });
+
+  it('should reject a too short vin', async () => {
+    const KNOWN_VEHICLE = {
+      vin: '2111',
+    };
+    const response = await request(server).get(
+      `/vehicle/search?vin=${KNOWN_VEHICLE.vin}`
+    );
+    expect(response.status).toBe(400);
+  });
+
+  it('should reject a too long vin', async () => {
+    const KNOWN_VEHICLE = {
+      vin: '211aasdfsdsssssasdfdsssssdsfaasdffdd1',
+    };
+    const response = await request(server).get(
+      `/vehicle/search?vin=${KNOWN_VEHICLE.vin}`
+    );
+    expect(response.status).toBe(400);
+  });
+
+  it('should reject a vin with spaces', async () => {
+    const KNOWN_VEHICLE = {
+      vin: 'WXY93812 83121111',
+    };
+    const response = await request(server).get(
+      `/vehicle/search?vin=${KNOWN_VEHICLE.vin}`
+    );
+    expect(response.status).toBe(400);
+  });
+  // TODO: lots more search test cases
 });

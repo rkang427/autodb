@@ -23,6 +23,29 @@ const vehicleGetValidator = [
     .withMessage('Field cannot contain spaces'),
 ];
 
+const vehicleSearchValidator = [
+  query('vin')
+    .optional()
+    .isLength({ min: 17, max: 17 })
+    .withMessage('vin must be 17 characters long')
+    .matches(/^[^\s]+$/)
+    .withMessage('Field cannot contain spaces'),
+  query('description').optional().isLength({ max: 280 }),
+  query('filter_type').optional().isIn(['sold', 'unsold', 'both']),
+  query('keyword')
+    .optional()
+    .isLength({ max: 120 })
+    .matches(/^[^\s]+$/)
+    .withMessage('Keyword cannot contain spaces'),
+  query('color').optional().isIn(COLORS),
+  query('manufacturer').optional().isIn(MANUFACTURERS),
+  query('vehicle_type').optional().isIn(VEHICLE_TYPES),
+  query('fuel_type').optional().isIn(FUEL_TYPES),
+  query('model_year')
+    .optional()
+    .isInt({ min: 1000, max: new Date().getFullYear() + 1 }),
+];
+
 const vendorGetValidator = [query('name').isLength({ min: 1, max: 120 })];
 
 const customerPostValidator = [
@@ -104,9 +127,10 @@ const vehiclePostValidator = [
 module.exports = {
   customerGetValidator,
   vehicleGetValidator,
+  vehiclePostValidator,
+  vehicleSearchValidator,
   vendorGetValidator,
   customerPostValidator,
   vendorPostValidator,
   partsOrderPostValidator,
-  vehiclePostValidator,
 };

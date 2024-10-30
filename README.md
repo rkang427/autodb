@@ -202,21 +202,38 @@ curl -X POST http://localhost:3000/customer \
   "customer_type": "b",
   "email": "john.doe@example.com"
 }'
-
-
-
 ```
+
+Vehicle
+```
+curl -X POST "http://localhost:3000/vehicle" \
+-H "Content-Type: application/json" \
+-d '{
+  "vin": "1HGCM82633A123456",
+  "vehicle_type": "Sedan",
+  "manufacturer": "Honda",
+  "model": "Accord",
+  "model_year": 2023,
+  "fuel_type": "Gas",
+  "horsepower": 192,
+  "condition": "Good",
+  "purchase_price": "25000.00",
+  "customer_seller": "123456789",
+  "inventory_clerk": "ownerdoe",
+  "sale_date": null,
+  "colors": ["Blue", "Black"]
+}'
+```
+
+
 Post Parts Order
 ```
-
 curl -X POST http://localhost:3000/partsorder \
 -H "Content-Type: application/json" \
 -d '{
   "vin": "WXY93812083121111",
   "vendor_name": "Vendor Name"
 }'
-
-
 ```
 
 ### GET requests -- for fetching records
@@ -242,5 +259,12 @@ Price Per Condition Report
 curl -X GET "http://localhost:3000/reports/price_condition"
 ```
 
+Get Vehicle Detail
+```
+curl "http://localhost:3000/vehicle?vin=WXY93812083121111" -H "Accept: application/json"
+```
 
-### post:
+Search Vehicle
+```
+curl "http://localhost:3000/vehicle/search?vin=WXY93812083121111&color=Blue&manufacturer=Ford&vehicle_type/search=SUV&fuel_type=Gas&model_year=2022&keyword=ford" -H "Accept: application/json"
+```

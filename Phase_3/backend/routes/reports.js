@@ -53,11 +53,22 @@ ORDER BY
 
   try {
     const result = await pool.query(query);
-    res.status(200).json(result.rows);
-  } catch (error) {
+
+    // highlighting
+    const formattedResults = result.rows.map(row => ({
+        namebusiness: row.namebusiness,
+        vehiclecount: row.vehiclecount,
+        averagepurchaseprice: row.averagepurchaseprice,
+        totalpartscount: row.totalpartscount,
+        averagepartscostpervehiclepurchased: row.averagepartscostpervehiclepurchased,
+        highlight: row.highlight === 'highlight' ? 'highlight' : 'no-highlight',
+    }));
+
+    res.status(200).json(formattedResults);
+} catch (error) {
     console.error('Error executing query:', error);
-    res.status(500).send('Error retrieving avg time in inventory');
-  }
+    res.status(500).send('Error retrieving seller history');
+}
 });
 
 // Report 2 : Average Time in Inventory Groups

@@ -1,82 +1,78 @@
 const request = require('supertest');
-
 const { startServer, stopServer } = require('../server');
-const pool = require('../config/db'); // Import the database pool
-const faker = require('faker');
-jest.mock('../config/db'); // Mock the database module
-
-
+const pool = require('../config/db');
+jest.mock('../config/db');
 let server;
-let sessionCookie; // To store session cookie after login
+let sessionCookie;
 
 beforeAll(async () => {
-  server = await startServer(4001); // Use a different port for tests
+  server = await startServer(4001);
 });
 
 afterAll(async () => {
   await stopServer(server);
 });
 
-
 describe('Reports API', () => {
   beforeAll(async () => {
+    pool.query.mockResolvedValueOnce({
+      rows: [{ user_type: 'owner', username: 'ownerdoe' }],
+    });
+
     const loginResponse = await request(server)
       .post('/auth/login')
-      .send({ username: 'ownerdoe', password: 'password' }); 
+      .send({ username: 'ownerdoe', password: 'password' });
 
     expect(loginResponse.status).toBe(200);
     expect(loginResponse.headers['set-cookie']).toBeDefined();
 
-    // Save the session cookie for subsequent authenticated requests
     sessionCookie = loginResponse.headers['set-cookie'].find((cookie) =>
       cookie.startsWith('connect.sid=')
     );
     expect(sessionCookie).toBeDefined();
   });
-  
+
   afterEach(() => {
-    jest.clearAllMocks(); // Clear mocks after each test
+    jest.clearAllMocks();
   });
 
   it('Report 1 - View Seller History', async () => {
-    // Mocking the database query result
     pool.query.mockResolvedValueOnce({
-        rows: [
-            {
-                namebusiness: 'Business A',
-                vehiclecount: 10,
-                averagepurchaseprice: 25000,
-                totalpartscount: 20,
-                averagepartscostpervehiclepurchased: 100,
-                highlight: 'highlight',
-            },
-        ],
+      rows: [
+        {
+          namebusiness: 'Business A',
+          vehiclecount: 10,
+          averagepurchaseprice: 25000,
+          totalpartscount: 20,
+          averagepartscostpervehiclepurchased: 100,
+          highlight: 'highlight',
+        },
+      ],
     });
 
-    const response = await request(server).get('/reports/view_seller_history').set('Cookie', sessionCookie);
-    
-    // Log the response for debugging
-    console.log('Response Status:', response.status);
-    console.log('Response Body:', response.body);
+    const response = await request(server)
+      .get('/reports/view_seller_history')
+      .set('Cookie', sessionCookie);
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual([
-        {
-            namebusiness: 'Business A',
-            vehiclecount: 10,
-            averagepurchaseprice: 25000,
-            totalpartscount: 20,
-            averagepartscostpervehiclepurchased: 100,
-            highlight: 'highlight',
-        },
+      {
+        namebusiness: 'Business A',
+        vehiclecount: 10,
+        averagepurchaseprice: 25000,
+        totalpartscount: 20,
+        averagepartscostpervehiclepurchased: 100,
+        highlight: 'highlight',
+      },
     ]);
-});
-
+  });
 
   it('should return 500 on error for View Seller History', async () => {
     pool.query.mockRejectedValueOnce(new Error('Database error'));
 
-    const response = await request(server).get('/reports/view_seller_history');
+    const response = await request(server)
+      .get('/reports/view_seller_history')
+      .set('Cookie', sessionCookie);
 
     expect(response.status).toBe(500);
     expect(response.text).toBe('Error retrieving seller history');
@@ -90,7 +86,9 @@ describe('Reports API', () => {
       ],
     });
 
-    const response = await request(server).get('/reports/avg_time_in_inventory');
+    const response = await request(server)
+      .get('/reports/avg_time_in_inventory')
+      .set('Cookie', sessionCookie);
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual([
@@ -102,7 +100,9 @@ describe('Reports API', () => {
   it('should return 500 on error for Average Time in Inventory', async () => {
     pool.query.mockRejectedValueOnce(new Error('Database error'));
 
-    const response = await request(server).get('/reports/avg_time_in_inventory').set('Cookie', sessionCookie);
+    const response = await request(server)
+      .get('/reports/avg_time_in_inventory')
+      .set('Cookie', sessionCookie);
 
     expect(response.status).toBe(500);
     expect(response.text).toBe('Error retrieving avg time in inventory');
@@ -116,7 +116,9 @@ describe('Reports API', () => {
       ],
     });
 
-    const response = await request(server).get('/reports/price_per_condition').set('Cookie', sessionCookie);
+    const response = await request(server)
+      .get('/reports/price_per_condition')
+      .set('Cookie', sessionCookie);
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual([
@@ -128,10 +130,12 @@ describe('Reports API', () => {
   it('should return 500 on error for Price Per Condition', async () => {
     pool.query.mockRejectedValueOnce(new Error('Database error'));
 
-    const response = await request(server).get('/reports/price_per_condition');
+    const response = await request(server)
+      .get('/reports/price_per_condition')
+      .set('Cookie', sessionCookie);
 
     expect(response.status).toBe(500);
-    expect(response.text).toBe('Error retrieving avg time in inventory');
+    expect(response.text).toBe('Error retrieving price per condition');
   });
 
   it('Report 4 - Part Statistics', async () => {
@@ -141,7 +145,9 @@ describe('Reports API', () => {
       ],
     });
 
-    const response = await request(server).get('/reports/part_statistics');
+    const response = await request(server)
+      .get('/reports/part_statistics')
+      .set('Cookie', sessionCookie);
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual([
@@ -152,7 +158,9 @@ describe('Reports API', () => {
   it('should return 500 on error for Part Statistics', async () => {
     pool.query.mockRejectedValueOnce(new Error('Database error'));
 
-    const response = await request(server).get('/reports/part_statistics').set('Cookie', sessionCookie);
+    const response = await request(server)
+      .get('/reports/part_statistics')
+      .set('Cookie', sessionCookie);
 
     expect(response.status).toBe(500);
     expect(response.text).toBe('Error retrieving part statistics');
@@ -161,49 +169,78 @@ describe('Reports API', () => {
   it('Report 5 - Monthly Sales Report pt 1', async () => {
     pool.query.mockResolvedValueOnce({
       rows: [
-        { year_sold: 2024, month_sold: 9, numbervehicles: 5, grossincome: 150000, netincome: 120000 },
+        {
+          year_sold: 2024,
+          month_sold: 9,
+          numbervehicles: 5,
+          grossincome: 150000,
+          netincome: 120000,
+        },
       ],
     });
 
-    const response = await request(server).get('/reports/monthly_sales/origin').set('Cookie', sessionCookie);
+    const response = await request(server)
+      .get('/reports/monthly_sales/origin')
+      .set('Cookie', sessionCookie);
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual([
-      { year_sold: 2024, month_sold: 9, numbervehicles: 5, grossincome: 150000, netincome: 120000 },
+      {
+        year_sold: 2024,
+        month_sold: 9,
+        numbervehicles: 5,
+        grossincome: 150000,
+        netincome: 120000,
+      },
     ]);
   });
 
   it('should return 500 on error for Monthly Sales Report pt 1', async () => {
     pool.query.mockRejectedValueOnce(new Error('Database error'));
 
-    const response = await request(server).get('/reports/monthly_sales/origin').set('Cookie', sessionCookie);
+    const response = await request(server)
+      .get('/reports/monthly_sales/origin')
+      .set('Cookie', sessionCookie);
 
     expect(response.status).toBe(500);
-    expect(response.text).toBe('Error retrieving price per condition report');
+    expect(response.text).toBe('Error retrieving monthly sales report');
   });
 
   it('Report 6 - Monthly Sales Report pt 2', async () => {
     pool.query.mockResolvedValueOnce({
       rows: [
-        { first_name: 'John', last_name: 'Doe', vehiclesold: 10, totalsales: 200000 },
+        {
+          first_name: 'John',
+          last_name: 'Doe',
+          vehiclesold: 10,
+          totalsales: 200000,
+        },
       ],
     });
 
-    const response = await request(server).get('/reports/monthly_sales/drilldown');
+    const response = await request(server)
+      .get('/reports/monthly_sales/drilldown')
+      .set('Cookie', sessionCookie);
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual([
-      { first_name: 'John', last_name: 'Doe', vehiclesold: 10, totalsales: 200000 },
+      {
+        first_name: 'John',
+        last_name: 'Doe',
+        vehiclesold: 10,
+        totalsales: 200000,
+      },
     ]);
   });
 
   it('should return 500 on error for Monthly Sales Report pt 2', async () => {
     pool.query.mockRejectedValueOnce(new Error('Database error'));
 
-    const response = await request(server).get('/reports/monthly_sales/drilldown');
+    const response = await request(server)
+      .get('/reports/monthly_sales/drilldown')
+      .set('Cookie', sessionCookie);
 
     expect(response.status).toBe(500);
-    expect(response.text).toBe('Error retrieving price per condition report');
-
+    expect(response.text).toBe('Error retrieving monthly sales report');
   });
 });

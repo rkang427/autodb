@@ -7,10 +7,11 @@ const { checkSessionUserType } = require('../routes/auth');
 //make test_backend from cs6400....
 
 // Report 1 : View Seller's History
-router.get('/view_seller_history',
-           checkSessionUserType(['manager', 'owner'])
-           , async (req, res) => {
-  const query = `
+router.get(
+  '/view_seller_history',
+  checkSessionUserType(['manager', 'owner']),
+  async (req, res) => {
+    const query = `
   SELECT
     COALESCE(
         b.business_name, CONCAT(i.first_name, ' ', i.last_name)
@@ -54,31 +55,34 @@ ORDER BY
     vehiclecount DESC, averagepurchaseprice ASC;
   `;
 
-  try {
-    const result = await pool.query(query);
+    try {
+      const result = await pool.query(query);
 
-    // highlighting
-    const formattedResults = result.rows.map(row => ({
+      // highlighting
+      const formattedResults = result.rows.map((row) => ({
         namebusiness: row.namebusiness,
         vehiclecount: row.vehiclecount,
         averagepurchaseprice: row.averagepurchaseprice,
         totalpartscount: row.totalpartscount,
-        averagepartscostpervehiclepurchased: row.averagepartscostpervehiclepurchased,
+        averagepartscostpervehiclepurchased:
+          row.averagepartscostpervehiclepurchased,
         highlight: row.highlight === 'highlight' ? 'highlight' : 'no-highlight',
-    }));
+      }));
 
-    res.status(200).json(formattedResults);
-} catch (error) {
-    console.error('Error executing query:', error);
-    res.status(500).send('Error retrieving seller history');
-}
-});
+      res.status(200).json(formattedResults);
+    } catch (error) {
+      console.error('Error executing query:', error);
+      res.status(500).send('Error retrieving seller history');
+    }
+  }
+);
 
 // Report 2 : Average Time in Inventory Groups
-router.get('/avg_time_in_inventory',
-           checkSessionUserType(['manager', 'owner']),
-           async (req, res) => {
-  const query = `
+router.get(
+  '/avg_time_in_inventory',
+  checkSessionUserType(['manager', 'owner']),
+  async (req, res) => {
+    const query = `
   SELECT
     vt.vehicle_type,
     COALESCE(
@@ -110,20 +114,22 @@ GROUP BY vt.vehicle_type
 ORDER BY vt.vehicle_type;
   `;
 
-  try {
-    const result = await pool.query(query);
-    res.status(200).json(result.rows);
-  } catch (error) {
-    console.error('Error executing query:', error);
-    res.status(500).send('Error retrieving avg time in inventory');
-
+    try {
+      const result = await pool.query(query);
+      res.status(200).json(result.rows);
+    } catch (error) {
+      console.error('Error executing query:', error);
+      res.status(500).send('Error retrieving avg time in inventory');
+    }
   }
 );
 
 // Report 3 : View Price Per Condition
-router.get('/price_per_condition',
-           checkSessionUserType(['manager', 'owner']), async (req, res) => {
-  const query = `
+router.get(
+  '/price_per_condition',
+  checkSessionUserType(['manager', 'owner']),
+  async (req, res) => {
+    const query = `
   SELECT
     vt.vehicle_type,
     COALESCE(
@@ -167,15 +173,17 @@ ORDER BY vt.vehicle_type DESC;
       res.status(200).json(result.rows);
     } catch (error) {
       console.error('Error executing query:', error);
-      res.status(500).json({ error: 'Error retrieving avg time in inventory' });
+      res.status(500).send('Error retrieving price per condition');
     }
   }
 );
 
 // Report 4 : Route to get part statistics
-router.get('/part_statistics',
-           checkSessionUserType(['manager', 'owner']), async (req, res) => {
-  const query = `
+router.get(
+  '/part_statistics',
+  checkSessionUserType(['manager', 'owner']),
+  async (req, res) => {
+    const query = `
     SELECT
       vendor.name,
       SUM(part.quantity) AS totalpartsquantity,
@@ -189,20 +197,22 @@ router.get('/part_statistics',
     ORDER BY vendortotalexpense DESC;
   `;
 
-  try {
-    const result = await pool.query(query);
-    res.status(200).json(result.rows);
-  } catch (error) {
-    console.error('Error executing query:', error);
-    res.status(500).send('Error retrieving part statistics');
+    try {
+      const result = await pool.query(query);
+      res.status(200).json(result.rows);
+    } catch (error) {
+      console.error('Error executing query:', error);
+      res.status(500).send('Error retrieving part statistics');
+    }
   }
-});
+);
 
 // Report 5 : Monthly Sales Report pt 1
-router.get('/monthly_sales/origin', 
-           checkSessionUserType(['manager', 'owner']),
-           async (req, res) => {
-  const query = `
+router.get(
+  '/monthly_sales/origin',
+  checkSessionUserType(['manager', 'owner']),
+  async (req, res) => {
+    const query = `
     SELECT
     DATE_PART('year', v.sale_date) AS year_sold,
     DATE_PART('month', v.sale_date) AS month_sold,
@@ -224,20 +234,22 @@ HAVING
 ORDER BY year_sold DESC, month_sold DESC;
   `;
 
-  try {
-    const result = await pool.query(query);
-    res.status(200).json(result.rows);
-  } catch (error) {
-    console.error('Error executing query:', error);
-    res.status(500).send('Error retrieving price per condition report');
+    try {
+      const result = await pool.query(query);
+      res.status(200).json(result.rows);
+    } catch (error) {
+      console.error('Error executing query:', error);
+      res.status(500).send('Error retrieving monthly sales report');
+    }
   }
-});
+);
 
 // Report 5 : Monthly Sales Report pt 2 (Drilldown)
-router.get('/monthly_sales/drilldown',
-           checkSessionUserType(['manager', 'owner'])
-           , async (req, res) => {
-  const query = `
+router.get(
+  '/monthly_sales/drilldown',
+  checkSessionUserType(['manager', 'owner']),
+  async (req, res) => {
+    const query = `
     SELECT
     au.first_name,
     au.last_name,
@@ -265,15 +277,15 @@ GROUP BY au.first_name, au.last_name, vehiclesold, totalsales
 ORDER BY vehiclesold DESC, totalsales DESC;
   `;
 
-  try {
-    const result = await pool.query(query);
-    res.status(200).json(result.rows);
-  } catch (error) {
-    console.error('Error executing query:', error);
-    res.status(500).send('Error retrieving price per condition report');
+    try {
+      const result = await pool.query(query);
+      res.status(200).json(result.rows);
+    } catch (error) {
+      console.error('Error executing query:', error);
+      res.status(500).send('Error retrieving monthly sales report');
+    }
   }
-});
-  //checkSessionUserType(['manager', 'owner'])
-
+);
+//checkSessionUserType(['manager', 'owner'])
 
 module.exports = router;

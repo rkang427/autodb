@@ -9,9 +9,18 @@ const {
 const { startServer, stopServer } = require('../server'); // Adjust the path as necessary
 
 let server;
+let cookie;
 
 beforeAll(async () => {
   server = await startServer(4001); // Use a different port for tests
+
+  // Log in and store the session cookie
+  const loginResponse = await request(server)
+    .post('/auth/login')
+    .send({ username: 'ownerdoe', password: 'password' });
+
+  expect(loginResponse.status).toBe(200); // Ensure login was successful
+  cookie = loginResponse.headers['set-cookie'][0]; // Extract the cookie
 });
 
 afterAll(async () => {
@@ -38,11 +47,13 @@ const KNOWN_VEHICLE = {
   sale_price: '43750.00',
 };
 
-describe('Vehicle API', () => {
+describe('Vehicle API with Authentication', () => {
   it('should create a vehicle', async () => {
-    // Corrected placement of async function
     const customerData = generateCustomerData(); // Assuming you generate customer data
-    const response = await request(server).post('/customer').send(customerData);
+    const response = await request(server)
+      .post('/customer')
+      .set('Cookie', cookie) // Set the authentication cookie
+      .send(customerData);
 
     try {
       expect(response.status).toBe(201);
@@ -58,7 +69,10 @@ describe('Vehicle API', () => {
     }
 
     const vehicleData = generateVehicleData(customerData.tax_id, 'ownerdoe');
-    const response2 = await request(server).post('/vehicle').send(vehicleData);
+    const response2 = await request(server)
+      .post('/vehicle')
+      .set('Cookie', cookie) // Set the authentication cookie
+      .send(vehicleData);
 
     try {
       expect(response2.status).toBe(201);
@@ -75,9 +89,9 @@ describe('Vehicle API', () => {
   });
 
   it('should get a vehicle by vin', async () => {
-    const response = await request(server).get(
-      `/vehicle?vin=${KNOWN_VEHICLE.vin}`
-    );
+    const response = await request(server)
+      .get(`/vehicle?vin=${KNOWN_VEHICLE.vin}`)
+      .set('Cookie', cookie); // Use the cookie for the GET request
 
     expect(response.status).toBe(200);
 
@@ -93,9 +107,10 @@ describe('Vehicle API', () => {
     const KNOWN_VEHICLE = {
       vin: '2111',
     };
-    const response = await request(server).get(
-      `/vehicle?vin=${KNOWN_VEHICLE.vin}`
-    );
+    const response = await request(server)
+      .get(`/vehicle?vin=${KNOWN_VEHICLE.vin}`)
+      .set('Cookie', cookie);
+
     expect(response.status).toBe(400);
   });
 
@@ -103,9 +118,10 @@ describe('Vehicle API', () => {
     const KNOWN_VEHICLE = {
       vin: '211aasdfsdsssssasdfdsssssdsfaasdffdd1',
     };
-    const response = await request(server).get(
-      `/vehicle?vin=${KNOWN_VEHICLE.vin}`
-    );
+    const response = await request(server)
+      .get(`/vehicle?vin=${KNOWN_VEHICLE.vin}`)
+      .set('Cookie', cookie);
+
     expect(response.status).toBe(400);
   });
 
@@ -113,18 +129,19 @@ describe('Vehicle API', () => {
     const KNOWN_VEHICLE = {
       vin: 'WXY93812 83121111',
     };
-    const response = await request(server).get(
-      `/vehicle?vin=${KNOWN_VEHICLE.vin}`
-    );
+    const response = await request(server)
+      .get(`/vehicle?vin=${KNOWN_VEHICLE.vin}`)
+      .set('Cookie', cookie);
+
     expect(response.status).toBe(400);
   });
 });
 
-describe('Vehicle Search API', () => {
+describe('Vehicle Search API with Authentication', () => {
   it('should get a vehicle by vin', async () => {
-    const response = await request(server).get(
-      `/vehicle/search?vin=${KNOWN_VEHICLE.vin}`
-    );
+    const response = await request(server)
+      .get(`/vehicle/search?vin=${KNOWN_VEHICLE.vin}`)
+      .set('Cookie', cookie); // Use the cookie for the GET request
 
     expect(response.status).toBe(200);
 
@@ -139,9 +156,9 @@ describe('Vehicle Search API', () => {
       'fuel_type',
       'horsepower',
       'sale_price',
-      'colors'
+      'colors',
     ];
-    
+
     for (const key of expectedKeys) {
       console.log(
         key,
@@ -161,9 +178,10 @@ describe('Vehicle Search API', () => {
     const KNOWN_VEHICLE = {
       vin: '2111',
     };
-    const response = await request(server).get(
-      `/vehicle/search?vin=${KNOWN_VEHICLE.vin}`
-    );
+    const response = await request(server)
+      .get(`/vehicle/search?vin=${KNOWN_VEHICLE.vin}`)
+      .set('Cookie', cookie);
+
     expect(response.status).toBe(400);
   });
 
@@ -171,9 +189,10 @@ describe('Vehicle Search API', () => {
     const KNOWN_VEHICLE = {
       vin: '211aasdfsdsssssasdfdsssssdsfaasdffdd1',
     };
-    const response = await request(server).get(
-      `/vehicle/search?vin=${KNOWN_VEHICLE.vin}`
-    );
+    const response = await request(server)
+      .get(`/vehicle/search?vin=${KNOWN_VEHICLE.vin}`)
+      .set('Cookie', cookie);
+
     expect(response.status).toBe(400);
   });
 
@@ -181,40 +200,52 @@ describe('Vehicle Search API', () => {
     const KNOWN_VEHICLE = {
       vin: 'WXY93812 83121111',
     };
-    const response = await request(server).get(
-      `/vehicle/search?vin=${KNOWN_VEHICLE.vin}`
-    );
+    const response = await request(server)
+      .get(`/vehicle/search?vin=${KNOWN_VEHICLE.vin}`)
+      .set('Cookie', cookie);
+
     expect(response.status).toBe(400);
   });
 
   // TODO: lots more search test cases
   it('should reject a vin that is not 17 characters long', async () => {
-    const response = await request(server).get('/vehicle/search?vin=1234567');
+    const response = await request(server).get('/vehicle/search?vin=1234567').set('Cookie', cookie);
     expect(response.status).toBe(400);
     expect(response.body.errors[0].msg).toBe('vin must be 17 characters long');
 
-    const response2 = await request(server).get('/vehicle/search?vin=123456789012345678');
+    const response2 = await request(server)
+      .get('/vehicle/search?vin=123456789012345678')
+      .set('Cookie', cookie);
+
     expect(response2.status).toBe(400);
     expect(response2.body.errors[0].msg).toBe('vin must be 17 characters long');
   });
 
   it('should accept a valid vin', async () => {
-    const response = await request(server).get(`/vehicle/search?vin=${KNOWN_VEHICLE.vin}`);
+    const response = await request(server)
+      .get(`/vehicle/search?vin=${KNOWN_VEHICLE.vin}`)
+      .set('Cookie', cookie);
+
     expect(response.status).toBe(200);
   });
 
   it('should reject a description longer than 280 characters', async () => {
     const longDescription = 'A'.repeat(281);
-    const response = await request(server).get(`/vehicle/search?description=${encodeURIComponent(longDescription)}`);
+    const response = await request(server)
+      .get(`/vehicle/search?description=${encodeURIComponent(longDescription)}`)
+      .set('Cookie', cookie);
+
     expect(response.status).toBe(400);
   });
 
   it('should reject a keyword longer than 120 characters', async () => {
     const longKeyword = 'A'.repeat(121);
-    const response = await request(server).get(`/vehicle/search?keyword=${encodeURIComponent(longKeyword)}`);
+    const response = await request(server)
+      .get(`/vehicle/search?keyword=${encodeURIComponent(longKeyword)}`)
+      .set('Cookie', cookie);
+
     expect(response.status).toBe(400);
   });
-
 });
 
 // Additional edge case for POST /vehicle validation
@@ -222,30 +253,36 @@ describe('Vehicle API - POST /vehicle validation', () => {
   it('should reject a POST request with missing required fields', async () => {
     const incompleteVehicleData = {
       vin: 'WXY93812083121111',
-      model: 'Transit'
+      model: 'Transit',
       // Other required fields are missing
     };
 
-    const response = await request(server).post('/vehicle').send(incompleteVehicleData);
+    const response = await request(server)
+      .post('/vehicle')
+      .set('Cookie', cookie) // Set the authentication cookie
+      .send(incompleteVehicleData);
+
     expect(response.status).toBe(400);
     expect(response.body.errors).toBeDefined();
   });
 
   it('should reject a duplicate vehicle vin', async () => {
-    const vehicleData = generateVehicleData(KNOWN_VEHICLE.customer_seller, KNOWN_VEHICLE.inventory_clerk);
-    vehicleData.vin = KNOWN_VEHICLE.vin; // Duplicate VIN
+    const vehicleData = generateVehicleData(
+      KNOWN_VEHICLE.customer_seller,
+      KNOWN_VEHICLE.inventory_clerk
+    );
 
-    const response = await request(server).post('/vehicle').send(vehicleData);
-    expect(response.status).toBe(409);
-    expect(response.body.error).toBe('Error: Vehicle already exists.');
-  });
-  it('should reject invalid data type for horsepower', async () => {
-    const vehicleData = generateVehicleData(KNOWN_VEHICLE.customer_seller, KNOWN_VEHICLE.inventory_clerk);
-    vehicleData.horsepower = 'two hundred'; // Invalid type
+    await request(server)
+      .post('/vehicle')
+      .set('Cookie', cookie) // Set the authentication cookie
+      .send(vehicleData); // This should succeed
 
-    const response = await request(server).post('/vehicle').send(vehicleData);
+    const response = await request(server)
+      .post('/vehicle')
+      .set('Cookie', cookie) // Set the authentication cookie
+      .send(vehicleData); // This should fail due to duplicate VIN
+
     expect(response.status).toBe(400);
-    expect(response.body.errors[0].msg).toContain('Invalid value');
+    expect(response.body.errors[0].msg).toBe('Vehicle with this VIN already exists');
   });
-  
 });

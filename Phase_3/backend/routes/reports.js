@@ -2,10 +2,15 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../config/db');
 const PG_ERROR_CODES = require('../config/constants');
+const { checkSessionUserType } = require('../routes/auth');
+
 //make test_backend from cs6400....
 // Route to get part statistics
-router.get('/part_statistics', async (req, res) => {
-  const query = `
+router.get(
+  '/part_statistics',
+  checkSessionUserType(['manager', 'owner']),
+  async (req, res) => {
+    const query = `
     SELECT
       vendor.name,
       SUM(part.quantity) AS totalpartsquantity,
@@ -19,18 +24,22 @@ router.get('/part_statistics', async (req, res) => {
     ORDER BY vendortotalexpense DESC;
   `;
 
-  try {
-    const result = await pool.query(query);
-    res.status(200).json(result.rows);
-  } catch (error) {
-    console.error('Error executing query:', error);
-    res.status(500).send('Error retrieving part statistics');
+    try {
+      const result = await pool.query(query);
+      res.status(200).json(result.rows);
+    } catch (error) {
+      console.error('Error executing query:', error);
+      res.status(500).json({ error: 'Error retrieving part statistics' });
+    }
   }
-});
+);
 
 // Route to get price per condition report
-router.get('/price_condition', async (req, res) => {
-  const query = `
+router.get(
+  '/price_condition',
+  checkSessionUserType(['manager', 'owner']),
+  async (req, res) => {
+    const query = `
     SELECT
       vt.vehicle_type,
       COALESCE(SUM(CASE WHEN v.condition = 'Excellent' THEN v.purchase_price ELSE 0 END), 0) AS excellenttotalprice,
@@ -55,18 +64,24 @@ router.get('/price_condition', async (req, res) => {
     ORDER BY vt.vehicle_type DESC;
   `;
 
-  try {
-    const result = await pool.query(query);
-    res.status(200).json(result.rows);
-  } catch (error) {
-    console.error('Error executing query:', error);
-    res.status(500).send('Error retrieving price per condition report');
+    try {
+      const result = await pool.query(query);
+      res.status(200).json(result.rows);
+    } catch (error) {
+      console.error('Error executing query:', error);
+      res
+        .status(500)
+        .json({ error: 'Error retrieving price per condition report' });
+    }
   }
-});
+);
 
 // Route to get Average Time in Inventory
-router.get('/avg_time_in_inventory', async (req, res) => {
-  const query = `
+router.get(
+  '/avg_time_in_inventory',
+  checkSessionUserType(['manager', 'owner']),
+  async (req, res) => {
+    const query = `
   SELECT
     vt.vehicle_type,
     COALESCE(
@@ -98,13 +113,14 @@ GROUP BY vt.vehicle_type
 ORDER BY vt.vehicle_type;
   `;
 
-  try {
-    const result = await pool.query(query);
-    res.status(200).json(result.rows);
-  } catch (error) {
-    console.error('Error executing query:', error);
-    res.status(500).send('Error retrieving avg time in inventory');
+    try {
+      const result = await pool.query(query);
+      res.status(200).json(result.rows);
+    } catch (error) {
+      console.error('Error executing query:', error);
+      res.status(500).json({ error: 'Error retrieving avg time in inventory' });
+    }
   }
-});
+);
 
 module.exports = router;

@@ -131,18 +131,21 @@ Note: there may be some problems that need manual intervention, especially if sy
 
 Install node `v22.9.0`
 For Mac,
+
 ```
 brew install node@22.9.0
 brew link --force --overwrite node@22.9.0
 ```
 
 ### Node dependencies
+
 ```
 cd Phase_3/backend
 npm install
 ```
 
 ### Run dev server
+
 Once you have database running with `make db_up`
 
 ```
@@ -151,26 +154,39 @@ npm run dev
 ```
 
 ### Run tests
+
 Once you have database running with `make db_up`
 You can also run tests (no need to stop dev server)
+
 ```
 cd Phase_3/backend
 npm test
 ```
 
 Alternatively, from root of repository, run
+
 ```
 make test_backend
 ```
 
 Either way, it will print information at end about code coverage and what tests passed/failed
 
-
 ## Examples of how to interact with endpoints
+
+### Login
+This is first thing you need to do to do following requests
+
+```
+curl -X POST http://localhost:3000/auth/login -H "Content-Type: application/json" \
+     -d '{"username": "ownerdoe", "password": "password"}' \
+     -c cookies.txt
+```
 
 
 ### POST requests -- for creating records
+
 Vendor
+
 ```
 curl -X POST http://localhost:3000/vendor \
 -H "Content-Type: application/json" \
@@ -181,10 +197,11 @@ curl -X POST http://localhost:3000/vendor \
   "city": "Vendor City",
   "state": "Vendor State",
   "postal_code": "12345"
-}'
+}' -b cookies.txt
 ```
 
 Customer
+
 ```
 curl -X POST http://localhost:3000/customer \
 -H "Content-Type: application/json" \
@@ -201,7 +218,7 @@ curl -X POST http://localhost:3000/customer \
   "title": "CEO",
   "customer_type": "b",
   "email": "john.doe@example.com"
-}'
+}' -b cookies.txt
 ```
 
 Vehicle
@@ -222,49 +239,54 @@ curl -X POST "http://localhost:3000/vehicle" \
   "inventory_clerk": "ownerdoe",
   "sale_date": null,
   "colors": ["Blue", "Black"]
-}'
+}' -b cookies.txt
 ```
 
-
 Post Parts Order
+
 ```
 curl -X POST http://localhost:3000/partsorder \
 -H "Content-Type: application/json" \
 -d '{
   "vin": "WXY93812083121111",
   "vendor_name": "Vendor Name"
-}'
+}' -b cookies.txt
 ```
 
 ### GET requests -- for fetching records
+
 To experiment with GET requests that are for reading data (with potential filters), do
 
 Vendor
+
 ```
-curl -X GET "http://localhost:3000/vendor?name=Vendor%20Name"
+curl -X GET "http://localhost:3000/vendor?name=Vendor%20Name" -b cookies.txt
 ```
 
 Customer
+
 ```
-curl -X GET "http://localhost:3000/customer?tax_id=123456789"
+curl -X GET "http://localhost:3000/customer?tax_id=123456789" -b cookies.txt
 ```
 
 Part Statistics Report
+
 ```
-curl -X GET "http://localhost:3000/reports/part_statistics"
+curl -X GET "http://localhost:3000/reports/part_statistics" -b cookies.txt
 ```
 
 Price Per Condition Report
+
 ```
-curl -X GET "http://localhost:3000/reports/price_condition"
+curl -X GET "http://localhost:3000/reports/price_condition" -b cookies.txt
 ```
 
 Get Vehicle Detail
 ```
-curl "http://localhost:3000/vehicle?vin=WXY93812083121111" -H "Accept: application/json"
+curl "http://localhost:3000/vehicle?vin=WXY93812083121111" -H "Accept: application/json" -b cookies.txt
 ```
 
 Search Vehicle
 ```
-curl "http://localhost:3000/vehicle/search?vin=WXY93812083121111&color=Blue&manufacturer=Ford&vehicle_type/search=SUV&fuel_type=Gas&model_year=2022&keyword=ford" -H "Accept: application/json"
+curl "http://localhost:3000/vehicle/search?vin=WXY93812083121111&color=Blue&manufacturer=Ford&vehicle_type/search=SUV&fuel_type=Gas&model_year=2022&keyword=ford" -H "Accept: application/json" -b cookies.txt
 ```

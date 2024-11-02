@@ -124,6 +124,11 @@ const vehiclePostValidator = [
   body('colors').isArray({ min: 1 }).custom(isArrayOfColors),
 ];
 
+const loginValidator = [
+  body('username').notEmpty().withMessage('Username is required'),
+  body('password').notEmpty().withMessage('Password is required'),
+];
+
 module.exports = {
   customerGetValidator,
   vehicleGetValidator,
@@ -133,4 +138,5 @@ module.exports = {
   customerPostValidator,
   vendorPostValidator,
   partsOrderPostValidator,
+  loginValidator,
 };

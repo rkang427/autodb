@@ -2,11 +2,14 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../config/db');
 const PG_ERROR_CODES = require('../config/constants');
+const { checkSessionUserType } = require('../routes/auth');
+
 //make test_backend from cs6400....
 
-
 // Report 1 : View Seller's History
-router.get('/view_seller_history', async (req, res) => {
+router.get('/view_seller_history',
+           checkSessionUserType(['manager', 'owner'])
+           , async (req, res) => {
   const query = `
   SELECT
     COALESCE(
@@ -72,7 +75,9 @@ ORDER BY
 });
 
 // Report 2 : Average Time in Inventory Groups
-router.get('/avg_time_in_inventory', async (req, res) => {
+router.get('/avg_time_in_inventory',
+           checkSessionUserType(['manager', 'owner']),
+           async (req, res) => {
   const query = `
   SELECT
     vt.vehicle_type,
@@ -111,11 +116,13 @@ ORDER BY vt.vehicle_type;
   } catch (error) {
     console.error('Error executing query:', error);
     res.status(500).send('Error retrieving avg time in inventory');
+
   }
-});
+);
 
 // Report 3 : View Price Per Condition
-router.get('/price_per_condition', async (req, res) => {
+router.get('/price_per_condition',
+           checkSessionUserType(['manager', 'owner']), async (req, res) => {
   const query = `
   SELECT
     vt.vehicle_type,
@@ -155,17 +162,19 @@ GROUP BY vt.vehicle_type
 ORDER BY vt.vehicle_type DESC;
   `;
 
-  try {
-    const result = await pool.query(query);
-    res.status(200).json(result.rows);
-  } catch (error) {
-    console.error('Error executing query:', error);
-    res.status(500).send('Error retrieving avg time in inventory');
+    try {
+      const result = await pool.query(query);
+      res.status(200).json(result.rows);
+    } catch (error) {
+      console.error('Error executing query:', error);
+      res.status(500).json({ error: 'Error retrieving avg time in inventory' });
+    }
   }
-});
+);
 
 // Report 4 : Route to get part statistics
-router.get('/part_statistics', async (req, res) => {
+router.get('/part_statistics',
+           checkSessionUserType(['manager', 'owner']), async (req, res) => {
   const query = `
     SELECT
       vendor.name,
@@ -190,7 +199,9 @@ router.get('/part_statistics', async (req, res) => {
 });
 
 // Report 5 : Monthly Sales Report pt 1
-router.get('/monthly_sales/origin', async (req, res) => {
+router.get('/monthly_sales/origin', 
+           checkSessionUserType(['manager', 'owner']),
+           async (req, res) => {
   const query = `
     SELECT
     DATE_PART('year', v.sale_date) AS year_sold,
@@ -223,7 +234,9 @@ ORDER BY year_sold DESC, month_sold DESC;
 });
 
 // Report 5 : Monthly Sales Report pt 2 (Drilldown)
-router.get('/monthly_sales/drilldown', async (req, res) => {
+router.get('/monthly_sales/drilldown',
+           checkSessionUserType(['manager', 'owner'])
+           , async (req, res) => {
   const query = `
     SELECT
     au.first_name,
@@ -260,6 +273,7 @@ ORDER BY vehiclesold DESC, totalsales DESC;
     res.status(500).send('Error retrieving price per condition report');
   }
 });
+  //checkSessionUserType(['manager', 'owner'])
 
 
 module.exports = router;

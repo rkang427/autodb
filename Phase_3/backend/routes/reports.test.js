@@ -1,10 +1,13 @@
 const request = require('supertest');
-const { startServer, stopServer } = require('../server'); // Adjust the path as necessary
-const pool = require('../config/db'); // Import the database pool
 
+const { startServer, stopServer } = require('../server');
+const pool = require('../config/db'); // Import the database pool
+const faker = require('faker');
 jest.mock('../config/db'); // Mock the database module
 
+
 let server;
+let sessionCookie; // To store session cookie after login
 
 beforeAll(async () => {
   server = await startServer(4001); // Use a different port for tests
@@ -14,7 +17,23 @@ afterAll(async () => {
   await stopServer(server);
 });
 
+
 describe('Reports API', () => {
+  beforeAll(async () => {
+    const loginResponse = await request(server)
+      .post('/auth/login')
+      .send({ username: 'ownerdoe', password: 'password' }); 
+
+    expect(loginResponse.status).toBe(200);
+    expect(loginResponse.headers['set-cookie']).toBeDefined();
+
+    // Save the session cookie for subsequent authenticated requests
+    sessionCookie = loginResponse.headers['set-cookie'].find((cookie) =>
+      cookie.startsWith('connect.sid=')
+    );
+    expect(sessionCookie).toBeDefined();
+  });
+  
   afterEach(() => {
     jest.clearAllMocks(); // Clear mocks after each test
   });
@@ -34,7 +53,7 @@ describe('Reports API', () => {
         ],
     });
 
-    const response = await request(server).get('/reports/view_seller_history');
+    const response = await request(server).get('/reports/view_seller_history').set('Cookie', sessionCookie);
     
     // Log the response for debugging
     console.log('Response Status:', response.status);
@@ -83,7 +102,7 @@ describe('Reports API', () => {
   it('should return 500 on error for Average Time in Inventory', async () => {
     pool.query.mockRejectedValueOnce(new Error('Database error'));
 
-    const response = await request(server).get('/reports/avg_time_in_inventory');
+    const response = await request(server).get('/reports/avg_time_in_inventory').set('Cookie', sessionCookie);
 
     expect(response.status).toBe(500);
     expect(response.text).toBe('Error retrieving avg time in inventory');
@@ -97,7 +116,7 @@ describe('Reports API', () => {
       ],
     });
 
-    const response = await request(server).get('/reports/price_per_condition');
+    const response = await request(server).get('/reports/price_per_condition').set('Cookie', sessionCookie);
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual([
@@ -133,7 +152,7 @@ describe('Reports API', () => {
   it('should return 500 on error for Part Statistics', async () => {
     pool.query.mockRejectedValueOnce(new Error('Database error'));
 
-    const response = await request(server).get('/reports/part_statistics');
+    const response = await request(server).get('/reports/part_statistics').set('Cookie', sessionCookie);
 
     expect(response.status).toBe(500);
     expect(response.text).toBe('Error retrieving part statistics');
@@ -146,7 +165,7 @@ describe('Reports API', () => {
       ],
     });
 
-    const response = await request(server).get('/reports/monthly_sales/origin');
+    const response = await request(server).get('/reports/monthly_sales/origin').set('Cookie', sessionCookie);
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual([
@@ -157,7 +176,7 @@ describe('Reports API', () => {
   it('should return 500 on error for Monthly Sales Report pt 1', async () => {
     pool.query.mockRejectedValueOnce(new Error('Database error'));
 
-    const response = await request(server).get('/reports/monthly_sales/origin');
+    const response = await request(server).get('/reports/monthly_sales/origin').set('Cookie', sessionCookie);
 
     expect(response.status).toBe(500);
     expect(response.text).toBe('Error retrieving price per condition report');
@@ -185,5 +204,6 @@ describe('Reports API', () => {
 
     expect(response.status).toBe(500);
     expect(response.text).toBe('Error retrieving price per condition report');
+
   });
 });

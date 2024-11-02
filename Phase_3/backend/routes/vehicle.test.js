@@ -139,8 +139,9 @@ describe('Vehicle Search API', () => {
       'fuel_type',
       'horsepower',
       'sale_price',
+      'colors'
     ];
-    // TODO: Assert on colors too
+    
     for (const key of expectedKeys) {
       console.log(
         key,
@@ -151,6 +152,9 @@ describe('Vehicle Search API', () => {
       );
       expect(matchedVehicle[key]).toEqual(KNOWN_VEHICLE[key]);
     }
+
+    // Assert on colors too
+    expect(matchedVehicle.colors).toEqual(KNOWN_VEHICLE.colors);
   });
 
   it('should reject a too short vin', async () => {
@@ -182,5 +186,66 @@ describe('Vehicle Search API', () => {
     );
     expect(response.status).toBe(400);
   });
+
   // TODO: lots more search test cases
+  it('should reject a vin that is not 17 characters long', async () => {
+    const response = await request(server).get('/vehicle/search?vin=1234567');
+    expect(response.status).toBe(400);
+    expect(response.body.errors[0].msg).toBe('vin must be 17 characters long');
+
+    const response2 = await request(server).get('/vehicle/search?vin=123456789012345678');
+    expect(response2.status).toBe(400);
+    expect(response2.body.errors[0].msg).toBe('vin must be 17 characters long');
+  });
+
+  it('should accept a valid vin', async () => {
+    const response = await request(server).get(`/vehicle/search?vin=${KNOWN_VEHICLE.vin}`);
+    expect(response.status).toBe(200);
+  });
+
+  it('should reject a description longer than 280 characters', async () => {
+    const longDescription = 'A'.repeat(281);
+    const response = await request(server).get(`/vehicle/search?description=${encodeURIComponent(longDescription)}`);
+    expect(response.status).toBe(400);
+  });
+
+  it('should reject a keyword longer than 120 characters', async () => {
+    const longKeyword = 'A'.repeat(121);
+    const response = await request(server).get(`/vehicle/search?keyword=${encodeURIComponent(longKeyword)}`);
+    expect(response.status).toBe(400);
+  });
+
+});
+
+// Additional edge case for POST /vehicle validation
+describe('Vehicle API - POST /vehicle validation', () => {
+  it('should reject a POST request with missing required fields', async () => {
+    const incompleteVehicleData = {
+      vin: 'WXY93812083121111',
+      model: 'Transit'
+      // Other required fields are missing
+    };
+
+    const response = await request(server).post('/vehicle').send(incompleteVehicleData);
+    expect(response.status).toBe(400);
+    expect(response.body.errors).toBeDefined();
+  });
+
+  it('should reject a duplicate vehicle vin', async () => {
+    const vehicleData = generateVehicleData(KNOWN_VEHICLE.customer_seller, KNOWN_VEHICLE.inventory_clerk);
+    vehicleData.vin = KNOWN_VEHICLE.vin; // Duplicate VIN
+
+    const response = await request(server).post('/vehicle').send(vehicleData);
+    expect(response.status).toBe(409);
+    expect(response.body.error).toBe('Error: Vehicle already exists.');
+  });
+  it('should reject invalid data type for horsepower', async () => {
+    const vehicleData = generateVehicleData(KNOWN_VEHICLE.customer_seller, KNOWN_VEHICLE.inventory_clerk);
+    vehicleData.horsepower = 'two hundred'; // Invalid type
+
+    const response = await request(server).post('/vehicle').send(vehicleData);
+    expect(response.status).toBe(400);
+    expect(response.body.errors[0].msg).toContain('Invalid value');
+  });
+  
 });

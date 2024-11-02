@@ -43,8 +43,14 @@ router.post('/login', loginValidator, async (req, res) => {
       'SELECT * FROM app_user WHERE username = $1 AND password = $2';
     const values = [username, password];
     const result = await pool.query(query, values);
-
-    if (result.rows.length === 0) {
+    if (!result) {
+      console.error('No result from database');
+      return res.status(500).json({ error: 'No database result' });
+    }
+    if (!result.rows) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    if (result.rows && result.rows.length === 0) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 

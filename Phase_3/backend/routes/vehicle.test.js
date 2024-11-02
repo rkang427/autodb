@@ -209,7 +209,9 @@ describe('Vehicle Search API with Authentication', () => {
 
   // TODO: lots more search test cases
   it('should reject a vin that is not 17 characters long', async () => {
-    const response = await request(server).get('/vehicle/search?vin=1234567').set('Cookie', cookie);
+    const response = await request(server)
+      .get('/vehicle/search?vin=1234567')
+      .set('Cookie', cookie);
     expect(response.status).toBe(400);
     expect(response.body.errors[0].msg).toBe('vin must be 17 characters long');
 
@@ -283,6 +285,8 @@ describe('Vehicle API - POST /vehicle validation', () => {
       .send(vehicleData); // This should fail due to duplicate VIN
 
     expect(response.status).toBe(400);
-    expect(response.body.errors[0].msg).toBe('Vehicle with this VIN already exists');
+    expect(response.body.errors[0].msg).toBe(
+      'Vehicle with this VIN already exists'
+    );
   });
 });

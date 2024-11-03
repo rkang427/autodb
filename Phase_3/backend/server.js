@@ -1,4 +1,5 @@
 const express = require('express');
+const morgan = require("morgan");
 const expressListRoutes = require('express-list-routes');
 const session = require('express-session');
 const { router: authRoutes } = require('./routes/auth');
@@ -14,6 +15,7 @@ require('dotenv').config();
 
 const app = express();
 app.use(express.json());
+app.use(morgan("tiny"));
 app.use(
   cors({
     origin: 'http://localhost:5173',

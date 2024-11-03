@@ -249,8 +249,22 @@ curl -X POST http://localhost:3000/partsorder \
 -H "Content-Type: application/json" \
 -d '{
   "vin": "WXY93812083121111",
-  "vendor_name": "Vendor Name"
-}' -b cookies.txt
+  "vendor_name": "Vendor Name",
+  "parts":[
+    {
+       "part_number": "part1",
+       "description": "cool part",
+       "quantity": 1,
+       "unit_price": 10.10
+    },
+    {
+      "part_number" : "part2",
+      "description": "another cool part",
+      "quantity": 10,
+      "unit_price": 5.00
+    }
+  ]
+}'  -b cookies.txt
 ```
 
 ### GET requests -- for fetching records

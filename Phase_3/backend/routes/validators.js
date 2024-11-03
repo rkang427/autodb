@@ -133,6 +133,24 @@ const partsOrderPostValidator = [
     .matches(/^[^\s]+$/)
     .withMessage('Field cannot contain spaces'),
   body('vendor_name', 'Invalid Vendor').isLength({ min: 1, max: 120 }),
+  // Validate that `parts` is an array
+  body('parts', 'Parts must be an array').isArray(),
+
+  // Custom validation for each part in the `parts` array
+  body('parts.*.part_number', 'Each part must have a valid name')
+    .isString()
+    .notEmpty(),
+  body('parts.*.description', 'Each part must have a valid description')
+    .isString()
+    .notEmpty(),
+  body(
+    'parts.*.quantity',
+    'Each part must have a positive integer quantity'
+  ).isInt({ gt: 0 }),
+  body(
+    'parts.*.unit_price',
+    'Each part must have a non-negative unit price'
+  ).isFloat({ min: 0.0 }),
 ];
 
 function isArrayOfColors(value) {

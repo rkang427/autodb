@@ -119,9 +119,7 @@ router.get('/search', vehicleSearchValidator, async (req, res) => {
 
     if (result.rows.length === 0) {
       return res.status(404).json({
-        errors: [
-          { msg: 'Sorry, it looks like we don’t have that in stock!' },
-        ],
+        errors: [{ msg: 'Sorry, it looks like we don’t have that in stock!' }],
       });
     }
 
@@ -443,9 +441,7 @@ router.patch(
       const vehicleCheckResult = await client.query(checkVehicleQuery, [vin]);
 
       if (vehicleCheckResult.rows.length === 0) {
-        return res
-          .status(404)
-          .json({ errors: [{ msg: 'Vehicle not found' }] });
+        return res.status(404).json({ errors: [{ msg: 'Vehicle not found' }] });
       }
 
       const { sale_date } = vehicleCheckResult.rows[0];

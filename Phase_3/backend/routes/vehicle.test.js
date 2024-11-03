@@ -213,18 +213,14 @@ describe('Vehicle Search API with Authentication', () => {
       .get('/vehicle/search?vin=1234567')
       .set('Cookie', cookie);
     expect(response.status).toBe(400);
-    expect(response.body.errors[0].msg).toBe(
-      'vin must be 17 characters long'
-    );
+    expect(response.body.errors[0].msg).toBe('vin must be 17 characters long');
 
     const response2 = await request(server)
       .get('/vehicle/search?vin=123456789012345678')
       .set('Cookie', cookie);
 
     expect(response2.status).toBe(400);
-    expect(response2.body.errors[0].msg).toBe(
-      'vin must be 17 characters long'
-    );
+    expect(response2.body.errors[0].msg).toBe('vin must be 17 characters long');
   });
 
   it('should accept a valid vin', async () => {

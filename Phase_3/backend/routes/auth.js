@@ -74,35 +74,35 @@ router.get('/session', checkSession, (req, res) => {
   res.json({ user: req.session.user });
 });
 
-router.get('/check-username/:username', async (req, res) => {
-  const { username } = req.params;
-  const query = 'SELECT * FROM app_user WHERE username = $1';
+//router.get('/check-username/:username', async (req, res) => {
+//  const { username } = req.params;
+//  const query = 'SELECT * FROM app_user WHERE username = $1';
+//
+//  try {
+//    const result = await pool.query(query, [username]);
+//    res.status(200).json({ exists: result.rows.length > 0 });
+//  } catch (error) {
+//    console.error('Error checking username:', error);
+//    res.status(500).send('Error checking username');
+// }
+//});
 
-  try {
-    const result = await pool.query(query, [username]);
-    res.status(200).json({ exists: result.rows.length > 0 });
-  } catch (error) {
-    console.error('Error checking username:', error);
-    res.status(500).send('Error checking username');
-  }
-});
-
-router.post('/signup', async (req, res) => {
-  const { username, password } = req.body;
-  const query = 'INSERT INTO app_user (username, password) VALUES ($1, $2) RETURNING *';
-
-  try {
-    const existingUser = await pool.query('SELECT * FROM app_user WHERE username = $1', [username]);
-    if (existingUser.rows.length > 0) {
-      return res.status(400).json({ error: 'Username already exists' });
-    }
-
-    const result = await pool.query(query, [username, password]); // Hash password before storing
-    res.status(201).json(result.rows[0]);
-  } catch (error) {
-    console.error('Error creating user:', error);
-    res.status(500).send('Error creating user');
-  }
-});
+//router.post('/signup', async (req, res) => {
+//  const { username, password } = req.body;
+//  const query = 'INSERT INTO app_user (username, password) VALUES ($1, $2) RETURNING *';
+//
+// try {
+//    const existingUser = await pool.query('SELECT * FROM app_user WHERE username = $1', [username]);
+//    if (existingUser.rows.length > 0) {
+//      return res.status(400).json({ error: 'Username already exists' });
+//   }
+//
+//   const result = await pool.query(query, [username, password]); // Hash password before storing
+//    res.status(201).json(result.rows[0]);
+//  } catch (error) {
+//   console.error('Error creating user:', error);
+//    res.status(500).send('Error creating user');
+//  }
+//});
 
 module.exports = { router, checkSession, checkSessionUserType };

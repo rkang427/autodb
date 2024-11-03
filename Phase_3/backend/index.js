@@ -1,4 +1,4 @@
-const { startServer, stopServer } = require('./server'); // Adjust path as necessary
+const { startServer, stopServer } = require('./server');
 const port = process.env.PORT || 3000;
 
 startServer(port)

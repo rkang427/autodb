@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate, Link } from "react-router-dom";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loggedInUser, setLoggedInUser] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const checkSession = async () => {
@@ -26,12 +28,8 @@ const Login = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post(
-        "http://localhost:3000/auth/logout",
-        {},
-        { withCredentials: true }
-      );
-      setLoggedInUser(null); // Clear the logged-in user state
+      await axios.post("http://localhost:3000/auth/logout", {}, { withCredentials: true });
+      setLoggedInUser(null);
       setUsername("");
       setPassword("");
     } catch (error) {
@@ -41,20 +39,22 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMessage("");
+
     try {
-      await axios.post(
-        "http://localhost:3000/auth/login",
-        { username, password },
-        { withCredentials: true }
-      );
-      // Re-check session after login
-      const response = await axios.get("http://localhost:3000/auth/session", {
-        withCredentials: true,
-      });
+      //const userCheckResponse = await axios.get(`http://localhost:3000/auth/check-username/${username}`);
+      //if (!userCheckResponse.data.exists) {
+      //  setErrorMessage("Username does not exist. Please sign up.");
+        // navigate('/signup'); // Commented out to disable signup navigation
+      //  return;
+      //}
+
+      const loginResponse = await axios.post("http://localhost:3000/auth/login", { username, password }, { withCredentials: true });
+      const response = await axios.get("http://localhost:3000/auth/session", { withCredentials: true });
       setLoggedInUser(response.data.user);
     } catch (error) {
       setErrorMessage("Login failed. Please check your credentials.");
-      console.error("Login error", error);
+      console.error("Login error", error.response ? error.response.data : error);
     }
   };
 
@@ -62,6 +62,25 @@ const Login = () => {
     return (
       <div>
         <h1>Hello, {loggedInUser.first_name}!</h1>
+        {/* Link to Average Time in Inventory page */}
+        <div>
+          <Link to="/average_time_in_inventory">View Average Time in Inventory</Link>
+        </div>
+        <div>
+          <Link to="/view_seller_history">View Seller History</Link>
+        </div>
+        <div>
+          <Link to="/price_per_condition">Price Per Condition</Link>
+        </div>
+        <div>
+          <Link to="/part_statistics">Part Statistics</Link>
+        </div>
+        <div>
+          <Link to="/monthly_sales/origin">Monthly Sales Origin</Link>
+        </div>
+        <div>
+          <Link to="/monthly_sales/drilldown">Monthly Sales Drilldown</Link>
+        </div>
         <button onClick={handleLogout}>Logout</button>
       </div>
     );

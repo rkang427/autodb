@@ -6,6 +6,7 @@ const { customerGetValidator, customerPostValidator } = require('./validators');
 const { PG_ERROR_CODES } = require('../config/constants');
 const { checkSessionUserType } = require('../routes/auth');
 
+
 // GET endpoint to check if customer exists by tax_id
 router.get(
   '/',

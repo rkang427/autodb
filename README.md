@@ -248,7 +248,7 @@ Post Parts Order
 curl -X POST http://localhost:3000/partsorder \
 -H "Content-Type: application/json" \
 -d '{
-  "vin": "WXY93812083121111",
+  "vin": "1HGCM82633A123456",
   "vendor_name": "Vendor Name",
   "parts":[
     {
@@ -297,12 +297,12 @@ curl -X GET "http://localhost:3000/reports/price_condition" -b cookies.txt
 
 Get Vehicle Detail
 ```
-curl "http://localhost:3000/vehicle?vin=WXY93812083121111" -H "Accept: application/json" -b cookies.txt
+curl "http://localhost:3000/vehicle?vin=1HGCM82633A123456" -H "Accept: application/json" -b cookies.txt
 ```
 
 Search Vehicle
 ```
-curl "http://localhost:3000/vehicle/search?vin=WXY93812083121111&color=Blue&manufacturer=Ford&vehicle_type/search=SUV&fuel_type=Gas&model_year=2022&keyword=ford" -H "Accept: application/json" -b cookies.txt
+curl "http://localhost:3000/vehicle/search?vin=1HGCM82633A123456&color=Blue&manufacturer=Ford&vehicle_type/search=SUV&fuel_type=Gas&model_year=2022&keyword=ford" -H "Accept: application/json" -b cookies.txt
 ```
 
 Search Screen (aka Landing Page)
@@ -311,6 +311,19 @@ curl "http://localhost:3000/" -H "Accept: application/json" -b cookies.txt
 ```
 
 ### PATCH requests -- for updating records
+
+Update parts status
+// TODO: accept a list of parts??? either way works
+```
+curl -X PATCH http://localhost:3000/partsorder/updateStatus \
+-H "Content-Type: application/json" \
+-d '{
+  "part_number": "part1",
+  "parts_order_number": "1HGCM82633A123456-001",
+  "status": "received"
+}' 
+```
+
 
 Sell vehicle (note this is the one we created in earlier example)
 ```

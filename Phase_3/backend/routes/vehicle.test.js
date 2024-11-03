@@ -240,17 +240,19 @@ describe('Vehicle Search API with Authentication', () => {
 
   it('should return 404 for a non-existent VIN', async () => {
     const response = await request(server)
-    .get(`/vehicle/search?vin=ZZZZZZZZZZZZZZZZZ`)
-    .set('Cookie', cookie);
+      .get(`/vehicle/search?vin=ZZZZZZZZZZZZZZZZZ`)
+      .set('Cookie', cookie);
     expect(response.status).toBe(404);
-    expect(response.body.errors[0].msg).toBe('Sorry, it looks like we don’t have that in stock!');
+    expect(response.body.errors[0].msg).toBe(
+      'Sorry, it looks like we don’t have that in stock!'
+    );
   });
 
   it('should reject a description longer than 280 characters', async () => {
     const longDescription = 'A'.repeat(281);
     const response = await request(server)
-    .get(`/vehicle/search?description=${encodeURIComponent(longDescription)}`)
-    .set('Cookie', cookie);
+      .get(`/vehicle/search?description=${encodeURIComponent(longDescription)}`)
+      .set('Cookie', cookie);
     expect(response.status).toBe(400);
   });
 
@@ -311,26 +313,30 @@ describe('Vehicle API - POST /vehicle validation', () => {
 
   it('should reject unsupported characters in keyword', async () => {
     const response = await request(server)
-    .get(`/vehicle/search?keyword=%`)
-    .set('Cookie', cookie);
+      .get(`/vehicle/search?keyword=%`)
+      .set('Cookie', cookie);
     expect(response.status).toBe(400);
-    expect(response.body.errors[0].msg).toBe('Keyword contains invalid characters.');
+    expect(response.body.errors[0].msg).toBe(
+      'Keyword contains invalid characters.'
+    );
   });
 
   it('should reject requests with invalid filter_type', async () => {
     const response = await request(server)
-    .get(`/vehicle/search?filter_type=invalid`)
-    .set('Cookie', cookie);
+      .get(`/vehicle/search?filter_type=invalid`)
+      .set('Cookie', cookie);
     expect(response.status).toBe(400);
-    expect(response.body.errors[0].msg).toBe('filter_type must be one of: sold, unsold, both');
+    expect(response.body.errors[0].msg).toBe(
+      'filter_type must be one of: sold, unsold, both'
+    );
   });
 
   it('should return vehicles matching multiple search criteria', async () => {
     const response = await request(server)
-    .get(`/vehicle/search?vehicle_type=Van&fuel_type=Gas&color=Blue`)
-    .set('Cookie', cookie);
+      .get(`/vehicle/search?vehicle_type=Van&fuel_type=Gas&color=Blue`)
+      .set('Cookie', cookie);
     expect(response.status).toBe(200);
-    response.body.forEach(vehicle => {
+    response.body.forEach((vehicle) => {
       expect(vehicle.vehicle_type).toBe('Van');
       expect(vehicle.fuel_type).toBe('Gas');
       expect(vehicle.colors).toContain('Blue');
@@ -339,68 +345,70 @@ describe('Vehicle API - POST /vehicle validation', () => {
 
   it('should return vehicles by specified model year', async () => {
     const response = await request(server)
-    .get(`/vehicle/search?model_year=2022`)
-    .set('Cookie', cookie);
+      .get(`/vehicle/search?model_year=2022`)
+      .set('Cookie', cookie);
     expect(response.status).toBe(200);
-    expect(response.body).toEqual(expect.arrayContaining([
-      expect.objectContaining({ model_year: 2022 })
-    ]));
+    expect(response.body).toEqual(
+      expect.arrayContaining([expect.objectContaining({ model_year: 2022 })])
+    );
   });
 
   it('should reject an invalid model year format', async () => {
     const response = await request(server)
-    .get('/vehicle/search?model_year=abcd')
-    .set('Cookie', cookie);
+      .get('/vehicle/search?model_year=abcd')
+      .set('Cookie', cookie);
     expect(response.status).toBe(400);
     expect(response.body.errors[0].msg).toBe('Invalid value');
   });
 
   it('should return vehicles containing the specified color', async () => {
     const response = await request(server)
-    .get(`/vehicle/search?color=Red`)
-    .set('Cookie', cookie);
+      .get(`/vehicle/search?color=Red`)
+      .set('Cookie', cookie);
     expect(response.status).toBe(200);
-    response.body.forEach(vehicle => {
+    response.body.forEach((vehicle) => {
       expect(vehicle.colors).toContain('Red');
     });
   });
 
   it('should return vehicles by specified fuel type', async () => {
     const response = await request(server)
-    .get(`/vehicle/search?fuel_type=Gas`)
-    .set('Cookie', cookie);
+      .get(`/vehicle/search?fuel_type=Gas`)
+      .set('Cookie', cookie);
     expect(response.status).toBe(200);
-    expect(response.body).toEqual(expect.arrayContaining([
-      expect.objectContaining({ fuel_type: 'Gas' })
-    ]));
+    expect(response.body).toEqual(
+      expect.arrayContaining([expect.objectContaining({ fuel_type: 'Gas' })])
+    );
   });
 
   it('should return vehicles by specified vehicle type', async () => {
     const response = await request(server)
-    .get(`/vehicle/search?vehicle_type=Van`)
-    .set('Cookie', cookie);
+      .get(`/vehicle/search?vehicle_type=Van`)
+      .set('Cookie', cookie);
     expect(response.status).toBe(200);
-    expect(response.body).toEqual(expect.arrayContaining([
-      expect.objectContaining({ vehicle_type: 'Van' })
-    ]));
+    expect(response.body).toEqual(
+      expect.arrayContaining([expect.objectContaining({ vehicle_type: 'Van' })])
+    );
   });
 
   it('should return vehicles by specified manufacturer', async () => {
     const response = await request(server)
-    .get(`/vehicle/search?manufacturer=Ford`)
-    .set('Cookie', cookie);
+      .get(`/vehicle/search?manufacturer=Ford`)
+      .set('Cookie', cookie);
     expect(response.status).toBe(200);
-    expect(response.body).toEqual(expect.arrayContaining([
-      expect.objectContaining({ manufacturer: 'Ford' })
-    ]));
+    expect(response.body).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ manufacturer: 'Ford' }),
+      ])
+    );
   });
 
   it('should return vehicles that match multiple criteria (vehicle_type, fuel_type, model_year)', async () => {
     const response = await request(server)
-    .get('/vehicle/search?vehicle_type=Van&fuel_type=Gas&model_year=2022')
-    .set('Cookie', cookie);
+      .get('/vehicle/search?vehicle_type=Van&fuel_type=Gas&model_year=2022')
+      .set('Cookie', cookie);
     expect(response.status).toBe(200);
-    response.body.forEach(vehicle => {
+    response.body.forEach((vehicle) => {
       expect(vehicle.vehicle_type).toBe('Van');
       expect(vehicle.fuel_type).toBe('Gas');
       expect(vehicle.model_year).toBe(2022);
@@ -409,14 +417,16 @@ describe('Vehicle API - POST /vehicle validation', () => {
 
   it('should return vehicles that partially match the keyword in description or model', async () => {
     const response = await request(server)
-    .get('/vehicle/search?keyword=Trans')
-    .set('Cookie', cookie);
+      .get('/vehicle/search?keyword=Trans')
+      .set('Cookie', cookie);
     expect(response.status).toBe(200);
-    response.body.forEach(vehicle => {
-      expect(vehicle.model.includes('Trans') || vehicle.description.includes('Trans')).toBe(true);
+    response.body.forEach((vehicle) => {
+      expect(
+        vehicle.model.includes('Trans') || vehicle.description.includes('Trans')
+      ).toBe(true);
     });
   });
-/*
+  /*
   //TODO: add test case for case insensitivity - does not work
   it('should handle case insensitivity in search fields', async () => {
     const response = await request(server).get(`/vehicle/search?manufacturer=ford`);
@@ -430,7 +440,6 @@ describe('Vehicle API - POST /vehicle validation', () => {
     });
   });
   */
-
 });
 
 // Additional edge case for POST /vehicle validation
@@ -438,40 +447,45 @@ describe('Vehicle API - POST /vehicle validation', () => {
   it('should reject a POST request with missing required fields', async () => {
     const incompleteVehicleData = {
       vin: 'WXY93812083121111',
-      model: 'Transit'
+      model: 'Transit',
       // Other required fields are missing
     };
 
     const response = await request(server)
-    .post('/vehicle')
-    .set('Cookie', cookie) // Set the authentication cookie
-    .send(incompleteVehicleData);
+      .post('/vehicle')
+      .set('Cookie', cookie) // Set the authentication cookie
+      .send(incompleteVehicleData);
     expect(response.status).toBe(400);
     expect(response.body.errors).toBeDefined();
   });
 
   //TODO: fix validation
   it('should reject a duplicate vehicle vin', async () => {
-    const vehicleData = generateVehicleData(KNOWN_VEHICLE.customer_seller, KNOWN_VEHICLE.inventory_clerk);
+    const vehicleData = generateVehicleData(
+      KNOWN_VEHICLE.customer_seller,
+      KNOWN_VEHICLE.inventory_clerk
+    );
     vehicleData.vin = KNOWN_VEHICLE.vin; // Duplicate VIN
 
     const response = await request(server)
-    .post('/vehicle')
-    .set('Cookie', cookie) // Set the authentication cookie
-    .send(vehicleData);
+      .post('/vehicle')
+      .set('Cookie', cookie) // Set the authentication cookie
+      .send(vehicleData);
     expect(response.status).toBe(409);
     //expect(response.body.error).toBe('Error: Vehicle already exists.');
   });
   it('should reject invalid data type for horsepower', async () => {
-    const vehicleData = generateVehicleData(KNOWN_VEHICLE.customer_seller, KNOWN_VEHICLE.inventory_clerk);
+    const vehicleData = generateVehicleData(
+      KNOWN_VEHICLE.customer_seller,
+      KNOWN_VEHICLE.inventory_clerk
+    );
     vehicleData.horsepower = 'two hundred'; // Invalid type
 
     const response = await request(server)
-    .post('/vehicle')
-    .set('Cookie', cookie) // Set the authentication cookie
-    .send(vehicleData);
+      .post('/vehicle')
+      .set('Cookie', cookie) // Set the authentication cookie
+      .send(vehicleData);
     expect(response.status).toBe(400);
     expect(response.body.errors[0].msg).toContain('Invalid value');
   });
-  
 });

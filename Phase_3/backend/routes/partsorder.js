@@ -3,7 +3,7 @@ const { validationResult } = require('express-validator');
 const router = express.Router();
 const pool = require('../config/db');
 const { partsOrderPostValidator } = require('./validators');
-const PG_ERROR_CODES = require('../config/constants');
+const { PG_ERROR_CODES } = require('../config/constants');
 const { checkSessionUserType } = require('../routes/auth');
 
 router.post(
@@ -101,53 +101,57 @@ const STATUS_ORDER = {
   installed: 3,
 };
 
-router.patch('/updateStatus', async (req, res) => {
-  const { part_number, parts_order_number, status } = req.body;
+router.patch(
+  '/updateStatus',
+  checkSessionUserType(['inventory_clerk', 'owner']),
+  async (req, res) => {
+    const { part_number, parts_order_number, status } = req.body;
 
-  // Validate the new status
-  if (!['ordered', 'received', 'installed'].includes(status)) {
-    return res.status(400).send('Invalid status');
-  }
-
-  try {
-    // Fetch the current status of the part
-    const currentStatusResult = await pool.query(
-      `SELECT status FROM part WHERE part_number = $1 AND parts_order_number = $2;`,
-      [part_number, parts_order_number]
-    );
-
-    // If no matching part found
-    if (currentStatusResult.rowCount === 0) {
-      return res.status(404).json({ message: 'Part not found' });
+    // Validate the new status
+    if (!['ordered', 'received', 'installed'].includes(status)) {
+      return res.status(400).send('Invalid status');
     }
 
-    const currentStatus = currentStatusResult.rows[0].status;
+    try {
+      // Fetch the current status of the part
+      const currentStatusResult = await pool.query(
+        `SELECT status FROM part WHERE part_number = $1 AND parts_order_number = $2;`,
+        [part_number, parts_order_number]
+      );
 
-    // Check if the new status is allowed
-    if (STATUS_ORDER[status] < STATUS_ORDER[currentStatus]) {
-      return res
-        .status(400)
-        .send('Status cannot be changed to a previous state');
-    }
+      // If no matching part found
+      if (currentStatusResult.rowCount === 0) {
+        return res.status(404).json({ message: 'Part not found' });
+      }
 
-    // Update the part status if valid
-    const updatePartStatusQuery = `
+      const currentStatus = currentStatusResult.rows[0].status;
+
+      // Check if the new status is allowed
+      if (STATUS_ORDER[status] < STATUS_ORDER[currentStatus]) {
+        return res
+          .status(400)
+          .send('Status cannot be changed to a previous state');
+      }
+
+      // Update the part status if valid
+      const updatePartStatusQuery = `
       UPDATE part
       SET status = $1
       WHERE part_number = $2 AND parts_order_number = $3;
     `;
-    const result = await pool.query(updatePartStatusQuery, [
-      status,
-      part_number,
-      parts_order_number,
-    ]);
+      const result = await pool.query(updatePartStatusQuery, [
+        status,
+        part_number,
+        parts_order_number,
+      ]);
 
-    res.status(200).json({ message: 'Part status updated successfully' });
-  } catch (error) {
-    console.error('Database error:', error);
-    res.status(500).json({ error: 'Failed to update part status' });
+      res.status(200).json({ message: 'Part status updated successfully' });
+    } catch (error) {
+      console.error('Database error:', error);
+      res.status(500).json({ error: 'Failed to update part status' });
+    }
   }
-});
+);
 //imagine that the person send the vin and vendor and also list of tuples/dictionary that were the part name , part description, part quanity, and part unit price
 
 module.exports = router;

@@ -1,5 +1,5 @@
 const express = require('express');
-const morgan = require("morgan");
+const morgan = require('morgan');
 const expressListRoutes = require('express-list-routes');
 const session = require('express-session');
 const cors = require('cors');
@@ -19,7 +19,7 @@ require('dotenv').config();
 const app = express();
 
 app.use(express.json());
-app.use(morgan("tiny"));
+app.use(morgan('tiny'));
 app.use(
   cors({
     origin: 'http://localhost:5173',

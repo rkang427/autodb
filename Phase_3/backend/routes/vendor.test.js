@@ -67,20 +67,24 @@ describe('Parts Order API with Authentication', () => {
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty('name');
     const vin = '33393812083121111';
-    const partsOrderData = { vin: vin, vendor_name: vendorData.name, parts:[
-      {
-         "part_number": "part1",
-         "description": "cool part",
-         "quantity": 1,
-         "unit_price": 10.10
-      },
-      {
-        "part_number" : "part2",
-        "description": "another cool part",
-        "quantity": 10,
-        "unit_price": 5.00
-      }
-    ]};
+    const partsOrderData = {
+      vin: vin,
+      vendor_name: vendorData.name,
+      parts: [
+        {
+          part_number: 'part1',
+          description: 'cool part',
+          quantity: 1,
+          unit_price: 10.1,
+        },
+        {
+          part_number: 'part2',
+          description: 'another cool part',
+          quantity: 10,
+          unit_price: 5.0,
+        },
+      ],
+    };
     const response2 = await request(server)
       .post(`/partsorder`)
       .set('Cookie', cookie)

@@ -467,6 +467,9 @@ router.patch(
       }
 
       const updatedVehicle = result.rows[0];
+
+      await client.query('COMMIT'); // Commit transaction
+
       res.status(200).json(updatedVehicle);
     } catch (error) {
       await client.query('ROLLBACK');

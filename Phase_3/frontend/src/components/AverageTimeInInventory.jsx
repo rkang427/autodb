@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const AverageTimeInInventory = () => {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
+  const navigate = useNavigate(); // Initialize the useNavigate hook
 
   useEffect(() => {
     const fetchAverageTime = async () => {
@@ -18,14 +20,15 @@ const AverageTimeInInventory = () => {
     fetchAverageTime();
   }, []);
 
-  if (error) {
-
-    return <div>{error}</div>;
-  }
+  const handleGoBack = () => {
+    navigate(-1);  
+  };
 
   return (
     <div>
       <h2>Average Time in Inventory</h2>
+      {error && <div style={{ color: 'red' }}>{error}</div>} {/* Display error if exists */}
+      <button onClick={handleGoBack}>Go Back</button> {/* Go Back button */}
       <table>
         <thead>
           <tr>

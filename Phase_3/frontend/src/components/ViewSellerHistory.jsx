@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const ViewSellerHistory = () => {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
+  const navigate = useNavigate(); // Initialize the useNavigate hook
 
   useEffect(() => {
     const fetchSellerHistory = async () => {
@@ -18,13 +20,16 @@ const ViewSellerHistory = () => {
     fetchSellerHistory();
   }, []);
 
-  if (error) {
-    return <div>{error}</div>;
-  }
+  const handleGoBack = () => {
+    navigate(-1); // Navigate back to the previous page
+  };
 
   return (
     <div>
       <h2>View Seller History</h2>
+
+      <button onClick={handleGoBack}>Go Back</button> {/* Go Back button */}
+      {error && <div style={{ color: 'red' }}>{error}</div>} {/* Display error if exists */}
       <table>
         <thead>
           <tr>

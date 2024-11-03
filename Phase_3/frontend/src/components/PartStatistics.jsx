@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const PartStatistics = () => {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
+  const navigate = useNavigate(); // Initialize the useNavigate hook
 
   useEffect(() => {
     const fetchPartStatistics = async () => {
       try {
-        const response = await axios.get('/reports/part_statistics', { withCredentials: true });
+        const response = await axios.get('http://localhost:3000/reports/part_statistics', { withCredentials: true });
         setData(response.data);
       } catch (err) {
         setError('Error retrieving part statistics');
@@ -18,13 +20,15 @@ const PartStatistics = () => {
     fetchPartStatistics();
   }, []);
 
-  if (error) {
-    return <div>{error}</div>;
-  }
+  const handleGoBack = () => {
+    navigate(-1); // Navigate back to the previous page
+  };
 
   return (
     <div>
       <h2>Part Statistics</h2>
+      {error && <div style={{ color: 'red' }}>{error}</div>} {/* Display error if exists */}
+      <button onClick={handleGoBack}>Go Back</button> {/* Go Back button */}
       <table>
         <thead>
           <tr>

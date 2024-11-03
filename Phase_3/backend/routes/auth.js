@@ -4,29 +4,20 @@ const pool = require('../config/db');
 const router = express.Router();
 const { loginValidator } = require('./validators');
 
-// Middleware to check if a user is logged in
 const checkSession = (req, res, next) => {
   if (req.session.user) {
-    next(); // User is logged in, proceed to the next middleware/route
+    next();
   } else {
-    res.status(401).json({ message: 'Unauthorized' }); // User is not logged in
+    res.status(401).json({ message: 'Unauthorized' });
   }
 };
 
-// Middleware to check if a user is a specific user
 const checkSessionUserType = (reqUserTypes) => (req, res, next) => {
   const user = req.session.user;
   if (user && reqUserTypes.includes(user.user_type)) {
-    console.log(
-      'USER',
-      req.session.user.username,
-      'USER TYPE',
-      req.session.user.user_type
-    );
-    next(); // User is logged in and has the correct user_type, proceed
+    next();
   } else {
     res.status(401).json({ message: 'Unauthorized' });
-    // User is not logged in or has the wrong user_type
   }
 };
 
@@ -35,29 +26,23 @@ router.post('/login', loginValidator, async (req, res) => {
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
+  
   const { username, password } = req.body;
   console.log(username, password);
 
   try {
-    const query =
-      'SELECT * FROM app_user WHERE username = $1 AND password = $2';
-    const values = [username, password];
-    const result = await pool.query(query, values);
-    if (!result) {
-      console.error('No result from database');
-      return res.status(500).json({ error: 'No database result' });
-    }
-    if (!result.rows) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
-    if (result.rows && result.rows.length === 0) {
+    const query = 'SELECT * FROM app_user WHERE username = $1';
+    const result = await pool.query(query, [username]);
+    
+    if (!result || result.rows.length === 0) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
     const user = result.rows[0];
-    console.log(user);
+    if (user.password !== password) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
 
-    // create session after successfull login
     req.session.user = {
       username: user.username,
       user_type: user.user_type,
@@ -80,14 +65,43 @@ router.post('/logout', (req, res) => {
     if (err) {
       return res.status(500).json({ error: 'Could not logout' });
     }
-    return res.status(200).json({ message: 'Logout successfull' });
+    return res.status(200).json({ message: 'Logout successful' });
   });
 });
 
-// Route to check session
 router.get('/session', checkSession, (req, res) => {
-  // If the middleware passed, the user is logged in
   res.json({ user: req.session.user });
+});
+
+router.get('/check-username/:username', async (req, res) => {
+  const { username } = req.params;
+  const query = 'SELECT * FROM app_user WHERE username = $1';
+
+  try {
+    const result = await pool.query(query, [username]);
+    res.status(200).json({ exists: result.rows.length > 0 });
+  } catch (error) {
+    console.error('Error checking username:', error);
+    res.status(500).send('Error checking username');
+  }
+});
+
+router.post('/signup', async (req, res) => {
+  const { username, password } = req.body;
+  const query = 'INSERT INTO app_user (username, password) VALUES ($1, $2) RETURNING *';
+
+  try {
+    const existingUser = await pool.query('SELECT * FROM app_user WHERE username = $1', [username]);
+    if (existingUser.rows.length > 0) {
+      return res.status(400).json({ error: 'Username already exists' });
+    }
+
+    const result = await pool.query(query, [username, password]); // Hash password before storing
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error('Error creating user:', error);
+    res.status(500).send('Error creating user');
+  }
 });
 
 module.exports = { router, checkSession, checkSessionUserType };

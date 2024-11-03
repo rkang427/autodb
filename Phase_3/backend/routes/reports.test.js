@@ -78,7 +78,7 @@ describe('Reports API', () => {
     expect(response.text).toBe('Error retrieving seller history');
   });
 
-  it('Report 2 - Average Time in Inventory Groups', async () => {
+  it('Report 2 - Average Time in Inventory', async () => {
     pool.query.mockResolvedValueOnce({
       rows: [
         { vehicle_type: 'Sedan', average_time_in_inventory: '5' },
@@ -106,6 +106,27 @@ describe('Reports API', () => {
 
     expect(response.status).toBe(500);
     expect(response.text).toBe('Error retrieving avg time in inventory');
+  });
+
+  it('should return an empty array when no average time records are found', async () => {
+    pool.query.mockResolvedValueOnce({
+      rows: [],
+    });
+
+    const response = await request(server)
+      .get('/reports/avg_time_in_inventory')
+      .set('Cookie', sessionCookie);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([]);
+  });
+
+  it('should return 404 for invalid endpoint', async () => {
+    const response = await request(server)
+      .get('/reports/invalid_endpoint')
+      .set('Cookie', sessionCookie);
+
+    expect(response.status).toBe(404);
   });
 
   it('Report 3 - View Price Per Condition', async () => {

@@ -1,17 +1,13 @@
 const express = require('express');
 const expressListRoutes = require('express-list-routes');
 const session = require('express-session');
-const { router: authRoutes } = require('./routes/auth');
-const customerRoutes = require('./routes/customer');
-const vendorRoutes = require('./routes/vendor');
-const reportsRoutes = require('./routes/reports');
-const partsOrderRoutes = require('./routes/partsorder');
-const vehicleRoutes = require('./routes/vehicle');
-const pool = require('./config/db'); // Import database pool configuration
 const cors = require('cors');
+const { router: authRoutes } = require('./routes/auth');
+const pool = require('./config/db');
 require('dotenv').config();
 
 const app = express();
+
 app.use(express.json());
 app.use(
   cors({
@@ -27,14 +23,9 @@ app.use(
     cookie: { secure: false },
   })
 );
-app.use('/auth', authRoutes);
-app.use('/vehicle', vehicleRoutes);
-app.use('/customer', customerRoutes);
-app.use('/vendor', vendorRoutes);
-app.use('/reports', reportsRoutes);
-app.use('/partsorder', partsOrderRoutes);
 
-// debug what routes are registered
+app.use('/auth', authRoutes);
+
 console.log('Registered Routes:');
 expressListRoutes(app);
 
@@ -50,7 +41,7 @@ const startServer = (port) => {
 
 const stopServer = async (server) => {
   return new Promise(async (resolve) => {
-    await pool.end(); // Close the PostgreSQL connection pool
+    await pool.end();
     server.close(() => {
       console.log('Server closed.');
       resolve();

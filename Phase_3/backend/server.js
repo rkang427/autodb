@@ -3,7 +3,16 @@ const expressListRoutes = require('express-list-routes');
 const session = require('express-session');
 const cors = require('cors');
 const { router: authRoutes } = require('./routes/auth');
+
+
+const customerRoutes = require('./routes/customer');
+const vendorRoutes = require('./routes/vendor');
+const reportsRoutes = require('./routes/reports');
+const partsOrderRoutes = require('./routes/partsorder');
+const vehicleRoutes = require('./routes/vehicle');
 const pool = require('./config/db');
+
+
 require('dotenv').config();
 
 const app = express();
@@ -25,7 +34,11 @@ app.use(
 );
 
 app.use('/auth', authRoutes);
-
+app.use('/vehicle', vehicleRoutes);
+app.use('/customer', customerRoutes);
+app.use('/vendor', vendorRoutes);
+app.use('/reports', reportsRoutes);
+app.use('/partsorder', partsOrderRoutes);
 console.log('Registered Routes:');
 expressListRoutes(app);
 

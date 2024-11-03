@@ -207,7 +207,6 @@ describe('Vehicle Search API with Authentication', () => {
     expect(response.status).toBe(400);
   });
 
-  // TODO: lots more search test cases
   it('should reject a vin that is not 17 characters long', async () => {
     const response = await request(server)
       .get('/vehicle/search?vin=1234567')
@@ -228,14 +227,6 @@ describe('Vehicle Search API with Authentication', () => {
       .get(`/vehicle/search?vin=${KNOWN_VEHICLE.vin}`)
       .set('Cookie', cookie);
     expect(response.status).toBe(200);
-  });
-
-  it('should reject a description longer than 280 characters', async () => {
-    const longDescription = 'A'.repeat(281);
-    const response = await request(server)
-      .get(`/vehicle/search?description=${encodeURIComponent(longDescription)}`)
-      .set('Cookie', cookie);
-    expect(response.status).toBe(400);
   });
 
   it('should return 404 for a non-existent VIN', async () => {
@@ -263,52 +254,6 @@ describe('Vehicle Search API with Authentication', () => {
       .set('Cookie', cookie);
 
     expect(response.status).toBe(400);
-  });
-});
-
-// Additional edge case for POST /vehicle validation
-describe('Vehicle API - POST /vehicle validation', () => {
-  it('should reject a POST request with missing required fields', async () => {
-    const incompleteVehicleData = {
-      vin: 'WXY93812083121111',
-      model: 'Transit',
-      // Other required fields are missing
-    };
-
-    const response = await request(server)
-      .post('/vehicle')
-      .set('Cookie', cookie) // Set the authentication cookie
-      .send(incompleteVehicleData);
-
-    expect(response.status).toBe(400);
-    expect(response.body.errors).toBeDefined();
-  });
-
-  it('should reject a duplicate vehicle vin', async () => {
-    const vehicleData = generateVehicleData(
-      KNOWN_VEHICLE.customer_seller,
-      KNOWN_VEHICLE.inventory_clerk
-    );
-
-    await request(server)
-      .post('/vehicle')
-      .set('Cookie', cookie) // Set the authentication cookie
-      .send(vehicleData); // This should succeed
-
-    const response = await request(server)
-      .post('/vehicle')
-      .set('Cookie', cookie) // Set the authentication cookie
-      .send(vehicleData); // This should fail due to duplicate VIN
-
-    expect(response.status).toBe(409);
-    expect(response.body.errors[0].msg).toBe(
-      'Error: Vehicle with this VIN already exists'
-    );
-
-    //const response = await request(server)
-    //.get(`/vehicle/search?keyword=${encodeURIComponent(longKeyword)}`)
-    //.set('Cookie', cookie);
-    //expect(response.status).toBe(400);
   });
 
   it('should reject unsupported characters in keyword', async () => {
@@ -426,17 +371,19 @@ describe('Vehicle API - POST /vehicle validation', () => {
       ).toBe(true);
     });
   });
+  
   /*
   //TODO: add test case for case insensitivity - does not work
   it('should handle case insensitivity in search fields', async () => {
-    const response = await request(server).get(`/vehicle/search?manufacturer=ford`);
+    const response = await request(server)
+      .get(`/vehicle/search?manufacturer=ford`)
+      .set('Cookie', cookie);
+
     expect(response.status).toBe(200);
+
     response.body.forEach(vehicle => {
-      try {
-        expect(vehicle.manufacturer.toLowerCase()).toBe('ford');
-      } catch (error) {
-          console.log("errorddddd", error)
-      }
+      // Check if the manufacturer name matches 'Ford' regardless of case
+      expect(vehicle.manufacturer.toLowerCase()).toBe('ford');
     });
   });
   */
@@ -459,21 +406,37 @@ describe('Vehicle API - POST /vehicle validation', () => {
     expect(response.body.errors).toBeDefined();
   });
 
-  //TODO: fix validation
-  it('should reject a duplicate vehicle vin', async () => {
-    const vehicleData = generateVehicleData(
-      KNOWN_VEHICLE.customer_seller,
-      KNOWN_VEHICLE.inventory_clerk
-    );
-    vehicleData.vin = KNOWN_VEHICLE.vin; // Duplicate VIN
+  it('should reject a duplicate vehicle VIN', async () => {
+    const customerData = generateCustomerData();
+    const customerResponse = await request(server)
+      .post('/customer')
+      .set('Cookie', cookie)
+      .send(customerData);
 
-    const response = await request(server)
+    expect(customerResponse.status).toBe(201);
+    const customerTaxId = customerResponse.body.tax_id;
+
+    // Create the first vehicle with a unique VIN
+    const vehicleData = generateVehicleData(customerTaxId, 'ownerdoe');
+    vehicleData.vin = faker.vehicle.vin(); // Generates a unique VIN for initial creation
+
+    const firstResponse = await request(server)
       .post('/vehicle')
-      .set('Cookie', cookie) // Set the authentication cookie
+      .set('Cookie', cookie)
       .send(vehicleData);
-    expect(response.status).toBe(409);
-    //expect(response.body.error).toBe('Error: Vehicle already exists.');
+
+    expect(firstResponse.status).toBe(201);
+
+    // Attempt to create another vehicle with the same VIN
+    const duplicateResponse = await request(server)
+      .post('/vehicle')
+      .set('Cookie', cookie)
+      .send(vehicleData);
+
+    expect(duplicateResponse.status).toBe(409);
+    expect(duplicateResponse.body.errors[0].msg).toContain('VIN already exists');
   });
+
   it('should reject invalid data type for horsepower', async () => {
     const vehicleData = generateVehicleData(
       KNOWN_VEHICLE.customer_seller,

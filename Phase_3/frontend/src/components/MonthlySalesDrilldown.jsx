@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const MonthlySalesDrilldown = () => {
   const [data, setData] = useState([]);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
     const fetchMonthlySalesDrilldown = async () => {
@@ -18,9 +21,16 @@ const MonthlySalesDrilldown = () => {
     fetchMonthlySalesDrilldown();
   }, []);
 
+  // Handle the back navigation
+  const handleGoBack = () => {
+    navigate('/'); // Replace with the path to your welcome page
+  };
+
   return (
     <div>
       <h2>Monthly Sales Drilldown</h2>
+      {error && <div style={{ color: 'red' }}>{error}</div>} {/* Display error if exists */}
+      <button onClick={handleGoBack}>Go Back</button> {/* Go Back button */}
       <table>
         <thead>
           <tr>

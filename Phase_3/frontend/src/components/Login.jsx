@@ -42,12 +42,12 @@ const Login = () => {
     setErrorMessage("");
 
     try {
-      const userCheckResponse = await axios.get(`http://localhost:3000/auth/check-username/${username}`);
-      if (!userCheckResponse.data.exists) {
-        setErrorMessage("Username does not exist. Please sign up.");
-        navigate('/signup');
-        return;
-      }
+      //const userCheckResponse = await axios.get(`http://localhost:3000/auth/check-username/${username}`);
+      //if (!userCheckResponse.data.exists) {
+      //  setErrorMessage("Username does not exist. Please sign up.");
+        // navigate('/signup'); // Commented out to disable signup navigation
+      //  return;
+      //}
 
       const loginResponse = await axios.post("http://localhost:3000/auth/login", { username, password }, { withCredentials: true });
       const response = await axios.get("http://localhost:3000/auth/session", { withCredentials: true });

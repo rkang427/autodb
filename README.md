@@ -249,8 +249,22 @@ curl -X POST http://localhost:3000/partsorder \
 -H "Content-Type: application/json" \
 -d '{
   "vin": "WXY93812083121111",
-  "vendor_name": "Vendor Name"
-}' -b cookies.txt
+  "vendor_name": "Vendor Name",
+  "parts":[
+    {
+       "part_number": "part1",
+       "description": "cool part",
+       "quantity": 1,
+       "unit_price": 10.10
+    },
+    {
+      "part_number" : "part2",
+      "description": "another cool part",
+      "quantity": 10,
+      "unit_price": 5.00
+    }
+  ]
+}'  -b cookies.txt
 ```
 
 ### GET requests -- for fetching records
@@ -289,4 +303,16 @@ curl "http://localhost:3000/vehicle?vin=WXY93812083121111" -H "Accept: applicati
 Search Vehicle
 ```
 curl "http://localhost:3000/vehicle/search?vin=WXY93812083121111&color=Blue&manufacturer=Ford&vehicle_type/search=SUV&fuel_type=Gas&model_year=2022&keyword=ford" -H "Accept: application/json" -b cookies.txt
+```
+
+Search Screen (aka Landing Page)
+```
+curl "http://localhost:3000/" -H "Accept: application/json" -b cookies.txt
+```
+
+### PATCH requests -- for updating records
+
+Sell vehicle (note this is the one we created in earlier example)
+```
+curl -s -X PATCH http://localhost:3000/vehicle -d '{"vin": "1HGCM82633A123456", "customer_buyer": "444555666"}' -H 'Content-Type: application/json' -b cookies.txt
 ```

@@ -7,8 +7,9 @@ const { loginValidator } = require('./validators');
 const checkSession = (req, res, next) => {
   if (req.session.user) {
     next();
-  } else {
+  } else { 
     res.status(401).json({ message: 'Unauthorized' });
+ 
   }
 };
 
@@ -16,8 +17,8 @@ const checkSessionUserType = (reqUserTypes) => (req, res, next) => {
   const user = req.session.user;
   if (user && reqUserTypes.includes(user.user_type)) {
     next();
-  } else {
-    res.status(401).json({ message: 'Unauthorized' });
+  } else { 
+    res.status(401).json({ message: 'Unauthorized' }); 
   }
 };
 
@@ -51,7 +52,7 @@ router.post('/login', loginValidator, async (req, res) => {
     };
 
     return res.status(200).json({
-      message: 'Login successful',
+      msg: 'Login successful',
       user: req.session.user,
     });
   } catch (error) {
@@ -64,8 +65,8 @@ router.post('/logout', (req, res) => {
   req.session.destroy((err) => {
     if (err) {
       return res.status(500).json({ error: 'Could not logout' });
-    }
-    return res.status(200).json({ message: 'Logout successful' });
+    } 
+    return res.status(200).json({ message: 'Logout successful' }); 
   });
 });
 

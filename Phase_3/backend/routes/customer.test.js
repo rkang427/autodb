@@ -30,7 +30,7 @@ describe('Customer API with Authentication', () => {
       console.error('Error in individual customer creation:', {
         status: response.status,
         body: JSON.stringify(response.body),
-        error: error.message,
+        error: error.msg,
         customerData: customerData,
       });
       throw error; // Re-throw the error to fail the test
@@ -44,7 +44,7 @@ describe('Customer API with Authentication', () => {
       console.error('Error in retrieving individual customer:', {
         status: response2.status,
         body: JSON.stringify(response2.body),
-        error: error.message,
+        error: error.msg,
         customerData: customerData,
       });
       throw error; // Re-throw the error to fail the test
@@ -63,7 +63,7 @@ describe('Customer API with Authentication', () => {
       console.error('Error in business customer creation:', {
         status: response.status,
         body: JSON.stringify(response.body),
-        error: error.message,
+        error: error.msg,
         customerData: customerData,
       });
       throw error; // Re-throw the error to fail the test
@@ -77,7 +77,7 @@ describe('Customer API with Authentication', () => {
       console.error('Error in retrieving business customer:', {
         status: response2.status,
         body: JSON.stringify(response2.body),
-        error: error.message,
+        error: error.msg,
         customerData: customerData,
       });
       throw error; // Re-throw the error to fail the test
@@ -96,7 +96,7 @@ describe('Customer API with Authentication', () => {
       console.error('Error in first business customer creation:', {
         status: response.status,
         body: JSON.stringify(response.body),
-        error: error.message,
+        error: error.msg,
         customerData: customerData,
       });
       throw error; // Re-throw the error to fail the test
@@ -111,7 +111,7 @@ describe('Customer API with Authentication', () => {
       console.error('Error in duplicate business customer creation:', {
         status: response2.status,
         body: JSON.stringify(response2.body),
-        error: error.message,
+        error: error.msg,
         customerData: customerData,
       });
       throw error; // Re-throw the error to fail the test
@@ -125,7 +125,7 @@ describe('Customer API with Authentication', () => {
       console.error('Error in retrieving customer after duplicate attempt:', {
         status: response3.status,
         body: JSON.stringify(response3.body),
-        error: error.message,
+        error: error.msg,
         customerData: customerData,
       });
       throw error; // Re-throw the error to fail the test
@@ -142,7 +142,7 @@ describe('Customer API with Authentication', () => {
       console.error('Error in creating customer with missing fields:', {
         status: response.status,
         body: JSON.stringify(response.body),
-        error: error.message,
+        error: error.msg,
       });
       throw error; // Re-throw the error to fail the test
     }

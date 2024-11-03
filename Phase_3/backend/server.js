@@ -1,4 +1,5 @@
 const express = require('express');
+const morgan = require("morgan");
 const expressListRoutes = require('express-list-routes');
 const session = require('express-session');
 const cors = require('cors');
@@ -9,15 +10,16 @@ const customerRoutes = require('./routes/customer');
 const vendorRoutes = require('./routes/vendor');
 const reportsRoutes = require('./routes/reports');
 const partsOrderRoutes = require('./routes/partsorder');
-const vehicleRoutes = require('./routes/vehicle');
-const pool = require('./config/db');
-
-
+const vehicleRoutes = require('./routes/vehicle'); 
+const rootRoute = require('./routes/root');
+const pool = require('./config/db'); 
+const cors = require('cors'); 
 require('dotenv').config();
 
 const app = express();
 
 app.use(express.json());
+app.use(morgan("tiny"));
 app.use(
   cors({
     origin: 'http://localhost:5173',
@@ -31,8 +33,8 @@ app.use(
     saveUninitialized: true,
     cookie: { secure: false },
   })
-);
-
+); 
+app.use('/', rootRoute); 
 app.use('/auth', authRoutes);
 app.use('/vehicle', vehicleRoutes);
 app.use('/customer', customerRoutes);

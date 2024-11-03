@@ -281,6 +281,7 @@ CREATE TABLE part (
     ) ON DELETE CASCADE,
     CONSTRAINT chk_status CHECK (
         status IN ('ordered', 'received', 'installed')
-    )
+    ),
+    UNIQUE (parts_order_number, part_number)
     -- use application logic to prevent changing back to previous state
 );

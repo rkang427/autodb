@@ -111,7 +111,7 @@ router.post(
 
       res
         .status(201)
-        .json({ tax_id: newTaxId, message: 'Customer created successfully' });
+        .json({ tax_id: newTaxId, msg: 'Customer created successfully' });
     } catch (error) {
       await client.query('ROLLBACK');
       console.error('Database error:', error); //in order to debug, logging an error to server console for what was wrong

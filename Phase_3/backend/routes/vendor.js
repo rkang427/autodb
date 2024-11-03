@@ -82,7 +82,7 @@ router.post(
       // Respond with the created vendor information
       res.status(201).json({
         name: newVendorName,
-        message: 'Vendor created successfully',
+        msg: 'Vendor created successfully',
       });
     } catch (error) {
       await client.query('ROLLBACK'); // Rollback on error

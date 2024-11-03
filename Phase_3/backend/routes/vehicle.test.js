@@ -62,7 +62,7 @@ describe('Vehicle API with Authentication', () => {
       console.error('Error in individual customer creation:', {
         status: response.status,
         body: JSON.stringify(response.body),
-        error: error.message,
+        error: error.msg,
         customerData: customerData,
       });
       throw error; // Re-throw the error to fail the test
@@ -81,7 +81,7 @@ describe('Vehicle API with Authentication', () => {
       console.error('Error in vehicle creation:', {
         status: response2.status,
         body: JSON.stringify(response2.body),
-        error: error.message,
+        error: error.msg,
         vehicleData: vehicleData,
       });
       throw error; // Re-throw the error to fail the test
@@ -99,7 +99,7 @@ describe('Vehicle API with Authentication', () => {
     const responseBody = response.body;
 
     for (const [key, value] of Object.entries(KNOWN_VEHICLE)) {
-      expect(responseBody[key]).toEqual(value);
+      expect(responseBody['vehicle'][key]).toEqual(value);
     }
   });
 
@@ -213,14 +213,18 @@ describe('Vehicle Search API with Authentication', () => {
       .get('/vehicle/search?vin=1234567')
       .set('Cookie', cookie);
     expect(response.status).toBe(400);
-    expect(response.body.errors[0].msg).toBe('vin must be 17 characters long');
+    expect(response.body.errors[0].msg).toBe(
+      'vin must be 17 characters long'
+    );
 
     const response2 = await request(server)
       .get('/vehicle/search?vin=123456789012345678')
       .set('Cookie', cookie);
 
     expect(response2.status).toBe(400);
-    expect(response2.body.errors[0].msg).toBe('vin must be 17 characters long');
+    expect(response2.body.errors[0].msg).toBe(
+      'vin must be 17 characters long'
+    );
   });
 
   it('should accept a valid vin', async () => {
@@ -284,9 +288,9 @@ describe('Vehicle API - POST /vehicle validation', () => {
       .set('Cookie', cookie) // Set the authentication cookie
       .send(vehicleData); // This should fail due to duplicate VIN
 
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(409);
     expect(response.body.errors[0].msg).toBe(
-      'Vehicle with this VIN already exists'
+      'Error: Vehicle with this VIN already exists'
     );
   });
 });

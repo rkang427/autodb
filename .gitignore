@@ -1,6 +1,9 @@
-*cookies.txt
 *.bkp
 .DS_Store
+
+# node.js stuff
+*.vite
+*cookies.txt
 
 # general python stuff
 # Byte-compiled / optimized / DLL files

@@ -290,3 +290,15 @@ Search Vehicle
 ```
 curl "http://localhost:3000/vehicle/search?vin=WXY93812083121111&color=Blue&manufacturer=Ford&vehicle_type/search=SUV&fuel_type=Gas&model_year=2022&keyword=ford" -H "Accept: application/json" -b cookies.txt
 ```
+
+Search Screen (aka Landing Page)
+```
+curl "http://localhost:3000/" -H "Accept: application/json" -b cookies.txt
+```
+
+### PATCH requests -- for updating records
+
+Sell vehicle (note this is the one we created in earlier example)
+```
+curl -s -X PATCH http://localhost:3000/vehicle -d '{"vin": "1HGCM82633A123456", "customer_buyer": "444555666"}' -H 'Content-Type: application/json' -b cookies.txt
+```

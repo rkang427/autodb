@@ -9,7 +9,7 @@ const checkSession = (req, res, next) => {
   if (req.session.user) {
     next(); // User is logged in, proceed to the next middleware/route
   } else {
-    res.status(401).json({ message: 'Unauthorized' }); // User is not logged in
+    res.status(401).json({ msg: 'Unauthorized' }); // User is not logged in
   }
 };
 
@@ -25,7 +25,7 @@ const checkSessionUserType = (reqUserTypes) => (req, res, next) => {
     );
     next(); // User is logged in and has the correct user_type, proceed
   } else {
-    res.status(401).json({ message: 'Unauthorized' });
+    res.status(401).json({ msg: 'Unauthorized' });
     // User is not logged in or has the wrong user_type
   }
 };
@@ -66,7 +66,7 @@ router.post('/login', loginValidator, async (req, res) => {
     };
 
     return res.status(200).json({
-      message: 'Login successful',
+      msg: 'Login successful',
       user: req.session.user,
     });
   } catch (error) {
@@ -80,7 +80,7 @@ router.post('/logout', (req, res) => {
     if (err) {
       return res.status(500).json({ error: 'Could not logout' });
     }
-    return res.status(200).json({ message: 'Logout successfull' });
+    return res.status(200).json({ msg: 'Logout successfull' });
   });
 });
 

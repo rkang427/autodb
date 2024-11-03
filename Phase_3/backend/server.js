@@ -7,6 +7,7 @@ const vendorRoutes = require('./routes/vendor');
 const reportsRoutes = require('./routes/reports');
 const partsOrderRoutes = require('./routes/partsorder');
 const vehicleRoutes = require('./routes/vehicle');
+const rootRoute = require('./routes/root');
 const pool = require('./config/db'); // Import database pool configuration
 const cors = require('cors');
 require('dotenv').config();
@@ -27,6 +28,7 @@ app.use(
     cookie: { secure: false },
   })
 );
+app.use('/', rootRoute);
 app.use('/auth', authRoutes);
 app.use('/vehicle', vehicleRoutes);
 app.use('/customer', customerRoutes);

@@ -23,15 +23,50 @@ const vehicleGetValidator = [
     .withMessage('Field cannot contain spaces'),
 ];
 
+const vehiclePatchValidator = [
+  body('vin')
+    .isLength({ min: 17, max: 17 })
+    .withMessage('vin must be 17 characters long')
+    .matches(/^[^\s]+$/)
+    .withMessage('Field cannot contain spaces'),
+  body('customer_buyer')
+    .isLength({ min: 9, max: 9 })
+    .withMessage(
+      'customer_buyer is the ssn/tin of the customer and must be 9 digits long'
+    )
+    .matches(/^[^\s]+$/)
+    .withMessage('Field cannot contain spaces'),
+];
+
 const vehicleSearchValidator = [
   query('vin')
     .optional()
+    .custom((value, { req }) => {
+      // Check if req.session.user is defined
+      if (!req.session.user) {
+        throw new Error('User is not authenticated, search by VIN disabled.');
+      }
+      return true; // If validation passes
+    })
     .isLength({ min: 17, max: 17 })
     .withMessage('vin must be 17 characters long')
     .matches(/^[^\s]+$/)
     .withMessage('Field cannot contain spaces'),
   query('description').optional().isLength({ max: 280 }),
-  query('filter_type').optional().isIn(['sold', 'unsold', 'both']),
+  query('filter_type')
+    .optional()
+    .custom((value, { req }) => {
+      // Check if req.session.user is defined
+      if (
+        !req.session.user ||
+        !['owner', 'manager'].includes(req.session.user.user_type)
+      ) {
+        throw new Error('User is not authorized to set filter_type.');
+      }
+      return true; // If validation passes
+    })
+    .isIn(['sold', 'unsold', 'both'])
+    .withMessage('filter_type must be one of: sold, unsold, both'),
   query('keyword')
     .optional()
     .isLength({ max: 120 })
@@ -132,6 +167,7 @@ const loginValidator = [
 module.exports = {
   customerGetValidator,
   vehicleGetValidator,
+  vehiclePatchValidator,
   vehiclePostValidator,
   vehicleSearchValidator,
   vendorGetValidator,

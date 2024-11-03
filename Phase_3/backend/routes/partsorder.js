@@ -43,7 +43,7 @@ router.post(
 
       res.status(201).json({
         parts_order_number: newPartsOrderNumber,
-        message: 'Parts Order created successfully',
+        msg: 'Parts Order created successfully',
       });
     } catch (error) {
       await client.query('ROLLBACK');

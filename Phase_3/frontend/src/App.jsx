@@ -19,6 +19,7 @@ const App = () => {
     <Router>
       <div>
         <h1>Team 006 - Dealership DB</h1>
+        <h2>North Avenue Automotive</h2>
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/view_seller_history" element={<ViewSellerHistory />} />

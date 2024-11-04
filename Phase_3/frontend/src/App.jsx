@@ -17,7 +17,7 @@ const App = () => {
 
   return (
     <Router>
-      <div>
+      <div style={{ fontFamily: 'Poppins, sans-serif'}}>
         <h1>Team 006 - Dealership DB</h1>
         <h2>North Avenue Automotive</h2>
         <Routes>

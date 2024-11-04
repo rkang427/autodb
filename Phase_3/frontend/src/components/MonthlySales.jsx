@@ -10,17 +10,30 @@ const MonthlySales = () => {
 
   useEffect(() => {
     const fetchMonthlySales = async () => {
-      const endpoint = type === 'drilldown' 
-        ? 'http://localhost:3000/reports/monthly_sales/drilldown'
-        : 'http://localhost:3000/reports/monthly_sales/origin';
-      
+      const endpoint = 'http://localhost:3000/reports/monthly_sales';
+
       try {
         const response = await axios.get(endpoint, { withCredentials: true });
-        setData(response.data);
+        
+        console.log('API response:', response);  // Log the entire response
+
+        // Check the structure of the response
+        if (Array.isArray(response.data)) {
+          if (type === 'origin') {
+            setData(response.data); // Use origin data directly
+          } else {
+            // Flatten drilldown data based on response structure
+            setData(response.data.flatMap(item => item.drilldown || []));
+          }
+        } else {
+          throw new Error('Unexpected response format');
+        }
       } catch (error) {
-        setError(type === 'drilldown' 
-          ? 'Error fetching monthly sales drilldown' 
-          : 'Error fetching monthly sales origin');
+        const errorMessage = type === 'drilldown'
+          ? 'Error fetching monthly sales drilldown'
+          : 'Error fetching monthly sales origin';
+        setError(errorMessage);
+        console.error('Error fetching monthly sales data:', error.message || error);
       }
     };
 
@@ -59,26 +72,37 @@ const MonthlySales = () => {
           )}
         </thead>
         <tbody>
-          {data.map((item, index) => (
-            <tr key={index}>
-              {type === 'drilldown' ? (
-                <>
-                  <td>{item.first_name}</td>
-                  <td>{item.last_name}</td>
-                  <td>{item.vehiclesold}</td>
-                  <td>${item.totalsales.toFixed(2)}</td>
-                </>
-              ) : (
-                <>
-                  <td>{item.year_sold}</td>
-                  <td>{item.month_sold}</td>
-                  <td>{item.numbervehicles}</td>
-                  <td>${item.grossincome.toFixed(2)}</td>
-                  <td>${item.netincome.toFixed(2)}</td>
-                </>
-              )}
+          {data.length === 0 ? (
+            <tr>
+              <td colSpan={type === 'drilldown' ? 4 : 5} style={{ textAlign: 'center' }}>
+                No data available
+              </td>
             </tr>
-          ))}
+          ) : (
+            data.map((item, index) => {
+              console.log('Rendering item:', item); // Log each item to check its data
+              return (
+                <tr key={index}>
+                  {type === 'drilldown' ? (
+                    <>
+                      <td>{item.first_name}</td>
+                      <td>{item.last_name}</td>
+                      <td>{item.vehiclesold}</td>
+                      <td>${(item.totalsales || 0).toFixed(2)}</td>
+                    </>
+                  ) : (
+                    <>
+                      <td>{item.year_sold}</td>
+                      <td>{item.month_sold}</td>
+                      <td>{item.numbervehicles}</td>
+                      <td>${(item.grossincome || 0).toFixed(2)}</td>
+                      <td>${(item.netincome || 0).toFixed(2)}</td>
+                    </>
+                  )}
+                </tr>
+              );
+            })
+          )}
         </tbody>
       </table>
     </div>

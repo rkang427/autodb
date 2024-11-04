@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 
 const ViewSellerHistory = () => {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
-  const navigate = useNavigate(); // Initialize the useNavigate hook
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchSellerHistory = async () => {
@@ -21,15 +21,15 @@ const ViewSellerHistory = () => {
   }, []);
 
   const handleGoBack = () => {
-    navigate(-1); // Navigate back to the previous page
+    navigate(-1);
   };
 
   return (
     <div>
       <h2>View Seller History</h2>
 
-      <button onClick={handleGoBack}>Go Back</button> {/* Go Back button */}
-      {error && <div style={{ color: 'red' }}>{error}</div>} {/* Display error if exists */}
+      <button onClick={handleGoBack}>Go Back</button>
+      {error && <div style={{ color: 'red' }}>{error}</div>}
       <table>
         <thead>
           <tr>
@@ -38,18 +38,20 @@ const ViewSellerHistory = () => {
             <th>Average Purchase Price</th>
             <th>Total Parts Count</th>
             <th>Average Part Cost per Vehicle</th>
-            <th>Highlight</th>
           </tr>
         </thead>
         <tbody>
           {data.map((item, index) => (
-            <tr key={index}>
+            <tr 
+              key={index} 
+              //you just change 'no' to 'highlight' for the classes to run properly
+              style={{ backgroundColor: item.highlight === 'highlight' ? 'red' : 'transparent', color: item.highlight === 'highlight' ? 'white' : 'black' }}
+            >
               <td>{item.namebusiness}</td>
               <td>{item.vehiclecount}</td>
               <td>{item.averagepurchaseprice}</td>
               <td>{item.totalpartscount}</td>
               <td>{item.averagepartscostpervehiclepurchased}</td>
-              <td>{item.highlight}</td>
             </tr>
           ))}
         </tbody>

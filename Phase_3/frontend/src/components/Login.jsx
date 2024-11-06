@@ -57,7 +57,8 @@ const Login = () => {
   if (loggedInUser) {
     return (
       <div>
-        <h1>Hello, {loggedInUser.first_name}!</h1>
+        <p>Hello, {loggedInUser.first_name}!</p>
+        <Landing loggedInUser={loggedInUser} />
         <ReportLinks />
         <button onClick={handleLogout}>Logout</button>
       </div>

@@ -167,6 +167,20 @@ const Landing = ({ loggedInUser }) => {
             </div>
 
             <div>
+              <label>Keyword: </label>
+              <input
+                type="text"
+                value={searchOptions.keyword}
+                onChange={(e) =>
+                  setSearchParams({
+                    ...searchParams,
+                    keyword: e.target.value,
+                  })
+                }
+              />
+            </div>
+
+            <div>
               <input type="submit" value="Search" />
             </div>
           </form>

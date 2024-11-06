@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import auth from "../services/auth";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -12,9 +12,7 @@ const Login = () => {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/auth/session", {
-          withCredentials: true,
-        });
+        const response = await auth.checkSession();
         if (response.data.user) {
           setLoggedInUser(response.data.user);
         }
@@ -28,7 +26,7 @@ const Login = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post("http://localhost:3000/auth/logout", {}, { withCredentials: true });
+      await auth.logout();
       setLoggedInUser(null);
       setUsername("");
       setPassword("");
@@ -42,19 +40,17 @@ const Login = () => {
     setErrorMessage("");
 
     try {
-      //const userCheckResponse = await axios.get(`http://localhost:3000/auth/check-username/${username}`);
-      //if (!userCheckResponse.data.exists) {
-      //  setErrorMessage("Username does not exist. Please sign up.");
-        // navigate('/signup'); // Commented out to disable signup navigation
-      //  return;
-      //}
-
-      const loginResponse = await axios.post("http://localhost:3000/auth/login", { username, password }, { withCredentials: true });
-      const response = await axios.get("http://localhost:3000/auth/session", { withCredentials: true });
+      await auth.login(username, password);
+      const response = await auth.checkSession();
       setLoggedInUser(response.data.user);
     } catch (error) {
       setErrorMessage("Login failed. Please check your credentials.");
-      console.error("Login error", error.response ? error.response.data : error);
+      console.error(
+        "Login error",
+        error.response ? error.response.data : error
+      );
+      setUsername("");
+      setPassword("");
     }
   };
 
@@ -64,7 +60,9 @@ const Login = () => {
         <h1>Hello, {loggedInUser.first_name}!</h1>
         {/* Link to Average Time in Inventory page */}
         <div>
-          <Link to="/average_time_in_inventory">View Average Time in Inventory</Link>
+          <Link to="/average_time_in_inventory">
+            View Average Time in Inventory
+          </Link>
         </div>
         <div>
           <Link to="/view_seller_history">View Seller History</Link>

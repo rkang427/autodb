@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import auth from "../services/auth";
-import ReportLinks from "./ReportLinks";
 import Landing from "./Landing";
 
 const Login = () => {
@@ -57,10 +56,11 @@ const Login = () => {
   if (loggedInUser) {
     return (
       <div>
-        <p>Hello, {loggedInUser.first_name}!</p>
+        <p>
+          Hello, {loggedInUser.first_name}!{" "}
+          <button onClick={handleLogout}>Logout</button>
+        </p>
         <Landing loggedInUser={loggedInUser} />
-        <ReportLinks />
-        <button onClick={handleLogout}>Logout</button>
       </div>
     );
   }
@@ -90,6 +90,7 @@ const Login = () => {
         </div>
         <button type="submit">Login</button>
       </form>
+      <Landing loggedInUser={loggedInUser} />
     </div>
   );
 };

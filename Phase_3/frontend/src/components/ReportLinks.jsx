@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 const ReportLinks = () => {
   return (
     <div>
+      <h2>Reports</h2>
       <div>
         <Link to="/average_time_in_inventory">
           View Average Time in Inventory

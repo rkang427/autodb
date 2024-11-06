@@ -1,4 +1,4 @@
-const Landing = () => {
+const Landing = ({ loggedInUser }) => {
   return <div></div>;
 };
 

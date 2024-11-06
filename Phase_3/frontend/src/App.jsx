@@ -1,5 +1,4 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from "./components/Login";
 import ViewSellerHistory from "./components/ViewSellerHistory";
 import AverageTimeInInventory from "./components/AverageTimeInInventory";
@@ -20,11 +19,20 @@ const App = () => {
           <Route path="/check-username" element={<UsernameCheck />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/view_seller_history" element={<ViewSellerHistory />} />
-          <Route path="/average_time_in_inventory" element={<AverageTimeInInventory />} />
+          <Route
+            path="/average_time_in_inventory"
+            element={<AverageTimeInInventory />}
+          />
           <Route path="/price_per_condition" element={<PricePerCondition />} />
           <Route path="/part_statistics" element={<PartStatistics />} />
-          <Route path="/monthly_sales/origin" element={<MonthlySalesOrigin />} />
-          <Route path="/monthly_sales/drilldown" element={<MonthlySalesDrilldown />} />
+          <Route
+            path="/monthly_sales/origin"
+            element={<MonthlySalesOrigin />}
+          />
+          <Route
+            path="/monthly_sales/drilldown"
+            element={<MonthlySalesDrilldown />}
+          />
         </Routes>
       </div>
     </Router>

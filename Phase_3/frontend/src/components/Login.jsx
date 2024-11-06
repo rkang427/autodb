@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
 import auth from "../services/auth";
+import ReportLinks from "./ReportLinks";
+import Landing from "./Landing";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loggedInUser, setLoggedInUser] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
-  const navigate = useNavigate();
 
   useEffect(() => {
     const checkSession = async () => {
@@ -58,27 +58,7 @@ const Login = () => {
     return (
       <div>
         <h1>Hello, {loggedInUser.first_name}!</h1>
-        {/* Link to Average Time in Inventory page */}
-        <div>
-          <Link to="/average_time_in_inventory">
-            View Average Time in Inventory
-          </Link>
-        </div>
-        <div>
-          <Link to="/view_seller_history">View Seller History</Link>
-        </div>
-        <div>
-          <Link to="/price_per_condition">Price Per Condition</Link>
-        </div>
-        <div>
-          <Link to="/part_statistics">Part Statistics</Link>
-        </div>
-        <div>
-          <Link to="/monthly_sales/origin">Monthly Sales Origin</Link>
-        </div>
-        <div>
-          <Link to="/monthly_sales/drilldown">Monthly Sales Drilldown</Link>
-        </div>
+        <ReportLinks />
         <button onClick={handleLogout}>Logout</button>
       </div>
     );

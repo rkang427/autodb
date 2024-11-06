@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import search from "../services/search";
 import { useEffect, useState } from "react";
@@ -7,10 +8,10 @@ const Landing = ({ loggedInUser }) => {
   const [searchOptions, setSearchOptions] = useState(null);
   const [searchParams, setSearchParams] = useState({
     vin: "",
-    vehicleType: "",
+    vehicle_type: "",
     manufacturer: "",
-    year: "",
-    fuelType: "",
+    model_year: "",
+    fuel_type: "",
     color: "",
     keyword: "",
   });
@@ -24,9 +25,13 @@ const Landing = ({ loggedInUser }) => {
     getSearchOptions();
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("hello...");
+    const params = Object.fromEntries(
+      Object.entries(searchParams).filter(([key, value]) => value !== "")
+    );
+    const searchResults = await search.runSearch(params);
+    console.log(searchResults);
   };
 
   return (
@@ -35,9 +40,8 @@ const Landing = ({ loggedInUser }) => {
         <>
           <p>
             Available Cars: {searchOptions.ready}
-            {" - "}
             {searchOptions.not_ready && (
-              <>Car Pending Parts: {searchOptions.not_ready}</>
+              <> - Car Pending Parts: {searchOptions.not_ready}</>
             )}
           </p>
           <h2>Search Vehicles</h2>
@@ -61,11 +65,11 @@ const Landing = ({ loggedInUser }) => {
               <label>Vehicle Type: </label>
               <select
                 id="dropdown"
-                value={searchParams.vehicleType}
+                value={searchParams.vehicle_type}
                 onChange={(e) =>
                   setSearchParams({
                     ...searchParams,
-                    vehicleType: e.target.value,
+                    vehicle_type: e.target.value,
                   })
                 }
               >
@@ -103,11 +107,11 @@ const Landing = ({ loggedInUser }) => {
               <label>Year: </label>
               <select
                 id="dropdown"
-                value={searchParams.year}
+                value={searchParams.model_year}
                 onChange={(e) =>
                   setSearchParams({
                     ...searchParams,
-                    year: e.target.value,
+                    model_year: e.target.value,
                   })
                 }
               >
@@ -124,11 +128,11 @@ const Landing = ({ loggedInUser }) => {
               <label>Fuel Type: </label>
               <select
                 id="dropdown"
-                value={searchParams.fuelType}
+                value={searchParams.fuel_type}
                 onChange={(e) =>
                   setSearchParams({
                     ...searchParams,
-                    fuelType: e.target.value,
+                    fuel_type: e.target.value,
                   })
                 }
               >

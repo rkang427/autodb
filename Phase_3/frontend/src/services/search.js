@@ -6,4 +6,11 @@ const searchOptions = async () => {
   });
 };
 
-export default { searchOptions };
+const runSearch = async (searchParams) => {
+  return await axios.get("http://localhost:3000/vehicle/search", {
+    params: searchParams,
+    withCredentials: true,
+  });
+};
+
+export default { searchOptions, runSearch };

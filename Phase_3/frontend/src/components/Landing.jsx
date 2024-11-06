@@ -4,10 +4,12 @@ import search from "../services/search";
 import { useEffect, useState } from "react";
 import ReportLinks from "./ReportLinks";
 import SearchResults from "./SearchResults";
+import Notification from "./Notification";
 
 const Landing = ({ loggedInUser }) => {
   const [searchOptions, setSearchOptions] = useState(null);
   const [searchResults, setSearchResults] = useState([]);
+  const [notification, setNotification] = useState(null);
   const [searchParams, setSearchParams] = useState({
     vin: "",
     vehicle_type: "",
@@ -27,14 +29,26 @@ const Landing = ({ loggedInUser }) => {
     getSearchOptions();
   }, []);
 
+  const notify = (message, type) => {
+    setNotification({ message: message, type: type });
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const params = Object.fromEntries(
       Object.entries(searchParams).filter(([key, value]) => value !== "")
     );
-    const result = await search.runSearch(params);
-    console.log(result.data);
-    setSearchResults(result.data);
+    try {
+      const result = await search.runSearch(params);
+      console.log(result.data);
+      setSearchResults(result.data);
+    } catch (e) {
+      notify(e.response.data.errors[0].msg, "error");
+      console.log("Problem:::::", e.response.data.errors[0].msg);
+    }
   };
 
   return (
@@ -189,7 +203,11 @@ const Landing = ({ loggedInUser }) => {
           </form>
         </>
       )}
-      <SearchResults searchResults={searchResults} />
+      <Notification notification={notification} />
+      <SearchResults
+        searchResults={searchResults}
+        loggedInUser={loggedInUser}
+      />
       {loggedInUser &&
         ["owner", "salesperson"].includes(loggedInUser.user_type) && (
           <ReportLinks />

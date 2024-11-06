@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
-const SearchResults = ({ searchResults }) => {
+const SearchResults = ({ searchResults, loggedInUser }) => {
   if (searchResults.length == 0) return null;
 
   return (
@@ -49,6 +49,7 @@ const SearchResults = ({ searchResults }) => {
                 <td>{car.sale_price}</td>
               </tr>
             </table>
+            {loggedInUser && <button>Show Details</button>}
             <hr />
           </div>
         );

@@ -3,9 +3,11 @@
 import search from "../services/search";
 import { useEffect, useState } from "react";
 import ReportLinks from "./ReportLinks";
+import SearchResults from "./SearchResults";
 
 const Landing = ({ loggedInUser }) => {
   const [searchOptions, setSearchOptions] = useState(null);
+  const [searchResults, setSearchResults] = useState([]);
   const [searchParams, setSearchParams] = useState({
     vin: "",
     vehicle_type: "",
@@ -30,8 +32,9 @@ const Landing = ({ loggedInUser }) => {
     const params = Object.fromEntries(
       Object.entries(searchParams).filter(([key, value]) => value !== "")
     );
-    const searchResults = await search.runSearch(params);
-    console.log(searchResults);
+    const result = await search.runSearch(params);
+    console.log(result.data);
+    setSearchResults(result.data);
   };
 
   return (
@@ -186,6 +189,7 @@ const Landing = ({ loggedInUser }) => {
           </form>
         </>
       )}
+      <SearchResults searchResults={searchResults} />
       {loggedInUser &&
         ["owner", "salesperson"].includes(loggedInUser.user_type) && (
           <ReportLinks />

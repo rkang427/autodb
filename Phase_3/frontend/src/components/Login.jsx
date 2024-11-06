@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import auth from "../services/auth";
 import Landing from "./Landing";
+import NavBar from "./NavBar";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -55,13 +56,11 @@ const Login = () => {
 
   if (loggedInUser) {
     return (
-      <div>
-        <p>
-          Hello, {loggedInUser.first_name}!{" "}
-          <button onClick={handleLogout}>Logout</button>
-        </p>
+      <>
+        <NavBar loggedInUser={loggedInUser} handleLogout={handleLogout} />
+
         <Landing loggedInUser={loggedInUser} />
-      </div>
+      </>
     );
   }
 

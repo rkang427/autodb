@@ -47,7 +47,6 @@ const Landing = ({ loggedInUser }) => {
       setSearchResults(result.data);
     } catch (e) {
       notify(e.response.data.errors[0].msg, "error");
-      console.log("Problem:::::", e.response.data.errors[0].msg);
     }
   };
 

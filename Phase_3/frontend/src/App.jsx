@@ -5,8 +5,7 @@ import ViewSellerHistory from "./components/ViewSellerHistory";
 import AverageTimeInInventory from "./components/AverageTimeInInventory";
 import PricePerCondition from "./components/PricePerCondition";
 import PartStatistics from "./components/PartStatistics";
-import MonthlySalesOrigin from "./components/MonthlySalesOrigin";
-import MonthlySalesDrilldown from "./components/MonthlySalesDrilldown";
+import MonthlySales from "./components/MonthlySales";
 import BuyVehicle from "./components/BuyVehicle";
 import VehicleDetail from "./components/VehicleDetail";
 import PartsOrder from "./components/PartsOrder";
@@ -17,8 +16,9 @@ const App = () => {
 
   return (
     <Router>
-      <div>
+      <div style={{ fontFamily: 'Poppins, sans-serif'}}>
         <h1>Team 006 - Dealership DB</h1>
+        <h2>North Avenue Automotive</h2>
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/view_seller_history" element={<ViewSellerHistory />} />
@@ -34,11 +34,7 @@ const App = () => {
           <Route path="/part_statistics" element={<PartStatistics />} />
           <Route
             path="/monthly_sales/origin"
-            element={<MonthlySalesOrigin />}
-          />
-          <Route
-            path="/monthly_sales/drilldown"
-            element={<MonthlySalesDrilldown />}
+            element={<MonthlySales />}
           />
         </Routes>
       </div>

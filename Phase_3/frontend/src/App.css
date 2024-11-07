@@ -40,3 +40,22 @@
 .read-the-docs {
   color: #888;
 }
+
+.shadow-link {
+  display: inline-block;
+  transition: box-shadow 0.3s ease;
+}
+
+.shadow-link:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+body {
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5; /* Optional: Add a background color */
+}
+
+h1, h2, h3, p, input, button {
+  font-family: 'Poppins', sans-serif;
+}  

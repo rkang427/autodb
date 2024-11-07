@@ -21,9 +21,9 @@ const ReportLinks = () => {
       <div>
         <Link to="/monthly_sales/origin">Monthly Sales Origin</Link>
       </div>
-      <div>
+      {/* <div>
         <Link to="/monthly_sales/drilldown">Monthly Sales Drilldown</Link>
-      </div>
+      </div> */}
     </div>
   );
 };

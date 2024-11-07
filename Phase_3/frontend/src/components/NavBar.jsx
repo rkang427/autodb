@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom"; 
+
 /* eslint-disable react/prop-types */
 const NavBar = ({ loggedInUser, handleLogout }) => {
   if (!loggedInUser) return null;
@@ -7,7 +9,7 @@ const NavBar = ({ loggedInUser, handleLogout }) => {
       <p>
         Hello, {loggedInUser.first_name}!{" "}
         {["owner", "inventory_clerk"].includes(loggedInUser.user_type) && (
-          <button>Buy a Car</button>
+        <Link to="/buy_vehicle"><button>Buy a Car</button></Link> 
         )}
         <button onClick={handleLogout}>Logout</button>
       </p>

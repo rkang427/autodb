@@ -6,8 +6,7 @@ import PricePerCondition from "./components/PricePerCondition";
 import PartStatistics from "./components/PartStatistics";
 import MonthlySalesOrigin from "./components/MonthlySalesOrigin";
 import MonthlySalesDrilldown from "./components/MonthlySalesDrilldown";
-import Signup from "./components/Signup";
-import UsernameCheck from "./components/UsernameCheck";
+import BuyVehicle from "./components/BuyVehicle";
 
 const App = () => {
   return (
@@ -16,9 +15,8 @@ const App = () => {
         <h1>Team 006 - Dealership DB</h1>
         <Routes>
           <Route path="/" element={<Login />} />
-          <Route path="/check-username" element={<UsernameCheck />} />
-          <Route path="/signup" element={<Signup />} />
           <Route path="/view_seller_history" element={<ViewSellerHistory />} />
+          <Route path="/buy_vehicle" element={<BuyVehicle />} />
           <Route
             path="/average_time_in_inventory"
             element={<AverageTimeInInventory />}

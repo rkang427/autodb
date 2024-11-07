@@ -1,9 +1,8 @@
 import { useParams } from "react-router-dom";
-import { Link } from "react-router-dom"; 
 import auth from "../services/auth";
 import { useState, useEffect } from "react";
 
-const VehicleDetail = () => {
+const SellVehicle = () => {
   const { vin } = useParams();
   const [loggedInUser, setLoggedInUser] = useState(null);
   
@@ -23,21 +22,15 @@ const VehicleDetail = () => {
     checkSession();
   }, []);
   console.log(loggedInUser)
-  return (
+  return (<>
+    { loggedInUser && (loggedInUser.user_type === "sales_person" || loggedInUser.user_type === "owner") && (
     <div>
-      <h2>Vehicle Detail</h2>
+      <h2>Sell Vehicle</h2>
       <h3>Vin: {vin}</h3>
       {/* TODO: Check if logged in as owner or inventory clerk */}
-      { loggedInUser && (
-        loggedInUser.user_type === "inventory_clerk" || loggedInUser.user_type === "owner") &&
-        <Link to={`/parts_order/${vin}`}><button>Add parts order</button></Link>
-      }
-      { loggedInUser && (
-        loggedInUser.user_type === "sales_person" || loggedInUser.user_type === "owner") &&
-        <Link to={`/sell_vehicle/${vin}`}><button>Sell Vehicle</button></Link>
-      }
     </div>
-  );
+  ) || <h2>Forbidden</h2>}
+  </>);
 };
 
-export default VehicleDetail;
+export default SellVehicle;

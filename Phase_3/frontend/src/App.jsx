@@ -11,25 +11,9 @@ import BuyVehicle from "./components/BuyVehicle";
 import VehicleDetail from "./components/VehicleDetail";
 import PartsOrder from "./components/PartsOrder";
 import auth from "./services/auth";
+import SellVehicle from "./components/SellVehicle";
 
 const App = () => {
-  const [loggedInUser, setLoggedInUser] = useState(null);
-  
-  useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const response = await auth.checkSession();
-        console.log(response.data.user);
-        if (response.data.user) {
-          setLoggedInUser(response.data.user);
-        }
-      } catch (error) {
-        console.error("Error checking session", error);
-      }
-    };
-
-    checkSession();
-  }, []);
 
   return (
     <Router>
@@ -39,8 +23,9 @@ const App = () => {
           <Route path="/" element={<Login />} />
           <Route path="/view_seller_history" element={<ViewSellerHistory />} />
           <Route path="/buy_vehicle" element={<BuyVehicle />} />
-          <Route path="/vehicle_detail/:vin" element={<VehicleDetail loggedInUser={loggedInUser} />} />
+          <Route path="/vehicle_detail/:vin" element={<VehicleDetail />} />
           <Route path="/parts_order/:vin" element={<PartsOrder />} />
+          <Route path="/sell_vehicle/:vin" element={<SellVehicle />} />
           <Route
             path="/average_time_in_inventory"
             element={<AverageTimeInInventory />}

@@ -48,7 +48,7 @@ const MonthlySales = () => {
     <div>
       <h2>{type === 'drilldown' ? 'Monthly Sales Drilldown' : 'Monthly Sales Origin'}</h2>
       <button onClick={() => setType('origin')}>View Monthly Sales Origin</button>
-      <button onClick={() => setType('drilldown')}>View Monthly Sales Drilldown</button>
+      {/* <button onClick={() => setType('drilldown')}>View Monthly Sales Drilldown</button> */}
 
       {error && <div style={{ color: 'red' }}>{error}</div>}
       <button onClick={handleGoBack}>Go Back</button>

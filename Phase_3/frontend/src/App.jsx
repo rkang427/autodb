@@ -5,8 +5,7 @@ import ViewSellerHistory from "./components/ViewSellerHistory";
 import AverageTimeInInventory from "./components/AverageTimeInInventory";
 import PricePerCondition from "./components/PricePerCondition";
 import PartStatistics from "./components/PartStatistics";
-import MonthlySalesOrigin from "./components/MonthlySalesOrigin";
-import MonthlySalesDrilldown from "./components/MonthlySalesDrilldown";
+import MonthlySales from "./components/MonthlySales";
 import BuyVehicle from "./components/BuyVehicle";
 import VehicleDetail from "./components/VehicleDetail";
 import PartsOrder from "./components/PartsOrder";
@@ -35,11 +34,7 @@ const App = () => {
           <Route path="/part_statistics" element={<PartStatistics />} />
           <Route
             path="/monthly_sales/origin"
-            element={<MonthlySalesOrigin />}
-          />
-          <Route
-            path="/monthly_sales/drilldown"
-            element={<MonthlySalesDrilldown />}
+            element={<MonthlySales />}
           />
         </Routes>
       </div>

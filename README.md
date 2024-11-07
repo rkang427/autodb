@@ -321,7 +321,7 @@ curl -X PATCH http://localhost:3000/partsorder/updateStatus \
   "part_number": "part1",
   "parts_order_number": "1HGCM82633A123456-001",
   "status": "received"
-}' 
+}' -b cookies.txt
 ```
 
 

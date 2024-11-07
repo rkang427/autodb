@@ -30,7 +30,7 @@ const AddCustomer = () => {
   };
 
   const handleGoBack = () => {
-    navigate(-1); // Go back to the previous page
+    navigate(-1); 
   };
 
   const handleSubmit = async (e) => {

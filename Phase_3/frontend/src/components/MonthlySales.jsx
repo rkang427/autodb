@@ -95,8 +95,8 @@ const MonthlySales = () => {
                       <td>{item.year_sold}</td>
                       <td>{item.month_sold}</td>
                       <td>{item.numbervehicles}</td>
-                      <td>${(item.grossincome || 0).toFixed(2)}</td>
-                      <td>${(item.netincome || 0).toFixed(2)}</td>
+                      <td>${Number((item.grossincome || 0.0)).toFixed(2)}</td>
+                      <td>${Number((item.netincome || 0.0)).toFixed(2)}</td>
                     </>
                   )}
                 </tr>

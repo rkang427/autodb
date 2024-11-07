@@ -47,6 +47,7 @@ const Landing = ({ loggedInUser }) => {
       setSearchResults(result.data);
     } catch (e) {
       notify(e.response.data.errors[0].msg, "error");
+      setSearchResults([]);
     }
   };
 
@@ -60,6 +61,10 @@ const Landing = ({ loggedInUser }) => {
               <> - Car Pending Parts: {searchOptions.not_ready}</>
             )}
           </p>
+          {loggedInUser &&
+          ["owner", "salesperson"].includes(loggedInUser.user_type) && (
+            <ReportLinks />
+          )}
           <h2>Search Vehicles</h2>
 
           <form onSubmit={handleSubmit}>
@@ -207,10 +212,6 @@ const Landing = ({ loggedInUser }) => {
         searchResults={searchResults}
         loggedInUser={loggedInUser}
       />
-      {loggedInUser &&
-        ["owner", "salesperson"].includes(loggedInUser.user_type) && (
-          <ReportLinks />
-        )}
     </div>
   );
 };

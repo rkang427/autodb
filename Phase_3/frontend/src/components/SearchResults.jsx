@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom"; 
+
 /* eslint-disable react/prop-types */
 const SearchResults = ({ searchResults, loggedInUser }) => {
   if (searchResults.length == 0) return null;
@@ -48,7 +50,7 @@ const SearchResults = ({ searchResults, loggedInUser }) => {
                 <td>{car.sale_price}</td>
               </tr>
             </table>
-            {loggedInUser && <button>Show Details</button>}
+            {loggedInUser && <Link to={`/vehicle_detail/${car.vin}`}><button>Vehicle Details</button></Link>}
             <hr />
           </div>
         );

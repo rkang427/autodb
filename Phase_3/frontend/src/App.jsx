@@ -7,6 +7,7 @@ import PartStatistics from "./components/PartStatistics";
 import MonthlySalesOrigin from "./components/MonthlySalesOrigin";
 import MonthlySalesDrilldown from "./components/MonthlySalesDrilldown";
 import BuyVehicle from "./components/BuyVehicle";
+import VehicleDetail from "./components/VehicleDetail";
 
 const App = () => {
   return (
@@ -17,6 +18,7 @@ const App = () => {
           <Route path="/" element={<Login />} />
           <Route path="/view_seller_history" element={<ViewSellerHistory />} />
           <Route path="/buy_vehicle" element={<BuyVehicle />} />
+          <Route path="/vehicle_detail/:vin" element={<VehicleDetail />} />
           <Route
             path="/average_time_in_inventory"
             element={<AverageTimeInInventory />}

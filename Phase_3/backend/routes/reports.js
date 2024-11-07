@@ -16,18 +16,18 @@ router.get('/view_seller_history', checkSessionUserType(['manager', 'owner']), a
         0
       ) AS averagepartscostpervehiclepurchased,
       CASE
-        WHEN SUM(p.quantity) >= 5 THEN 'highlight'  -- Check if total parts count is 5 or more
-        WHEN ROUND(SUM(p.quantity * p.unit_price) / NULLIF(COUNT(DISTINCT v.vin), 0), 2) >= 500 THEN 'highlight'  -- Check if average part cost is $500 or more
+        WHEN SUM(p.quantity) >= 5 THEN 'highlight'  
+        WHEN ROUND(SUM(p.quantity * p.unit_price) / NULLIF(COUNT(DISTINCT v.vin), 0), 2) >= 500 THEN 'highlight' 
         ELSE 'no'
       END AS highlight
-FROM vehicle AS v
-LEFT JOIN parts_order AS po ON v.vin = po.vin
-LEFT JOIN part AS p ON po.parts_order_number = p.parts_order_number
-INNER JOIN customer AS cs ON v.customer_seller = cs.tax_id
-LEFT JOIN individual AS i ON cs.tax_id = i.ssn
-LEFT JOIN business AS b ON cs.tax_id = b.tin
-GROUP BY cs.tax_id, b.business_name, i.first_name, i.last_name
-ORDER BY vehiclecount DESC, averagepurchaseprice ASC;
+      FROM vehicle AS v
+      LEFT JOIN parts_order AS po ON v.vin = po.vin
+      LEFT JOIN part AS p ON po.parts_order_number = p.parts_order_number
+      INNER JOIN customer AS cs ON v.customer_seller = cs.tax_id
+      LEFT JOIN individual AS i ON cs.tax_id = i.ssn
+      LEFT JOIN business AS b ON cs.tax_id = b.tin
+      GROUP BY cs.tax_id, b.business_name, i.first_name, i.last_name
+      ORDER BY vehiclecount DESC, averagepurchaseprice ASC;
 
   `;
 
@@ -121,12 +121,12 @@ router.get('/monthly_sales', checkSessionUserType(['manager', 'owner']), async (
         DATE_PART('year', v.sale_date) AS year_sold,
         DATE_PART('month', v.sale_date) AS month_sold,
         COUNT(DISTINCT v.vin) AS numbervehicles,
-        SUM(ROUND((1.25 * v.purchase_price) + (1.1 * v.total_parts_price), 2)) AS grossincome,
-        (SUM(ROUND((1.25 * v.purchase_price) + (1.1 * v.total_parts_price), 2)) - SUM(v.total_parts_price)) AS netincome
+        SUM(ROUND((1.25 * COALESCE(v.purchase_price, 0)) + (1.1 * COALESCE(v.total_parts_price, 0)), 2)) AS grossincome,
+        (SUM(ROUND((1.25 * COALESCE(v.purchase_price, 0)) + (1.1 * COALESCE(v.total_parts_price, 0)), 2)) - SUM(COALESCE(v.total_parts_price, 0))) AS netincome
       FROM vehicle AS v
       WHERE v.sale_date IS NOT NULL
       GROUP BY DATE_PART('year', v.sale_date), DATE_PART('month', v.sale_date)
-      HAVING SUM(ROUND((1.25 * v.purchase_price) + (1.1 * v.total_parts_price), 2)) > 0
+      HAVING SUM(ROUND((1.25 * COALESCE(v.purchase_price, 0)) + (1.1 * COALESCE(v.total_parts_price, 0)), 2)) > 0
       ORDER BY year_sold DESC, month_sold DESC;
     `;
 
@@ -135,7 +135,7 @@ router.get('/monthly_sales', checkSessionUserType(['manager', 'owner']), async (
         au.first_name,
         au.last_name,
         COUNT(DISTINCT v.vin) AS vehiclesold,
-        SUM(ROUND((1.25 * v.purchase_price) + (1.1 * v.total_parts_price), 2)) AS totalsales,
+        SUM(ROUND((1.25 * COALESCE(v.purchase_price, 0)) + (1.1 * COALESCE(v.total_parts_price, 0)), 2)) AS totalsales,
         DATE_PART('year', v.sale_date) AS year_sold,
         DATE_PART('month', v.sale_date) AS month_sold
       FROM vehicle AS v
@@ -151,7 +151,11 @@ router.get('/monthly_sales', checkSessionUserType(['manager', 'owner']), async (
       pool.query(originQuery),
       pool.query(drilldownQuery),
     ]);
-
+    
+    // Log the results for debugging
+    console.log('Origin query result:', originResult.rows);
+    console.log('Drilldown query result:', drilldownResult.rows);
+    
     // Organize drilldown data by year and month for easier access
     const organizedDrilldownData = drilldownResult.rows.reduce((acc, drillItem) => {
       const key = `${drillItem.year_sold}-${drillItem.month_sold}`;
@@ -161,21 +165,22 @@ router.get('/monthly_sales', checkSessionUserType(['manager', 'owner']), async (
       acc[key].push(drillItem);
       return acc;
     }, {});
-
+    
     // Prepare the response
     const responseData = originResult.rows.map(originItem => {
       const key = `${originItem.year_sold}-${originItem.month_sold}`;
       return {
         ...originItem,
-        drilldown: organizedDrilldownData[key] || [],
+        drilldown: organizedDrilldownData[key] || [], // This ensures no errors if the key doesn't exist
       };
     });
-
+    
     res.status(200).json(responseData);
   } catch (error) {
-    console.error('Error executing queries:', error);
+    console.error('Error executing queries:', error.message || error);
     res.status(500).send('Error retrieving monthly sales data');
   }
 });
+
 
 module.exports = router;

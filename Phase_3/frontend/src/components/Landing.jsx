@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import ReportLinks from "./ReportLinks";
 import SearchResults from "./SearchResults";
 import Notification from "./Notification";
+import { Link } from "react-router-dom";
 
 const Landing = ({ loggedInUser }) => {
   const [searchOptions, setSearchOptions] = useState(null);
@@ -214,7 +215,7 @@ const Landing = ({ loggedInUser }) => {
               <label>Keyword: </label>
               <input
                 type="text"
-                value={searchOptions.keyword}
+                value={searchParams.keyword}
                 onChange={(e) =>
                   setSearchParams({
                     ...searchParams,

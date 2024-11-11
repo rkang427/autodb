@@ -131,19 +131,19 @@ router.get('/monthly_sales', checkSessionUserType(['manager', 'owner']), async (
     `;
 
     const drilldownQuery = `
-      SELECT
-        au.first_name,
-        au.last_name,
-        COUNT(DISTINCT v.vin) AS vehiclesold,
-        SUM(ROUND((1.25 * COALESCE(v.purchase_price, 0)) + (1.1 * COALESCE(v.total_parts_price, 0)), 2)) AS totalsales,
-        DATE_PART('year', v.sale_date) AS year_sold,
-        DATE_PART('month', v.sale_date) AS month_sold
-      FROM vehicle AS v
-      INNER JOIN salesperson AS e ON v.salesperson = e.username
-      INNER JOIN app_user AS au ON e.username = au.username
-      WHERE v.sale_date IS NOT NULL
-      GROUP BY au.first_name, au.last_name, year_sold, month_sold
-      ORDER BY year_sold DESC, month_sold DESC, vehiclesold DESC, totalsales DESC;
+     SELECT
+    au.first_name,
+    au.last_name,
+    COUNT(DISTINCT v.vin) AS vehiclesold,
+    SUM(ROUND((1.25 * COALESCE(v.purchase_price, 0)) + (1.1 * COALESCE(v.total_parts_price, 0)), 2)) AS totalsales,
+    DATE_PART('year', v.sale_date) AS year_sold,
+    DATE_PART('month', v.sale_date) AS month_sold
+    FROM vehicle AS v
+    INNER JOIN salesperson AS e ON v.salesperson = e.username
+    INNER JOIN app_user AS au ON e.username = au.username
+    WHERE v.sale_date IS NOT NULL  -- Ensuring only sales with valid dates are included
+    GROUP BY au.first_name, au.last_name, year_sold, month_sold
+    ORDER BY year_sold DESC, month_sold DESC, vehiclesold DESC, totalsales DESC;
     `;
 
     // Execute both queries in parallel

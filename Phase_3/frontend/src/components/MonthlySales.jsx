@@ -5,25 +5,30 @@ import { useNavigate } from 'react-router-dom';
 const MonthlySales = () => {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
-  const [type, setType] = useState('origin'); // Default type
+  const [type, setType] = useState('origin'); 
+  const [selectedMonth, setSelectedMonth] = useState(null);  
   const navigate = useNavigate();
 
+  // Fetch monthly sales data
   useEffect(() => {
     const fetchMonthlySales = async () => {
       const endpoint = 'http://localhost:3000/reports/monthly_sales';
 
       try {
         const response = await axios.get(endpoint, { withCredentials: true });
-        
-        console.log('API response:', response);  // Log the entire response
 
-        // Check the structure of the response
+        console.log('API response:', response); 
+        
         if (Array.isArray(response.data)) {
           if (type === 'origin') {
-            setData(response.data); // Use origin data directly
-          } else {
-            // Flatten drilldown data based on response structure
-            setData(response.data.flatMap(item => item.drilldown || []));
+            setData(response.data); 
+            
+          } else if (type === 'drilldown' && selectedMonth) {
+            
+            const drilldownEndpoint = `http://localhost:3000/reports/monthly_sales_drilldown?year=${selectedMonth.year}&month=${selectedMonth.month}`;
+            const drilldownResponse = await axios.get(drilldownEndpoint, { withCredentials: true });
+
+            setData(drilldownResponse.data);  
           }
         } else {
           throw new Error('Unexpected response format');
@@ -38,17 +43,22 @@ const MonthlySales = () => {
     };
 
     fetchMonthlySales();
-  }, [type]);
+  }, [type, selectedMonth]);
 
   const handleGoBack = () => {
     navigate(-1);  
+  };
+
+  
+  const handleDrilldown = (year, month) => {
+    setSelectedMonth({ year, month });
+    setType('drilldown');
   };
 
   return (
     <div>
       <h2>{type === 'drilldown' ? 'Monthly Sales Drilldown' : 'Monthly Sales Origin'}</h2>
       <button onClick={() => setType('origin')}>View Monthly Sales Origin</button>
-      {/* <button onClick={() => setType('drilldown')}>View Monthly Sales Drilldown</button> */}
 
       {error && <div style={{ color: 'red' }}>{error}</div>}
       <button onClick={handleGoBack}>Go Back</button>
@@ -80,7 +90,7 @@ const MonthlySales = () => {
             </tr>
           ) : (
             data.map((item, index) => {
-              console.log('Rendering item:', item); // Log each item to check its data
+              console.log('Rendering item:', item); 
               return (
                 <tr key={index}>
                   {type === 'drilldown' ? (
@@ -98,6 +108,13 @@ const MonthlySales = () => {
                       <td>${Number((item.grossincome || 0.0)).toFixed(2)}</td>
                       <td>${Number((item.netincome || 0.0)).toFixed(2)}</td>
                     </>
+                  )}
+                  {type === 'origin' && (
+                    <td>
+                      <button onClick={() => handleDrilldown(item.year_sold, item.month_sold)}>
+                        View Drilldown
+                      </button>
+                    </td>
                   )}
                 </tr>
               );

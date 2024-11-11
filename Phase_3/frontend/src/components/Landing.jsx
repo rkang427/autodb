@@ -18,11 +18,13 @@ const Landing = ({ loggedInUser }) => {
     fuel_type: "",
     color: "",
     keyword: "",
+    filter_type: "",
   });
 
   useEffect(() => {
     const getSearchOptions = async () => {
       const response = await search.searchOptions();
+      console.log(response.data);
       setSearchOptions(response.data);
     };
 
@@ -57,14 +59,14 @@ const Landing = ({ loggedInUser }) => {
         <>
           <p>
             Available Cars: {searchOptions.ready}
-            {searchOptions.not_ready && (
+            {searchOptions.not_ready != null && (
               <> - Car Pending Parts: {searchOptions.not_ready}</>
             )}
           </p>
           {loggedInUser &&
-          ["owner", "salesperson"].includes(loggedInUser.user_type) && (
-            <ReportLinks />
-          )}
+            ["owner", "manager"].includes(loggedInUser.user_type) && (
+              <ReportLinks />
+            )}
           <h2>Search Vehicles</h2>
 
           <form onSubmit={handleSubmit}>
@@ -82,6 +84,27 @@ const Landing = ({ loggedInUser }) => {
                 </>
               )}
             </div>
+            {loggedInUser &&
+              ["owner", "manager"].includes(loggedInUser.user_type) && (
+                <div>
+                  <label>Filter Type: </label>
+                  <select
+                    id="dropdown"
+                    value={searchParams.filter_type}
+                    onChange={(e) =>
+                      setSearchParams({
+                        ...searchParams,
+                        filter_type: e.target.value,
+                      })
+                    }
+                  >
+                    <option value=""></option>
+                    <option value="unsold">Unsold</option>
+                    <option value="sold">Sold</option>
+                    <option value="both">Both</option>
+                  </select>
+                </div>
+              )}
             <div>
               <label>Vehicle Type: </label>
               <select
@@ -208,10 +231,7 @@ const Landing = ({ loggedInUser }) => {
         </>
       )}
       <Notification notification={notification} />
-      <SearchResults
-        searchResults={searchResults}
-        loggedInUser={loggedInUser}
-      />
+      <SearchResults searchResults={searchResults} />
     </div>
   );
 };

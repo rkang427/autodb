@@ -29,6 +29,10 @@ db_clean:
 schema_only:
 	PGPASSWORD=$(POSTGRES_PASSWORD) psql -h 0.0.0.0 -p 5432 -U $(POSTGRES_USER) -d $(POSTGRES_DB) -f Phase_2/team006_p2_schema.sql
 
+load_demo_data:
+	PGPASSWORD=$(POSTGRES_PASSWORD) psql -h 0.0.0.0 -p 5432 -U $(POSTGRES_USER) -d $(POSTGRES_DB) -f Phase_2/team006_p2_schema.sql
+	PGPASSWORD=$(POSTGRES_PASSWORD) psql -h 0.0.0.0 -p 5432 -U $(POSTGRES_USER) -d $(POSTGRES_DB) -f Phase_3/Demo_Data/dump_customer.sql
+
 load_data:
 	PGPASSWORD=$(POSTGRES_PASSWORD) psql -h 0.0.0.0 -p 5432 -U $(POSTGRES_USER) -d $(POSTGRES_DB) -f Phase_2/team006_p2_schema.sql
 	PGPASSWORD=$(POSTGRES_PASSWORD) psql -h 0.0.0.0 -p 5432 -U $(POSTGRES_USER) -d $(POSTGRES_DB) -f tests/load_data.sql

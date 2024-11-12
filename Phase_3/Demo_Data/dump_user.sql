@@ -1,6 +1,7 @@
+-- Connect to the dealership database
 \c dealership;
 
-
+-- Step 1: Insert users into the app_user table
 INSERT INTO app_user (username, password, first_name, last_name, user_type) VALUES
 ('owner', 'owner', 'O', 'Owner', 'owner'),
 ('user01', 'pass01', 'Mitzie', 'Wenner', 'manager'),
@@ -28,3 +29,23 @@ INSERT INTO app_user (username, password, first_name, last_name, user_type) VALU
 ('user23', 'pass23', 'Yoko', 'Leinenbach', 'sales_person'),
 ('user24', 'pass24', 'Taryn', 'Whobrey', 'inventory_clerk'),
 ('user25', 'pass25', 'Mari', 'Mcrae', 'sales_person');
+
+-- Step 2: Insert records into inventory_clerk, manager, and salesperson tables based on user_type
+
+-- Insert inventory clerks
+INSERT INTO inventory_clerk (username)
+SELECT username
+FROM app_user
+WHERE user_type = 'inventory_clerk' OR user_type = 'owner';
+
+-- Insert managers
+INSERT INTO manager (username)
+SELECT username
+FROM app_user
+WHERE user_type = 'manager' OR user_type = 'owner';
+
+-- Insert salespersons
+INSERT INTO salesperson (username)
+SELECT username
+FROM app_user
+WHERE user_type = 'sales_person' OR user_type = 'owner';

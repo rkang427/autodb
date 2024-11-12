@@ -38,20 +38,19 @@ load_demo_data:
 	PGPASSWORD=$(POSTGRES_PASSWORD) psql -h 0.0.0.0 -p 5432 -U $(POSTGRES_USER) -d $(POSTGRES_DB) -f Phase_3/Demo_Data/dump_part.sql
 
 load_data:
-	PGPASSWORD=$(POSTGRES_PASSWORD) psql -h 0.0.0.0 -p 5432 -U $(POSTGRES_USER) -d $(POSTGRES_DB) -f Phase_2/team006_p2_schema.sql
 	PGPASSWORD=$(POSTGRES_PASSWORD) psql -h 0.0.0.0 -p 5432 -U $(POSTGRES_USER) -d $(POSTGRES_DB) -f tests/load_data.sql
 	PGPASSWORD=$(POSTGRES_PASSWORD) psql -h 0.0.0.0 -p 5432 -U $(POSTGRES_USER) -d $(POSTGRES_DB) -f tests/update_vehicles.sql
 
 reports:
 	PGPASSWORD=$(POSTGRES_PASSWORD) psql -h 0.0.0.0 -p 5432 -U $(POSTGRES_USER) -d $(POSTGRES_DB) -f tests/reports.sql
 
-db_schema: load_data reports
+db_schema: load_demo_data load_data reports
 
 
 test_schema: db_schema
 	pytest -vv tests/ --log-cli-level=INFO --log-cli-format="%(message)s" -x
 
-test_backend: db_up load_data
+test_backend: db_up load_demo_data load_data
 	cd Phase_3/backend && npm test
 
 check-lint:

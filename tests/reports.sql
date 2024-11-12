@@ -553,8 +553,8 @@ FROM
         FROM vehicle AS v
         INNER JOIN salesperson AS e ON v.salesperson = e.username
         WHERE
-            EXTRACT(YEAR FROM v.sale_date) = 2024
-            AND EXTRACT(MONTH FROM v.sale_date) = 9
+            EXTRACT(YEAR FROM v.sale_date) = 2023
+            AND EXTRACT(MONTH FROM v.sale_date) = 8
         GROUP BY e.username
     ) AS a
 INNER JOIN app_user AS au ON a.username = au.username

@@ -150,8 +150,7 @@ const SellVehicle = () => {
             }} 
             disabled={vehicleSold || saleDate || !customerTaxId}
           >
-            Sell Vehicle
-          </button>
+            Sell Vehicle </button>
 
           {/* Success or Error Message Display */}
           {saleStatus && <p>{saleStatus}</p>}

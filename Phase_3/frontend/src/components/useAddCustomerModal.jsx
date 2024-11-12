@@ -37,6 +37,57 @@ const useAddCustomerModal = () => {
   const handleSubmit = async (e, onCustomerTaxIdReceived) => {
     e.preventDefault();
     setError(null); // Clear previous errors
+
+    const {
+      customer_type,
+      tax_id,
+      email,
+      first_name,
+      last_name,
+      phone_number,
+      street,
+      city,
+      state,
+      postal_code,
+      title,
+      business_name,
+    } = form;
+
+    // Validation for Business Fields
+    if (customer_type === 'b') {
+      if (!business_name.trim() || business_name.length > 120) {
+        return setError("Business Name is required for a Business customer and must be between 1 and 120 characters.");
+      }
+      if (!title.trim() || title.length > 120) {
+        return setError("Primary Contact Title is required for a Business customer and must be between 1 and 120 characters.");
+      }
+    }
+
+    // Validation for common fields
+    if (!first_name.trim() || first_name.length > 120) {
+      return setError("First Name is invalid. It must be between 1 and 120 characters.");
+    }
+    if (!last_name.trim() || last_name.length > 120) {
+      return setError("Last Name is invalid. It must be between 1 and 120 characters.");
+    }
+    if (!/^\d{10}$/.test(phone_number)) {
+      return setError("Invalid Phone Number. It must be exactly 10 digits.");
+    }
+    if (email && !/\S+@\S+\.\S+/.test(email)) {
+      return setError("Invalid Email. Please enter a valid email address.");
+    }
+    if (!street.trim() || street.length < 2 || street.length > 120) {
+      return setError("Street Address is invalid. It must be between 2 and 120 characters.");
+    }
+    if (!city.trim() || city.length < 2 || city.length > 120) {
+      return setError("City is invalid. It must be between 2 and 120 characters.");
+    }
+    if (!state.trim() || state.length < 2 || state.length > 120) {
+      return setError("State is invalid. It must be between 2 and 120 characters.");
+    }
+    if (!/^\d{5}$/.test(postal_code)) {
+      return setError("Postal Code is invalid. It must be exactly 5 digits.");
+    }
   
     try {
       const response = await axios.post("http://localhost:3000/customer", form, { withCredentials: true });

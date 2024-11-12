@@ -31,7 +31,6 @@ const App = () => {
           <Route path="/part_statistics" element={<PartStatistics />} />
           <Route path="/monthly_sales" element={<MonthlySales />} />
           <Route path="/monthly_sales/drilldown/:year/:month" element={<MonthlySalesDrilldown />} />
-
         </Routes>
       </div>
     </Router>

@@ -21,8 +21,8 @@ const Dropdown = ({ label, name, options, value, onChange, placeholder = "Select
   const selectOptions = options.map((option) => ({ value: option, label: option }));
 
   const selectedOption = isMulti
-    ? selectOptions.filter((option) => value.includes(option.value))
-    : selectOptions.find((option) => option.value === value);
+    ? selectOptions.filter((option) => value?.includes(option.value))
+    : selectOptions.find((option) => option.value === value) || null; // Default to null
 
   return (
     <div style={{ marginBottom: '16px', fontFamily: 'Arial, sans-serif' }}>
@@ -158,13 +158,70 @@ const BuyVehicle = () => {
   const handleBuyVehicle = async (e) => {
     e.preventDefault();
 
-    // Ensure VIN is valid
-    const validateVIN = (vin) => vin.length === 17 && !vin.includes(" ");
-    if (!validateVIN(vehicleDetails.vin)) {
-      return alert("VIN must be 17 characters long and cannot contain spaces.");
+    // VIN validation
+    if (vehicleDetails.vin.length !== 17 || vehicleDetails.vin.includes(" ")) {
+      return alert("VIN must be exactly 17 characters long and cannot contain spaces.");
     }
 
+    // Vehicle type validation
+    if (!vehicleTypes.includes(vehicleDetails.vehicle_type)) {
+      return alert("Please select a vehicle type.");
+    }
+
+    // Manufacturer validation
+    if (!manufacturers.includes(vehicleDetails.manufacturer)) {
+      return alert("Please select a manufacturer.");
+    }
+
+    // Fuel type validation
+    if (!fuelTypes.includes(vehicleDetails.fuel_type)) {
+      return alert("Please select a fuel type.");
+    }
+
+    // Condition validation
+    if (!vehicleDetails.condition) {
+      return alert("Please select a vehicle condition.");
+    }
+
+    // Colors validation
+    if (!vehicleDetails.colors || vehicleDetails.colors.length === 0) {
+      return alert("Please select at least one color for the vehicle.");
+    }
+
+    // Model validation
+    if (!vehicleDetails.model) {
+      return alert("Please type a model.");
+    } 
+    if (vehicleDetails.model.length > 120) {
+      return alert("Model must be between 1 and 120 characters long.");
+    }
+
+    // Horsepower validation
+    if (!vehicleDetails.horsepower) {
+      return alert("Please type a horsepower.");
+    } 
+    if (vehicleDetails.horsepower <= 0 || vehicleDetails.horsepower > 32767 || !Number.isInteger(vehicleDetails.horsepower)) {
+      return alert("Horsepower must be an integer between 1 and 32,767.");
+    }
+
+    // Purchase price validation
+    if (!vehicleDetails.purchase_price && vehicleDetails.purchase_price != 0) {
+      return alert("Please type a purchase price.");
+    }
+    if (isNaN(vehicleDetails.purchase_price) || parseFloat(vehicleDetails.purchase_price) <= 0) {
+      return alert("Purchase price must be a positive number.");
+    }
+
+    // Description validation
+    if (vehicleDetails.description && vehicleDetails.description.length > 280) {
+      return alert("Description must not exceed 280 characters.");
+    }
+  
+    // Model year validation
     const currentYear = new Date().getFullYear();
+    if (!vehicleDetails.model_year) {
+      return alert("Please type a model year.");
+    }
     if (vehicleDetails.model_year > currentYear + 1) {
       alert("Model year must be within the current year or the next year.");
       return;
@@ -173,12 +230,8 @@ const BuyVehicle = () => {
       alert("Model year must include the full century digits (e.g., 2020).");
       return;
     }
-
-      // Ensure all required fields are filled
-    if (!vehicleDetails.vehicle_type || !vehicleDetails.manufacturer || !vehicleDetails.condition) {
-      return alert("Please fill in all the required fields.");
-    }
-      
+    
+    // Customer Seller Tax ID validation
     if (!customerTaxId) return alert("Please add a customer before buying.");
   
     const updatedVehicleDetails = {
@@ -191,6 +244,24 @@ const BuyVehicle = () => {
       await buyService.addVehicleToInventory(updatedVehicleDetails);
       setPurchaseStatus("Vehicle successfully added to inventory.");
       setVehicleBought(true);
+
+      // Clear form inputs and reset states 
+      setVehicleDetails({
+        vin: vin || "",
+        vehicle_type: null,
+        manufacturer: null,
+        model: "",
+        fuel_type: null,
+        colors: [],
+        horsepower: "",
+        purchase_price: "",
+        description: "",
+        model_year: "",
+        condition: null,
+      });
+      setLookupCustomerTaxId("");
+      setCustomerTaxId(null);
+
     } catch (error) {
       console.log("Error purchasing vehicle:", error);
       setPurchaseStatus("Failed to add vehicle to inventory.");
@@ -244,16 +315,24 @@ const BuyVehicle = () => {
 
           {/* Vehicle Details Form */}
           <form>
-          <input
-              type="text"
-              name="vin"
-              placeholder="VIN"
-              onChange={handleInputChange}
-              value={vehicleDetails.vin}
-              maxLength={17} // Restrict input to 17 characters
-            />
+            <div style={{ marginBottom: "16px", fontFamily: "Arial, sans-serif" }}>
+              <label 
+                htmlFor="vin" 
+                style={{ display: "block", marginBottom: "8px", fontWeight: "bold" }}
+              >
+                VIN
+              </label>
+              <input
+                type="text"
+                id="vin"
+                name="vin"
+                placeholder="Enter VIN"
+                maxLength={17}
+                onChange={handleInputChange}
+                value={vehicleDetails.vin}
+              />
+            </div>
 
-            {/* Vehicle Type Dropdown */}
             <Dropdown
               label="Vehicle Type"
               name="vehicle_type"
@@ -262,7 +341,6 @@ const BuyVehicle = () => {
               onChange={handleInputChange}
             />
 
-            {/* Manufacturer Dropdown */}
             <Dropdown
               label="Manufacturer"
               name="manufacturer"
@@ -271,7 +349,6 @@ const BuyVehicle = () => {
               onChange={handleInputChange}
             />
 
-            {/* Fuel Type Dropdown */}
             <Dropdown
               label="Fuel Type"
               name="fuel_type"
@@ -280,7 +357,6 @@ const BuyVehicle = () => {
               onChange={handleInputChange}
             />
 
-            {/* Condition Dropdown */}
             <Dropdown
               label="Condition"
               name="condition"
@@ -289,7 +365,6 @@ const BuyVehicle = () => {
               onChange={handleInputChange}
             />
 
-            {/* Color Dropdown */}
             <Dropdown
               label="Color"
               name="color"
@@ -299,17 +374,97 @@ const BuyVehicle = () => {
               isMulti={true}
             />
 
-            {/* Other Inputs */}
-            <input type="text" name="model" placeholder="Model" onChange={handleInputChange} value={vehicleDetails.model} />
-            <input type="number" name="horsepower" placeholder="Horsepower" onChange={handleInputChange} value={vehicleDetails.horsepower} />
-            <input type="number" name="purchase_price" placeholder="Purchase Price" onChange={handleInputChange} value={vehicleDetails.purchase_price} />
-            <input type="text" name="description" placeholder="Description" onChange={handleInputChange} value={vehicleDetails.description} />
-            <input type="number" name="model_year" placeholder="Model Year" onChange={handleInputChange} value={vehicleDetails.model_year} />
-            
-          </form>
+            <div style={{ marginBottom: "16px", fontFamily: "Arial, sans-serif" }}>
+              <label 
+                htmlFor="model" 
+                style={{ display: "block", marginBottom: "8px", fontWeight: "bold" }}
+              >
+                Model
+              </label>
+              <input
+                type="text"
+                id="model"
+                name="model"
+                placeholder="Enter Model"
+                onChange={handleInputChange}
+                value={vehicleDetails.model}
+              />
+            </div>
 
+            <div style={{ marginBottom: "16px", fontFamily: "Arial, sans-serif" }}>
+              <label 
+                htmlFor="horsepower" 
+                style={{ display: "block", marginBottom: "8px", fontWeight: "bold" }}
+              >
+                Horsepower
+              </label>
+              <input
+                type="number"
+                id="horsepower"
+                name="horsepower"
+                min={1}
+                placeholder="Enter Horsepower"
+                onChange={handleInputChange}
+                value={vehicleDetails.horsepower}
+              />
+            </div>
+
+            <div style={{ marginBottom: "16px", fontFamily: "Arial, sans-serif" }}>
+              <label 
+                htmlFor="purchase_price" 
+                style={{ display: "block", marginBottom: "8px", fontWeight: "bold" }}
+              >
+                Purchase Price
+              </label>
+              <input
+                type="number"
+                id="purchase_price"
+                min={1}
+                name="purchase_price"
+                placeholder="Enter Purchase Price"
+                onChange={handleInputChange}
+                value={vehicleDetails.purchase_price}
+              />
+            </div>
+
+            <div style={{ marginBottom: "16px", fontFamily: "Arial, sans-serif" }}>
+              <label 
+                htmlFor="description" 
+                style={{ display: "block", marginBottom: "8px", fontWeight: "bold" }}
+              >
+                Description
+              </label>
+              <input
+                type="text"
+                id="description"
+                name="description"
+                placeholder="Enter Description"
+                onChange={handleInputChange}
+                value={vehicleDetails.description}
+              />
+            </div>
+
+            <div style={{ marginBottom: "16px", fontFamily: "Arial, sans-serif" }}>
+              <label 
+                htmlFor="model_year" 
+                style={{ display: "block", marginBottom: "8px", fontWeight: "bold" }}
+              >
+                Model Year
+              </label>
+              <input
+                type="number"
+                id="model_year"
+                name="model_year"
+                min="1000"
+                max={new Date().getFullYear()}
+                placeholder="Enter Model Year"
+                onChange={handleInputChange}
+                value={vehicleDetails.model_year}
+              />
+            </div>
+          </form>
           {/* Buy Vehicle Button */}
-          <button type="submit" onClick={handleBuyVehicle} disabled={vehicleBought}>Add Vehicle to Inventory</button>
+          <button type="submit" onClick={handleBuyVehicle}>Add Vehicle to Inventory</button>
 
           {/* Purchase Status Message */}
           {purchaseStatus && <p>{purchaseStatus}</p>}

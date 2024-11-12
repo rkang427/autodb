@@ -7,7 +7,7 @@ import PartStatistics from "./components/PartStatistics";
 import MonthlySales from "./components/MonthlySales";
 import BuyVehicle from "./components/BuyVehicle";
 import VehicleDetail from "./components/VehicleDetail";
-import PartsOrder from "./components/PartsOrder";
+import PartsOrder from "./components/AddPartsOrder";
 import SellVehicle from "./components/SellVehicle";
 
 const App = () => {

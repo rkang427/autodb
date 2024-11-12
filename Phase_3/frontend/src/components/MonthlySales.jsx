@@ -5,120 +5,84 @@ import { useNavigate } from 'react-router-dom';
 const MonthlySales = () => {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
-  const [type, setType] = useState('origin'); 
-  const [selectedMonth, setSelectedMonth] = useState(null);  
   const navigate = useNavigate();
 
-  // Fetch monthly sales data
+  // Fetch monthly sales data (only for the "origin" view)
   useEffect(() => {
     const fetchMonthlySales = async () => {
-      const endpoint = 'http://localhost:3000/reports/monthly_sales';
-
       try {
+        const endpoint = 'http://localhost:3000/reports/monthly_sales';
+
+        console.log('Requesting data from:', endpoint); // Log the endpoint being requested
+
         const response = await axios.get(endpoint, { withCredentials: true });
 
-        console.log('API response:', response); 
-        
-        if (Array.isArray(response.data)) {
-          if (type === 'origin') {
-            setData(response.data); 
-            
-          } else if (type === 'drilldown' && selectedMonth) {
-            
-            const drilldownEndpoint = `http://localhost:3000/reports/monthly_sales_drilldown?year=${selectedMonth.year}&month=${selectedMonth.month}`;
-            const drilldownResponse = await axios.get(drilldownEndpoint, { withCredentials: true });
+        console.log('API Response:', response.data);  // Log the response data
 
-            setData(drilldownResponse.data);  
-          }
+        if (Array.isArray(response.data)) {
+          setData(response.data);  // Set the data accordingly
         } else {
           throw new Error('Unexpected response format');
         }
       } catch (error) {
-        const errorMessage = type === 'drilldown'
-          ? 'Error fetching monthly sales drilldown'
-          : 'Error fetching monthly sales origin';
-        setError(errorMessage);
-        console.error('Error fetching monthly sales data:', error.message || error);
+        console.error('Error fetching monthly sales data:', error);
+        setError(error.message || 'Failed to fetch data');
       }
     };
 
     fetchMonthlySales();
-  }, [type, selectedMonth]);
+  }, []); // Only fetch data once when the component is mounted
 
-  const handleGoBack = () => {
-    navigate(-1);  
-  };
-
-  
-  const handleDrilldown = (year, month) => {
-    setSelectedMonth({ year, month });
-    setType('drilldown');
+  // Fetch drilldown data from the backend
+  const handleViewDrilldown = async (year, month) => {
+    try {
+      // Redirect to the drilldown page with the year and month query parameters
+      navigate(`/monthly_sales/drilldown?year=${year}&month=${month}`);
+    } catch (error) {
+      console.error('Error navigating to drilldown:', error);
+      setError(error.message || 'Failed to navigate to drilldown');
+    }
   };
 
   return (
     <div>
-      <h2>{type === 'drilldown' ? 'Monthly Sales Drilldown' : 'Monthly Sales Origin'}</h2>
-      <button onClick={() => setType('origin')}>View Monthly Sales Origin</button>
+      <h2>Monthly Sales</h2>
 
-      {error && <div style={{ color: 'red' }}>{error}</div>}
-      <button onClick={handleGoBack}>Go Back</button>
+      {error && <div style={{ color: 'red' }}>{error}</div>}  {/* Display error if any */}
+
       <table>
         <thead>
-          {type === 'drilldown' ? (
-            <tr>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>Vehicles Sold</th>
-              <th>Total Sales</th>
-            </tr>
-          ) : (
-            <tr>
-              <th>Year Sold</th>
-              <th>Month Sold</th>
-              <th>Number of Vehicles</th>
-              <th>Gross Income</th>
-              <th>Net Income</th>
-            </tr>
-          )}
+          <tr>
+            <th>Year Sold</th>
+            <th>Month Sold</th>
+            <th>Number of Vehicles</th>
+            <th>Gross Income</th>
+            <th>Net Income</th>
+            <th>Actions</th>
+          </tr>
         </thead>
         <tbody>
           {data.length === 0 ? (
             <tr>
-              <td colSpan={type === 'drilldown' ? 4 : 5} style={{ textAlign: 'center' }}>
+              <td colSpan="6" style={{ textAlign: 'center' }}>
                 No data available
               </td>
             </tr>
           ) : (
-            data.map((item, index) => {
-              console.log('Rendering item:', item); 
-              return (
-                <tr key={index}>
-                  {type === 'drilldown' ? (
-                    <>
-                      <td>{item.first_name}</td>
-                      <td>{item.last_name}</td>
-                      <td>{item.vehiclesold}</td>
-                      <td>${(item.totalsales || 0).toFixed(2)}</td>
-                    </>
-                  ) : (
-                    <>
-                      <td>{item.year_sold}</td>
-                      <td>{item.month_sold}</td>
-                      <td>{item.numbervehicles}</td>
-                      <td>${Number((item.grossincome || 0.0)).toFixed(2)}</td>
-                      <td>${Number((item.netincome || 0.0)).toFixed(2)}</td>
-                    </>
-                  )}
-                  {type === 'origin' && (
-                    <td>
-                      <button onClick={() => handleDrilldown(item.year_sold, item.month_sold)}>
-                        View Drilldown
-                      </button>
-                    </td>
-                  )}
-                </tr>
-              );
-            })
+            data.map((item, index) => (
+              <tr key={index}>
+                <td>{item.year_sold}</td>
+                <td>{item.month_sold}</td>
+                <td>{item.numbervehicles}</td>
+                <td>${Number((item.grossincome || 0.0)).toFixed(2)}</td>
+                <td>${Number((item.netincome || 0.0)).toFixed(2)}</td>
+                <td>
+                  <button onClick={() => handleViewDrilldown(item.year_sold, item.month_sold)}>
+                    View Drilldown
+                  </button>
+                </td>
+              </tr>
+            ))
           )}
         </tbody>
       </table>

@@ -37,7 +37,7 @@ const MonthlySales = () => {
   const handleViewDrilldown = async (year, month) => {
     try {
       // Redirect to the drilldown page with the year and month query parameters
-      navigate(`/monthly_sales/drilldown?year=${year}&month=${month}`);
+      navigate(`/monthly_sales/drilldown/${year}/${month}`);
     } catch (error) {
       console.error('Error navigating to drilldown:', error);
       setError(error.message || 'Failed to navigate to drilldown');

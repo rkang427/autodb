@@ -25,7 +25,7 @@ const MonthlySalesDrilldown = () => {
     const fetchDrilldownData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/reports/monthly_sales/drilldown?year=${year}&month=${month}`,
+          `http://localhost:3000/reports/monthly_sales/drilldown/${year}/${month}`,
           { withCredentials: true }
         );
 

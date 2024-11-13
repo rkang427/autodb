@@ -64,3 +64,17 @@ FROM staging_part sp;
 DROP TABLE IF EXISTS staging_parts_order;
 DROP TABLE IF EXISTS staging_part;
 
+-- Step: Update total_parts_price for every unique vin in the parts_order table
+WITH unique_vins AS (
+    SELECT DISTINCT vin
+    FROM parts_order
+)
+UPDATE vehicle v
+SET total_parts_price = (
+    SELECT COALESCE(SUM(p.quantity * p.unit_price), 0)
+    FROM part p
+    INNER JOIN parts_order po ON p.parts_order_number = po.parts_order_number
+    WHERE po.vin = v.vin
+)
+FROM unique_vins uv
+WHERE v.vin = uv.vin;

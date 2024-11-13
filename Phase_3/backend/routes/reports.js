@@ -130,57 +130,79 @@ router.get('/monthly_sales', checkSessionUserType(['manager', 'owner']), async (
       ORDER BY year_sold DESC, month_sold DESC;
     `;
 
-    const drilldownQuery = `
-      SELECT
-        au.first_name,
-        au.last_name,
-        COUNT(DISTINCT v.vin) AS vehiclesold,
-        SUM(ROUND((1.25 * COALESCE(v.purchase_price, 0)) + (1.1 * COALESCE(v.total_parts_price, 0)), 2)) AS totalsales,
-        DATE_PART('year', v.sale_date) AS year_sold,
-        DATE_PART('month', v.sale_date) AS month_sold
-      FROM vehicle AS v
-      INNER JOIN salesperson AS e ON v.salesperson = e.username
-      INNER JOIN app_user AS au ON e.username = au.username
-      WHERE v.sale_date IS NOT NULL
-      GROUP BY au.first_name, au.last_name, year_sold, month_sold
-      ORDER BY year_sold DESC, month_sold DESC, vehiclesold DESC, totalsales DESC;
-    `;
-
-    // Execute both queries in parallel
-    const [originResult, drilldownResult] = await Promise.all([
-      pool.query(originQuery),
-      pool.query(drilldownQuery),
-    ]);
+    const originResult = await pool.query(originQuery, []);
     
     // Log the results for debugging
     console.log('Origin query result:', originResult.rows);
-    console.log('Drilldown query result:', drilldownResult.rows);
     
-    // Organize drilldown data by year and month for easier access
-    const organizedDrilldownData = drilldownResult.rows.reduce((acc, drillItem) => {
-      const key = `${drillItem.year_sold}-${drillItem.month_sold}`;
-      if (!acc[key]) {
-        acc[key] = [];
-      }
-      acc[key].push(drillItem);
-      return acc;
-    }, {});
-    
-    // Prepare the response
-    const responseData = originResult.rows.map(originItem => {
-      const key = `${originItem.year_sold}-${originItem.month_sold}`;
-      return {
-        ...originItem,
-        drilldown: organizedDrilldownData[key] || [], // This ensures no errors if the key doesn't exist
-      };
-    });
-    
-    res.status(200).json(responseData);
+    res.status(200).json(originResult.rows);
   } catch (error) {
     console.error('Error executing queries:', error.message || error);
     res.status(500).send('Error retrieving monthly sales data');
   }
 });
 
+// Report 5: Monthly Sales Report
+router.get('/monthly_sales/drilldown', checkSessionUserType(['manager', 'owner']), async (req, res) => {
+  try {
+    const month = req.query.month;
+    const year = req.query.year;
+
+    // Validate year and month parameters
+    if (!month || !year) {
+      console.error('Missing year or month parameter');
+      return res.status(400).json({ errors: [{ msg: 'Missing year or month parameter' }] });
+    }
+
+    console.log(`Received parameters - Year: ${year}, Month: ${month}`);
+
+    const query = `
+      SELECT
+        au.first_name,
+        au.last_name,
+        vehiclesold,
+        totalsales
+      FROM
+        (
+          SELECT
+            e.username,
+            COUNT(DISTINCT v.vin) AS vehiclesold,
+            SUM(
+                ROUND(
+                    (1.25 * v.purchase_price) + (1.1 * v.total_parts_price), 2
+                )
+            ) AS totalsales
+          FROM vehicle AS v
+          INNER JOIN salesperson AS e ON v.salesperson = e.username
+          WHERE
+            EXTRACT(YEAR FROM v.sale_date) = $1
+            AND EXTRACT(MONTH FROM v.sale_date) = $2
+          GROUP BY e.username
+        ) AS a
+      INNER JOIN app_user AS au ON a.username = au.username
+      GROUP BY au.first_name, au.last_name, vehiclesold, totalsales
+      ORDER BY vehiclesold DESC, totalsales DESC`;
+
+    console.log('Executing drilldown query with parameters:', [year, month]);
+
+    // Execute the query
+    const drillDownResult = await pool.query(query, [year, month]);
+    console.log('Drilldown query result:', drillDownResult.rows);
+
+    // Check if no results
+    if (drillDownResult.rows.length === 0) {
+      console.log('No data found for the given year/month');
+      return res.status(404).json({
+        errors: [{ msg: 'No drilldown data available for that year/month' }],
+      });
+    }
+
+    // Send successful response
+    res.status(200).json(drillDownResult.rows);
+  } catch (error) {
+    console.error('Error executing queries:', error.message || error);
+    res.status(500).send('Error retrieving monthly sales data');
+  }
+});
 
 module.exports = router;

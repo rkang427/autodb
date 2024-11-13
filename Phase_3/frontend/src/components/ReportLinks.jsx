@@ -19,11 +19,8 @@ const ReportLinks = () => {
         <Link to="/part_statistics">Part Statistics</Link>
       </div>
       <div>
-        <Link to="/monthly_sales/origin">Monthly Sales Origin</Link>
+        <Link to="/monthly_sales">Monthly Sales</Link>
       </div>
-      {/* <div>
-        <Link to="/monthly_sales/drilldown">Monthly Sales Drilldown</Link>
-      </div> */}
     </div>
   );
 };

@@ -295,6 +295,16 @@ Price Per Condition Report
 curl -X GET "http://localhost:3000/reports/price_condition" -b cookies.txt
 ```
 
+Monthly Sales Report
+```
+curl -X GET "http://localhost:3000/reports/monthly_sales/" -b cookies.txt
+```
+
+Monthly Sales Report Drilldown
+```
+curl -X GET "http://localhost:3000/reports/monthly_sales/drilldown?month=9&year=2024" -b cookies.txt
+```
+
 Get Vehicle Detail
 ```
 curl "http://localhost:3000/vehicle?vin=1HGCM82633A123456" -H "Accept: application/json" -b cookies.txt

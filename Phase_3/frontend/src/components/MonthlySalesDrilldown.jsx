@@ -1,21 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
-
+import { useParams } from 'react-router-dom';
 const MonthlySalesDrilldown = () => {
   const location = useLocation();  // Access query string from the URL
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
 
-  const getQueryParams = () => {
-    const params = new URLSearchParams(location.search); 
-    return {
-      year: params.get('year'),
-      month: params.get('month')
-    };
-  };
-
-  const { year, month } = getQueryParams();  
+  const { year, month } = useParams();  
+  console.log(year, month);
   useEffect(() => {
     if (!year || !month) {
       setError('Missing year or month parameter');
@@ -25,9 +18,11 @@ const MonthlySalesDrilldown = () => {
     const fetchDrilldownData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/reports/monthly_sales/drilldown/${year}/${month}`,
-          { withCredentials: true }
+          `http://localhost:3000/reports/monthly_sales/drilldown`,
+          { params : {month:month, year:year},
+            withCredentials: true }
         );
+        console.log(response.data);
 
         if (response.status === 200) {
           // Set the drilldown data on successful response
@@ -73,7 +68,7 @@ const MonthlySalesDrilldown = () => {
                 <td>{item.first_name}</td>
                 <td>{item.last_name}</td>
                 <td>{item.vehiclesold}</td>
-                <td>${(item.totalsales || 0).toFixed(2)}</td>
+                <td>${Number(item.totalsales || 0).toFixed(2)}</td>
               </tr>
             ))
           )}

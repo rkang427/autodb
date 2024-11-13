@@ -10,22 +10,22 @@ const router = express.Router();
 // GET endpoint to retrieve a vendor by name
 router.get(
   '/',
-  vendorGetValidator,
+ // vendorGetValidator,
   checkSessionUserType(['inventory_clerk', 'owner', 'manager']),
   async (req, res) => {
-    const errors = validationResult(req);
+  //  const errors = validationResult(req);
 
-    if (!errors.isEmpty()) {
+    /*if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
-    }
+    }*/
     try {
       const vendorName = req.query.name;
 
       const query = `
-      SELECT name, phone_number, street, city, state, postal_code
-      FROM vendor
-      WHERE name = $1`;
-      const values = [vendorName];
+      SELECT name
+      FROM vendor`;
+
+      const values = [];
 
       const result = await pool.query(query, values);
 
@@ -35,7 +35,7 @@ router.get(
           .json({ error: 'No vendor found with the provided name' });
       }
 
-      res.status(200).json(result.rows[0]);
+      res.status(200).json(result.rows);
     } catch (error) {
       console.error('Database connection error:', error);
       res.status(500).json({ error: 'Error connecting to the database' });

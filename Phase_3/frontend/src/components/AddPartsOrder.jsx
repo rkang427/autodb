@@ -17,7 +17,7 @@ const AddPartsOrder = () => {
   useEffect(() => {
     const fetchVendors = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/vendor", { withCredentials: true });
+        const response = await axios.get("http://localhost:3000/vendor/", { withCredentials: true });
         setVendorList(response.data);
       } catch (error) {
         console.error("Error fetching vendors:", error);
@@ -74,7 +74,7 @@ const AddPartsOrder = () => {
       console.log("Parts Order Submitted Successfully:", response);
 
       setSuccessMessage("Parts order created successfully!");
-      navigate("/success");  // Redirect upon successful submission
+      navigate(`/vehicle_detail/${vin}`);  // Redirect upon successful submission
     } catch (error) {
       console.error("Error creating parts order:", error);
       

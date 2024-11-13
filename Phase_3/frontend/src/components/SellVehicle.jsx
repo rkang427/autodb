@@ -9,9 +9,11 @@ const SellVehicle = () => {
   const { vin } = useParams();
   console.log("VIN: ", vin);
   const [loggedInUser, setLoggedInUser] = useState(null);
-  const [customerTaxId, setCustomerTaxId] = useState(null); // Hardcoded customer ID for testing
+  const [customerTaxId, setCustomerTaxId] = useState(null);
   const [saleStatus, setSaleStatus] = useState(null);  // Track sale status
   const [isSellModalOpen, setIsSellModalOpen] = useState(false); // Controls modal visibility
+  const [vehicleSold, setVehicleSold] = useState(false); // To track if vehicle is sold
+  const [saleDate, setSaleDate] = useState(null); // To store the sale date
 
   useEffect(() => {
     const checkSession = async () => {
@@ -54,19 +56,16 @@ const SellVehicle = () => {
   const handleSellVehicle = async (event) => {
     event.preventDefault();
 
-    if (!customerTaxId) {
-      alert("Please add a customer before selling the vehicle.");
-      return;
-    }
-
     try {
       const data = await sellService.sellVehicle(vin, customerTaxId);
-      setSaleStatus("Vehicle sold successfully");
+      setSaleStatus("Vehicle sold successfully!"); // Success message
       console.log("Sell vehicle response:", data);
       setIsSellModalOpen(false); // Close the modal upon successful sale
+      setVehicleSold(true); // Mark the vehicle as sold
+      setSaleDate(new Date().toLocaleDateString()); // Set the sale date to today's date
     } catch (error) {
       console.error("Error selling vehicle:", error);
-      setSaleStatus(error.message); // Display the error message if sale fails
+      setSaleStatus("Error: " + error.message); // Display the error message if sale fails
     }
   };
 
@@ -81,7 +80,7 @@ const SellVehicle = () => {
           {/* Customer Tax ID */}
           <div>
             {customerTaxId ? <p>Customer Tax ID: {customerTaxId}</p> : <p>No customer selected.</p>}
-            <button onClick={handleAddCustomerClick}>Add Customer</button>
+            <button onClick={handleAddCustomerClick} disabled={vehicleSold}>Add Customer</button>
 
             {/* Conditionally render the Add Customer modal */}
             {isAddCustomerModalOpen && (
@@ -93,14 +92,33 @@ const SellVehicle = () => {
                 handleSubmit={handleSubmit}
                 isAddCustomerModalOpen={isAddCustomerModalOpen}
                 onCustomerTaxIdReceived={handleCustomerTaxIdReceived}
-                onCustomerTaxIdReceived={setCustomerTaxId} 
                 error={error} 
               />
             )}
           </div>
 
-          {/* Sell Vehicle Button */}
-          <button onClick={() => setIsSellModalOpen(true)}>Sell Vehicle</button>
+          {/* Conditionally disable the Sell Vehicle Button if the vehicle is already sold */}
+          <button 
+            onClick={() => {
+              if (!customerTaxId) {
+                alert("Please add a customer before selling the vehicle.");
+                return;
+              }
+
+              if (vehicleSold) {
+                alert("This vehicle has already been sold.");
+                return;
+              }
+
+              setIsSellModalOpen(true);
+            }} 
+            disabled={vehicleSold || saleDate}
+          >
+            Sell Vehicle
+          </button>
+
+          {/* Success or Error Message Display */}
+          {saleStatus && <p>{saleStatus}</p>}
 
           {/* Sell Vehicle Modal */}
           {isSellModalOpen && (
@@ -108,10 +126,9 @@ const SellVehicle = () => {
               <div className="modal-content">
                 <h3>Confirm Vehicle Sale</h3>
                 <form onSubmit={handleSellVehicle}>
-                  <button type="submit" disabled={!customerTaxId}>Confirm Sale</button>
+                  <button type="submit" disabled={!customerTaxId || vehicleSold}>Confirm Sale</button>
                   <button type="button" onClick={() => setIsSellModalOpen(false)}>Cancel</button>
                 </form>
-                {saleStatus && <p>{saleStatus}</p>}
               </div>
             </div>
           )}

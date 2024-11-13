@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useLocation } from 'react-router-dom';
-import { useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+
 const MonthlySalesDrilldown = () => {
   const location = useLocation();  // Access query string from the URL
+  const navigate = useNavigate();  // Get the navigate function for programmatic navigation
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
 
   const { year, month } = useParams();  
-  console.log(year, month);
+
   useEffect(() => {
     if (!year || !month) {
       setError('Missing year or month parameter');
@@ -19,8 +20,10 @@ const MonthlySalesDrilldown = () => {
       try {
         const response = await axios.get(
           `http://localhost:3000/reports/monthly_sales/drilldown`,
-          { params : {month:month, year:year},
-            withCredentials: true }
+          { 
+            params: { month, year },
+            withCredentials: true 
+          }
         );
         console.log(response.data);
 
@@ -36,15 +39,19 @@ const MonthlySalesDrilldown = () => {
       }
     };
 
-    // Fetch data for the selected year and month
+    
     fetchDrilldownData();
-  }, [location.search]);  // Only refetch when query parameters change
+  }, [location.search]);  
+  const handleGoBack = () => {
+    navigate(-1); 
+  };
 
   return (
     <div>
       <h2>Drilldown for {month}/{year}</h2>
 
-      {error && <div style={{ color: 'red' }}>{error}</div>}  {/* Display error if any */}
+      {error && <div style={{ color: 'red' }}>{error}</div>}
+      <button onClick={handleGoBack}>Go Back</button> 
 
       <table>
         <thead>

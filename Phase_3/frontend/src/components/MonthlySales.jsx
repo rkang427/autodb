@@ -33,7 +33,9 @@ const MonthlySales = () => {
     fetchMonthlySales();
   }, []); // Only fetch data once when the component is mounted
 
-  // Fetch drilldown data from the backend
+  const handleGoBack = () => {
+    navigate(-1); 
+  };
   const handleViewDrilldown = async (year, month) => {
     try {
       // Redirect to the drilldown page with the year and month query parameters
@@ -47,6 +49,7 @@ const MonthlySales = () => {
   return (
     <div>
       <h2>Monthly Sales</h2>
+      <button onClick={handleGoBack}>Go Back</button> 
 
       {error && <div style={{ color: 'red' }}>{error}</div>}  {/* Display error if any */}
 

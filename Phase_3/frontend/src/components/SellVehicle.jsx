@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import auth from "../services/auth";
+import axios from "axios";
 import sellService from "../services/sell";
 import { useState, useEffect } from "react";
 import AddCustomerModal from './AddCustomerModal'; 
@@ -10,6 +11,7 @@ const SellVehicle = () => {
   console.log("VIN: ", vin);
   const [loggedInUser, setLoggedInUser] = useState(null);
   const [customerTaxId, setCustomerTaxId] = useState(null);
+  const [lookupCustomerTaxId, setLookupCustomerTaxId] = useState("");
   const [saleStatus, setSaleStatus] = useState(null);  // Track sale status
   const [isSellModalOpen, setIsSellModalOpen] = useState(false); // Controls modal visibility
   const [vehicleSold, setVehicleSold] = useState(false); // To track if vehicle is sold
@@ -46,6 +48,18 @@ const SellVehicle = () => {
   const handleAddCustomerClick = () => {
     openAddCustomerModal(); // Open add customer modal
   };
+  
+  const handleLookupCustomerClick = async (e) => {
+    e.preventDefault();
+    console.log(`in handleLookupCustomerClick`)
+    try {
+      const response = await axios.get("http://localhost:3000/customer", { params: {tax_id: lookupCustomerTaxId}, withCredentials: true });
+      console.log(response.data)
+      setCustomerTaxId(response.data.tax_id); // Set customer tax ID received from the modal
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleCustomerTaxIdReceived = (taxId) => {
     console.log("Received tax_id from modal:", taxId);
@@ -80,6 +94,18 @@ const SellVehicle = () => {
           {/* Customer Tax ID */}
           <div>
             {customerTaxId ? <p>Customer Tax ID: {customerTaxId}</p> : <p>No customer selected.</p>}
+            <form onSubmit={handleLookupCustomerClick}>
+              <div>
+                <label>Look up existing customer by SSN/TIN:</label>
+                <input
+                  type="text"
+                  value={lookupCustomerTaxId}
+                  onChange={(e) => setLookupCustomerTaxId(e.target.value)}
+                  required
+                />
+              </div>
+              <button type="submit">Search Existing Customers</button>
+            </form>
             <button onClick={handleAddCustomerClick} disabled={vehicleSold}>Add Customer</button>
 
             {/* Conditionally render the Add Customer modal */}

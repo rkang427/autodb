@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import ReportLinks from "./ReportLinks";
 import SearchResults from "./SearchResults";
 import Notification from "./Notification";
+import { Link } from "react-router-dom";
 
 const Landing = ({ loggedInUser }) => {
   const [searchOptions, setSearchOptions] = useState(null);
@@ -18,11 +19,13 @@ const Landing = ({ loggedInUser }) => {
     fuel_type: "",
     color: "",
     keyword: "",
+    filter_type: "",
   });
 
   useEffect(() => {
     const getSearchOptions = async () => {
       const response = await search.searchOptions();
+      console.log(response.data);
       setSearchOptions(response.data);
     };
 
@@ -57,14 +60,14 @@ const Landing = ({ loggedInUser }) => {
         <>
           <p>
             Available Cars: {searchOptions.ready}
-            {searchOptions.not_ready && (
+            {searchOptions.not_ready != null && (
               <> - Car Pending Parts: {searchOptions.not_ready}</>
             )}
           </p>
           {loggedInUser &&
-          ["owner", "salesperson"].includes(loggedInUser.user_type) && (
-            <ReportLinks />
-          )}
+            ["owner", "manager"].includes(loggedInUser.user_type) && (
+              <ReportLinks />
+            )}
           <h2>Search Vehicles</h2>
 
           <form onSubmit={handleSubmit}>
@@ -82,6 +85,27 @@ const Landing = ({ loggedInUser }) => {
                 </>
               )}
             </div>
+            {loggedInUser &&
+              ["owner", "manager"].includes(loggedInUser.user_type) && (
+                <div>
+                  <label>Filter Type: </label>
+                  <select
+                    id="dropdown"
+                    value={searchParams.filter_type}
+                    onChange={(e) =>
+                      setSearchParams({
+                        ...searchParams,
+                        filter_type: e.target.value,
+                      })
+                    }
+                  >
+                    <option value=""></option>
+                    <option value="unsold">Unsold</option>
+                    <option value="sold">Sold</option>
+                    <option value="both">Both</option>
+                  </select>
+                </div>
+              )}
             <div>
               <label>Vehicle Type: </label>
               <select
@@ -191,7 +215,7 @@ const Landing = ({ loggedInUser }) => {
               <label>Keyword: </label>
               <input
                 type="text"
-                value={searchOptions.keyword}
+                value={searchParams.keyword}
                 onChange={(e) =>
                   setSearchParams({
                     ...searchParams,
@@ -208,10 +232,7 @@ const Landing = ({ loggedInUser }) => {
         </>
       )}
       <Notification notification={notification} />
-      <SearchResults
-        searchResults={searchResults}
-        loggedInUser={loggedInUser}
-      />
+      <SearchResults searchResults={searchResults} />
     </div>
   );
 };

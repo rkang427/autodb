@@ -6,7 +6,7 @@ const AddPartsOrder = () => {
   const { vin } = useParams();  // Extract VIN from the URL
   const [vendorList, setVendorList] = useState([]);
   const [vendor_name, setVendorName] = useState("");
-  const [parts, setParts] = useState([{ part_number: "", description: "", quantity: 0, unit_price: 0 }]);
+  const [parts, setParts] = useState([{ part_number: "", description: "", quantity: 1, unit_price: 0.01 }]);
   const [showAddVendorForm, setShowAddVendorForm] = useState(false); // Toggle for showing inline vendor form
   const [newVendor, setNewVendor] = useState({ name: "", phone_number: "", street: "", city: "", state: "", postal_code: "" });
   const [errorMessage, setErrorMessage] = useState("");
@@ -123,8 +123,8 @@ const AddPartsOrder = () => {
         <div key={index}>
           <input type="text" placeholder="Part Number" value={part.part_number} onChange={(e) => handlePartChange(index, "part_number", e.target.value)} />
           <input type="text" placeholder="Description" value={part.description} onChange={(e) => handlePartChange(index, "description", e.target.value)} />
-          <input type="number" placeholder="Quantity" value={part.quantity} onChange={(e) => handlePartChange(index, "quantity", parseInt(e.target.value))} />
-          <input type="number" placeholder="Unit Price" value={part.unit_price} onChange={(e) => handlePartChange(index, "unit_price", parseFloat(e.target.value))} />
+          <input type="number" min = "1" placeholder="Quantity" value={part.quantity} onChange={(e) => handlePartChange(index, "quantity", parseInt(e.target.value))} />
+          <input type="number" min="0.01" placeholder="Unit Price" value={part.unit_price} onChange={(e) => handlePartChange(index, "unit_price", parseFloat(e.target.value))} />
         </div>
       ))}
       <button type="button" onClick={addPartField}>Add Another Part</button>

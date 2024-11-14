@@ -40,7 +40,7 @@ router.get('/', async (req, res) => {
         INNER JOIN part AS p ON po.parts_order_number = p.parts_order_number
         WHERE p.status <> 'installed'
       )
-      SELECT COUNT(*)::int AS count
+      SELECT COUNT(DISTINCT v.vin)::int AS count
       FROM vehicle AS v
       LEFT JOIN po_not_installed ON v.vin = po_not_installed.vin
       WHERE po_not_installed.vin IS NOT NULL AND v.sale_date IS NULL;`,

@@ -40,7 +40,14 @@ const AverageTimeInInventory = () => {
           {data.map((item, index) => (
             <tr key={index}>
               <td>{item.vehicle_type}</td>
-              <td>{item.average_time_in_inventory}</td>
+              <td>
+                {
+                  // Check if the value is a number
+                  item.average_time_in_inventory === 'N/A' 
+                    ?item.average_time_in_inventory // Round to 2 decimal places if it's a number
+                    : Number(item.average_time_in_inventory).toFixed(2)// Leave it as is if it's not a number (string)
+                }
+              </td>
             </tr>
           ))}
         </tbody>

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import formatter from '../util/formatter';
+import '../App.css';
 
 const PricePerCondition = () => {
   const [data, setData] = useState([]);
@@ -31,19 +33,24 @@ const PricePerCondition = () => {
       <h2>Price Per Condition</h2>
       {error && <div style={{ color: 'red' }}>{error}</div>} {/* Display error if exists */}
       <button onClick={handleGoBack}>Go Back</button> {/* Go Back button */}
-      <table>
+      <table style = {{margin:'auto'}}> 
         <thead>
           <tr>
-            <th>Vehicle Type</th>
-            <th>Total Price</th>
-            <th>Condition</th>
+            <td>Vehicle Type</td>
+            <td>Fair</td>
+            <td>Good</td>
+            <td>Very Good</td>
+            <td>Excellent</td>
           </tr>
         </thead>
         <tbody>
           {data.map((item, index) => (
             <tr key={index}>
               <td>{item.vehicle_type}</td>
-              <td>{item.excellenttotalprice || item.verygoodtotalprice}</td> {/* Adjust this if necessary */}
+              <td>{formatter.formatUSD(item.fairavgprice)}</td> 
+              <td>{formatter.formatUSD(item.goodavgprice)}</td> 
+              <td>{formatter.formatUSD(item.verygoodavgprice)}</td> 
+              <td>{formatter.formatUSD(item.excellentavgprice)}</td> 
             </tr>
           ))}
         </tbody>

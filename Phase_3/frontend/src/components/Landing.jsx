@@ -61,7 +61,7 @@ const Landing = ({ loggedInUser }) => {
           <p>
             Available Cars: {searchOptions.ready}
             {searchOptions.not_ready != null && (
-              <> - Car Pending Parts: {searchOptions.not_ready}</>
+              <p>Car with Pending Parts: {searchOptions.not_ready}</p>
             )}
           </p>
           {loggedInUser &&

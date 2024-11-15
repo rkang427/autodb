@@ -72,10 +72,10 @@ router.get('/avg_time_in_inventory', checkSessionUserType(['manager', 'owner']),
 router.get('/price_per_condition', checkSessionUserType(['manager', 'owner']), async (req, res) => {
   const query = `
     SELECT vt.vehicle_type,
-      COALESCE(SUM(CASE WHEN v.condition = 'Excellent' THEN v.purchase_price ELSE 0 END), 0) AS excellenttotalprice,
-      COALESCE(SUM(CASE WHEN v.condition = 'Very Good' THEN v.purchase_price ELSE 0 END), 0) AS verygoodtotalprice,
-      COALESCE(SUM(CASE WHEN v.condition = 'Good' THEN v.purchase_price ELSE 0 END), 0) AS goodtotalprice,
-      COALESCE(SUM(CASE WHEN v.condition = 'Fair' THEN v.purchase_price ELSE 0 END), 0) AS fairtotalprice
+      COALESCE(ROUND(AVG(CASE WHEN v.condition = 'Excellent' THEN v.purchase_price ELSE 0 END),2), 0) AS excellentavgprice,
+      COALESCE(ROUND(AVG(CASE WHEN v.condition = 'Very Good' THEN v.purchase_price ELSE 0 END),2), 0) AS verygoodavgprice,
+      COALESCE(ROUND(AVG(CASE WHEN v.condition = 'Good' THEN v.purchase_price ELSE 0 END),2), 0) AS goodavgprice,
+      COALESCE(ROUND(AVG(CASE WHEN v.condition = 'Fair' THEN v.purchase_price ELSE 0 END),2), 0) AS fairavgprice
     FROM (SELECT UNNEST(ARRAY['Sedan', 'Coupe', 'Convertible', 'CUV', 'Truck', 'Van', 'Minivan', 'SUV', 'Other']) AS vehicle_type) AS vt
     LEFT JOIN vehicle AS v ON vt.vehicle_type = v.vehicle_type
     GROUP BY vt.vehicle_type

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
+import formatter from '../util/formatter';
 const MonthlySales = () => {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
@@ -77,8 +77,8 @@ const MonthlySales = () => {
                 <td>{item.year_sold}</td>
                 <td>{item.month_sold}</td>
                 <td>{item.numbervehicles}</td>
-                <td>${Number((item.grossincome || 0.0)).toFixed(2)}</td>
-                <td>${Number((item.netincome || 0.0)).toFixed(2)}</td>
+                <td>{formatter.formatUSD(Number((item.grossincome || 0.0)).toFixed(2))}</td>
+                <td>{formatter.formatUSD(Number((item.netincome || 0.0)).toFixed(2))}</td>
                 <td>
                   <button onClick={() => handleViewDrilldown(item.year_sold, item.month_sold)}>
                     View Drilldown

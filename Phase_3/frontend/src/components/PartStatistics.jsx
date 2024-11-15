@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import formatter from '../util/formatter';
 
 const PartStatistics = () => {
   const [data, setData] = useState([]);
@@ -42,7 +43,7 @@ const PartStatistics = () => {
             <tr key={index}>
               <td>{item.name}</td>
               <td>{item.totalpartsquantity}</td>
-              <td>{item.vendortotalexpense}</td>
+              <td>{formatter.formatUSD(item.vendortotalexpense)}</td>
             </tr>
           ))}
         </tbody>

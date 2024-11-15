@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import formatter from '../util/formatter';
 
 const MonthlySalesDrilldown = () => {
   const location = useLocation();  // Access query string from the URL
@@ -75,7 +76,7 @@ const MonthlySalesDrilldown = () => {
                 <td>{item.first_name}</td>
                 <td>{item.last_name}</td>
                 <td>{item.vehiclesold}</td>
-                <td>${Number(item.totalsales || 0).toFixed(2)}</td>
+                <td>{formatter.formatUSD(Number(item.totalsales || 0).toFixed(2))}</td>
               </tr>
             ))
           )}

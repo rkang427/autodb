@@ -33,7 +33,7 @@ const ViewSellerHistory = () => {
       <table>
         <thead>
           <tr>
-            <th>Name Business</th>
+            <th>Name</th>
             <th>Vehicle Count</th>
             <th>Average Purchase Price</th>
             <th>Total Parts Count</th>

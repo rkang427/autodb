@@ -277,10 +277,16 @@ Vendor
 curl -X GET "http://localhost:3000/vendor?name=Vendor%20Name" -b cookies.txt
 ```
 
-Customer
+Individual Customer
 
 ```
 curl -X GET "http://localhost:3000/customer?tax_id=123456789" -b cookies.txt
+```
+
+List Customer
+
+```
+curl -X GET "http://localhost:3000/customer/list" -b cookies.txt
 ```
 
 Part Statistics Report

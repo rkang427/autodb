@@ -10,6 +10,7 @@ const SellVehicle = () => {
   const { vin } = useParams();
   console.log("VIN: ", vin);
   const [loggedInUser, setLoggedInUser] = useState(null);
+  const [customerList, setCustomerList] = useState([]);
   const [customerTaxId, setCustomerTaxId] = useState(null);
   const [lookupCustomerTaxId, setLookupCustomerTaxId] = useState("");
   const [saleStatus, setSaleStatus] = useState(null);  // Track sale status
@@ -25,11 +26,19 @@ const SellVehicle = () => {
         if (response.data.user) {
           setLoggedInUser(response.data.user);
         }
+        try {
+          const response2 = await axios.get("http://localhost:3000/customer/list/", { withCredentials: true });
+          console.log(response2.data)
+          setCustomerList(response2.data);
+          console.log(customerList)
+        } catch (customerError) {
+          console.error("Error fetching customers:", customerError);
+          setErrorMessage("Could not load customers.");
+        }
       } catch (error) {
         console.log("Error checking session", error);
       }
     };
-
     checkSession();
   }, []);
 
@@ -96,17 +105,18 @@ const SellVehicle = () => {
             {customerTaxId ? <p>Customer Tax ID: {customerTaxId}</p> : <p>No customer selected.</p>}
             <form onSubmit={handleLookupCustomerClick}>
               <div>
-                <label>Look up existing customer by SSN/TIN:</label>
-                <input
-                  type="text"
-                  value={lookupCustomerTaxId}
-                  onChange={(e) => setLookupCustomerTaxId(e.target.value)}
-                  required
-                />
+                 <label>Select Customer:</label>
+                 <select value={customerTaxId} onChange={(e) => setCustomerTaxId(e.target.value)}>
+                   <option value="">Select an existing customer</option>
+                   {customerList.map((customer) => (
+                     <option key={customer.tax_id} value={customer.tax_id}>
+                       {customer.tax_id} -- {customer.name}
+                     </option>
+                   ))}
+                 </select>
               </div>
-              <button type="submit">Search Existing Customers</button>
             </form>
-            <button onClick={handleAddCustomerClick} disabled={vehicleSold}>Add Customer</button>
+            <button style={{border: "1px solid black"}} onClick={handleAddCustomerClick} disabled={vehicleSold}>Add Customer</button>
 
             {/* Conditionally render the Add Customer modal */}
             {isAddCustomerModalOpen && (
@@ -124,7 +134,7 @@ const SellVehicle = () => {
           </div>
 
           {/* Conditionally disable the Sell Vehicle Button if the vehicle is already sold */}
-          <button 
+          <button style={{border: "1px solid black"}} 
             onClick={() => {
               if (!customerTaxId) {
                 alert("Please add a customer before selling the vehicle.");
@@ -138,7 +148,7 @@ const SellVehicle = () => {
 
               setIsSellModalOpen(true);
             }} 
-            disabled={vehicleSold || saleDate}
+            disabled={vehicleSold || saleDate || !customerTaxId}
           >
             Sell Vehicle
           </button>
@@ -152,8 +162,8 @@ const SellVehicle = () => {
               <div className="modal-content">
                 <h3>Confirm Vehicle Sale</h3>
                 <form onSubmit={handleSellVehicle}>
-                  <button type="submit" disabled={!customerTaxId || vehicleSold}>Confirm Sale</button>
-                  <button type="button" onClick={() => setIsSellModalOpen(false)}>Cancel</button>
+                  <button type="submit" style={{border: "1px solid black"}} disabled={!customerTaxId || vehicleSold}>Confirm Sale</button>
+                  <button type="button" style={{border: "1px solid black"}} onClick={() => setIsSellModalOpen(false)}>Cancel</button>
                 </form>
               </div>
             </div>

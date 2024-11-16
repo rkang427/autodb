@@ -40,6 +40,30 @@ router.get(
   }
 );
 
+// GET endpoint to check if customer exists by tax_id
+router.get(
+  '/list',
+  checkSessionUserType(['inventory_clerk', 'owner', 'sales_person', 'manager']),
+  async (req, res) => {
+    try {
+      const query = `
+      SELECT
+      COALESCE(b.business_name, CONCAT(i.first_name, ' ', i.last_name)) AS name,
+      c.tax_id
+      FROM customer AS c
+      LEFT JOIN individual AS i ON c.tax_id = i.ssn
+      LEFT JOIN business AS b ON c.tax_id = b.tin
+      `;
+      const values = [];
+      const result = await pool.query(query, values);
+      res.status(200).json(result.rows);
+    } catch (error) {
+      console.error('Database connection error:', error);
+      res.status(500).json({ error: 'Error connecting to the database' });
+    }
+  }
+);
+
 // POST endpoint to create a new customer
 router.post(
   '/',

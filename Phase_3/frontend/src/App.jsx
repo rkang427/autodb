@@ -5,7 +5,7 @@ import AverageTimeInInventory from "./components/AverageTimeInInventory";
 import PricePerCondition from "./components/PricePerCondition";
 import PartStatistics from "./components/PartStatistics";
 import MonthlySales from "./components/MonthlySales";
-import BuyVehicle from "./components/BuyVehicle";
+import AddVehicle from "./components/AddVehicle";
 import VehicleDetail from "./components/VehicleDetail";
 import PartsOrder from "./components/AddPartsOrder";
 import SellVehicle from "./components/SellVehicle";
@@ -22,7 +22,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/view_seller_history" element={<ViewSellerHistory />} />
-          <Route path="/buy_vehicle" element={<BuyVehicle />} />
+          <Route path="/add_vehicle" element={<AddVehicle />} />
           <Route path="/vehicle_detail/:vin" element={<VehicleDetail />} />
           <Route path="/parts_order/:vin" element={<PartsOrder />} />
           <Route path="/sell_vehicle/:vin" element={<SellVehicle />} />

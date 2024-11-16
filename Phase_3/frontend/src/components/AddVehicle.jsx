@@ -61,12 +61,13 @@ const Dropdown = ({ label, name, options, value, onChange, placeholder = "Select
   );
 };
 
-const BuyVehicle = () => {
+const AddVehicle = () => {
   const { vin } = useParams();
 
   const [loggedInUser, setLoggedInUser] = useState(null);
   const [customerTaxId, setCustomerTaxId] = useState(null);
   const [lookupCustomerTaxId, setLookupCustomerTaxId] = useState("");
+  const [customerList, setCustomerList] = useState([]);
   const [vehicleDetails, setVehicleDetails] = useState({
     vin: vin || "",
     vehicle_type: "",
@@ -87,14 +88,23 @@ const BuyVehicle = () => {
     const checkSession = async () => {
       try {
         const response = await auth.checkSession();
+        console.log(response.data.user);
         if (response.data.user) {
           setLoggedInUser(response.data.user);
+        }
+        try {
+          const response2 = await axios.get("http://localhost:3000/customer/list/", { withCredentials: true });
+          console.log(response2.data)
+          setCustomerList(response2.data);
+          console.log(customerList)
+        } catch (customerError) {
+          console.error("Error fetching customers:", customerError);
+          setErrorMessage("Could not load customers.");
         }
       } catch (error) {
         console.log("Error checking session", error);
       }
     };
-
     checkSession();
   }, []);
 
@@ -155,7 +165,7 @@ const BuyVehicle = () => {
   };
 
   // Handle the buy vehicle operation
-  const handleBuyVehicle = async (e) => {
+  const handleAddVehicle = async (e) => {
     e.preventDefault();
 
     // VIN validation
@@ -276,27 +286,26 @@ const BuyVehicle = () => {
     <>
       {loggedInUser && (loggedInUser.user_type === "inventory_clerk" || loggedInUser.user_type === "owner") ? (
         <div>
-          <h2>Buy Vehicle</h2>
+          <h2>Add Vehicle</h2>
           <Link to="/">Go back to main page</Link>
 
           <div>
             {customerTaxId ? <p>Customer Tax ID: {customerTaxId}</p> : <p>No customer selected.</p>}
-            <form onSubmit={handleLookupCustomerClick}>
               <div>
-                <label>Look up existing customer by SSN/TIN:</label>
-                <input
-                  type="text"
-                  value={lookupCustomerTaxId}
-                  onChange={(e) => setLookupCustomerTaxId(e.target.value)}
-                  required
-                />
+                 <label>Select Customer:</label>
+                 <select value={customerTaxId} onChange={(e) => setCustomerTaxId(e.target.value)}>
+                   <option value="">Select an existing customer</option>
+                   {customerList.map((customer) => (
+                     <option key={customer.tax_id} value={customer.tax_id}>
+                       {customer.tax_id} -- {customer.name}
+                     </option>
+                   ))}
+                 </select>
               </div>
-              <button type="submit">Search Existing Customers</button>
-            </form>
           </div>
 
           <div>
-            <button onClick={handleAddCustomerClick}>Add Customer</button>
+            <button style={{border: "1px solid black"}} onClick={handleAddCustomerClick}>Add Customer</button>
 
             {/* Conditionally render the Add Customer modal */}
             {isAddCustomerModalOpen && (
@@ -464,7 +473,7 @@ const BuyVehicle = () => {
             </div>
           </form>
           {/* Buy Vehicle Button */}
-          <button type="submit" onClick={handleBuyVehicle}>Add Vehicle to Inventory</button>
+          <button style={{border: "1px solid black"}} type="submit" onClick={handleAddVehicle}>Add Vehicle to Inventory</button>
 
           {/* Purchase Status Message */}
           {purchaseStatus && <p>{purchaseStatus}</p>}
@@ -476,4 +485,4 @@ const BuyVehicle = () => {
   );
 };
 
-export default BuyVehicle;
+export default AddVehicle;

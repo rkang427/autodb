@@ -291,21 +291,17 @@ const AddVehicle = () => {
 
           <div>
             {customerTaxId ? <p>Customer Tax ID: {customerTaxId}</p> : <p>No customer selected.</p>}
-              <div>
-                 <label>Select Customer:</label>
-                 <select value={customerTaxId} onChange={(e) => setCustomerTaxId(e.target.value)}>
-                   <option value="">Select an existing customer</option>
-                   {customerList.map((customer) => (
-                     <option key={customer.tax_id} value={customer.tax_id}>
-                       {customer.tax_id} -- {customer.name}
-                     </option>
-                   ))}
-                 </select>
-              </div>
+            <Dropdown
+              label="Existing Customers"
+              name="customer"
+              options={customerList.map((customer) => (`${customer.tax_id} -- ${customer.name}`))}
+              value={customerTaxId}
+              onChange={(e) => setCustomerTaxId(e.target.value.split(' ')[0])}
+            />
           </div>
 
           <div>
-            <button style={{border: "1px solid black"}} onClick={handleAddCustomerClick}>Add Customer</button>
+            <button style={{border: "1px solid black"}} onClick={handleAddCustomerClick}>Add New Customer</button>
 
             {/* Conditionally render the Add Customer modal */}
             {isAddCustomerModalOpen && (

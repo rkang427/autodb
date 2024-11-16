@@ -16,6 +16,9 @@ const SearchResults = ({ searchResults }) => {
           <div key={car.vin}>
             <h4>
               {car.manufacturer}, {car.model_year}
+              <Link to={`/vehicle_detail/${car.vin}`}>
+                <button style={{border: "1px solid black"}}>Vehicle Details</button>
+              </Link>
             </h4>
             <table>
               <tbody>
@@ -53,10 +56,6 @@ const SearchResults = ({ searchResults }) => {
                 </tr>
               </tbody>
             </table>
-
-            <Link to={`/vehicle_detail/${car.vin}`}>
-              <button>Vehicle Details</button>
-            </Link>
             <hr />
           </div>
         );

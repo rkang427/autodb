@@ -285,7 +285,7 @@ const VehicleDetail = () => {
           )}
           {isAddPartAvailable() && (
             <Link to={`/parts_order/${vin}`}>
-              <button>Add parts order</button>
+              <button style={{border: "1px solid black"}}>Add parts order</button>
             </Link>
           )}
           {isSellVehicleAvailable() &&
@@ -293,7 +293,7 @@ const VehicleDetail = () => {
               (part) => part.status === "installed"
             ) && (
               <Link to={`/sell_vehicle/${vin}`}>
-                <button>Sell Vehicle</button>
+                <button style={{border: "1px solid black"}}>Sell Vehicle</button>
               </Link>
             )}
           {showPartsOrder() && (
@@ -340,7 +340,7 @@ const VehicleDetail = () => {
                                 <>{part.status == "ordered" ? (
                                   <tr>
                                     <td>
-                                      <button
+                                      <button style={{border: "1px solid black"}}
                                         onClick={() =>
                                           statusUpdate(part, "received")
                                         }
@@ -349,7 +349,7 @@ const VehicleDetail = () => {
                                       </button>
                                     </td>
                                     <td>
-                                      <button
+                                      <button style={{border: "1px solid black"}}
                                         onClick={() =>
                                           statusUpdate(part, "installed")
                                         }
@@ -361,7 +361,7 @@ const VehicleDetail = () => {
                                 ) : (
                                   <tr>
                                     <td>
-                                      <button
+                                      <button style={{border: "1px solid black"}}
                                         onClick={() =>
                                           statusUpdate(part, "installed")
                                         }

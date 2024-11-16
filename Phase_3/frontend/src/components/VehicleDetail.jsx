@@ -166,6 +166,32 @@ const VehicleDetail = () => {
                 <td>Description:</td>
                 <td>{vehicleDetails.vehicle.description}</td>
               </tr>
+              {loggedInUser &&
+                ["owner", "manager"].includes(
+                  loggedInUser.user_type
+                ) && vehicleDetails.vehicle.purchase_date && (
+                  <tr>
+                    <td>Purchase Date:</td>
+                    <td>
+                      {formatter.formatDate(
+                        vehicleDetails.vehicle.purchase_date
+                      )}
+                    </td>
+                  </tr>
+                )}
+              {loggedInUser &&
+                ["owner", "manager"].includes(
+                  loggedInUser.user_type
+                ) && vehicleDetails.vehicle.sale_date && (
+                  <tr>
+                    <td>Sale Date:</td>
+                    <td>
+                      {formatter.formatDate(
+                        vehicleDetails.vehicle.sale_date
+                      )}
+                    </td>
+                  </tr>
+                )}
             </tbody>
           </table>
           {isOwnerOrManager() && (

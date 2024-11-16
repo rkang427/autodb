@@ -171,6 +171,7 @@ router.get('/', vehicleGetValidator, async (req, res) => {
           ${isOwnerManager ? 'v.salesperson,' : 'NULL AS salesperson,'}
           ${isOwnerManager ? 'v.inventory_clerk,' : 'NULL AS inventory_clerk,'}
           ${isOwnerManager ? 'v.sale_date,' : 'NULL AS sale_date,'}
+          ${isOwnerManager ? 'v.purchase_date,' : 'NULL AS purchase_date,'}
           STRING_AGG(vc.color, ', ') AS colors,
           ROUND(
             (1.25 * COALESCE(v.purchase_price, 0)) + (1.1 * COALESCE(v.total_parts_price, 0)), 2
@@ -190,6 +191,7 @@ router.get('/', vehicleGetValidator, async (req, res) => {
           v.customer_buyer,
           v.salesperson,
           v.inventory_clerk,
+          v.purchase_date,
           v.sale_date`;
 
     const vehicleResult = await pool.query(query, [vin]);

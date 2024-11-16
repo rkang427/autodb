@@ -15,7 +15,7 @@ const SearchResults = ({ searchResults }) => {
         return (
           <div key={car.vin}>
             <h4>
-              {car.manufacturer}, {car.model_year}
+               {car.manufacturer} {car.model} , {car.model_year}
               <Link to={`/vehicle_detail/${car.vin}`}>
                 <button style={{border: "1px solid black"}}>Vehicle Details</button>
               </Link>

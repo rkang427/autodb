@@ -27,7 +27,10 @@ const ViewSellerHistory = () => {
   return (
     <div>
       <h2>View Seller History</h2>
-
+      <div style={{ marginBottom: '10px', fontStyle: 'italic' }}>
+    <span style={{ display: 'inline-block', width: '20px', height: '20px', backgroundColor: 'lightcoral', marginRight: '5px' }}></span>
+    Rows highlighted in red indicate sellers who have sold vehicles and average 5 or more parts OR average cost of parts is $500 or more.
+  </div>
       <button onClick={handleGoBack}>Go Back</button>
       {error && <div style={{ color: 'red' }}>{error}</div>}
       <table>
@@ -45,7 +48,7 @@ const ViewSellerHistory = () => {
             <tr 
               key={index} 
               //you just change 'no' to 'highlight' for the classes to run properly
-              style={{ backgroundColor: item.highlight === 'highlight' ? 'red' : 'transparent', color: item.highlight === 'highlight' ? 'white' : 'black' }}
+              style={{ backgroundColor: item.highlight === 'highlight' ? 'lightcoral' : 'transparent', color: item.highlight === 'highlight' ? 'black' : 'black',fontWeight: item.highlight === 'highlight' ? 450 : 400,}}
             >
               <td>{item.namebusiness}</td>
               <td>{item.vehiclecount}</td>

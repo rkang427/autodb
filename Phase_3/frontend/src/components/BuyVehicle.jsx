@@ -244,7 +244,14 @@ const BuyVehicle = () => {
 
           {/* Vehicle Details Form */}
           <form>
-            <input type="text" name="vin" placeholder="VIN" onChange={handleInputChange} value={vehicleDetails.vin} />
+          <input
+              type="text"
+              name="vin"
+              placeholder="VIN"
+              onChange={handleInputChange}
+              value={vehicleDetails.vin}
+              maxLength={17} // Restrict input to 17 characters
+            />
 
             {/* Vehicle Type Dropdown */}
             <Dropdown

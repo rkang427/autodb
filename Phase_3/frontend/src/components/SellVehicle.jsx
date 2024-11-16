@@ -113,7 +113,7 @@ const SellVehicle = () => {
               onChange={(e) => setCustomerTaxId(e.target.value.split(' ')[0])}
             />
             </form>
-            <button style={{border: "1px solid black"}} onClick={handleAddCustomerClick} disabled={vehicleSold}>Add Customer</button>
+            <button style={{border: "1px solid black"}} onClick={handleAddCustomerClick} disabled={vehicleSold}>Add New Customer</button>
 
             {/* Conditionally render the Add Customer modal */}
             {isAddCustomerModalOpen && (

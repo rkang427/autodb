@@ -37,6 +37,7 @@ const Dropdown = ({ label, name, options, value, onChange, placeholder = "Select
             borderRadius: '4px',
             fontSize: '14px',
             transition: 'border-color 0.3s ease',
+            width: '100%', // Ensure the dropdown takes up the full width of the container
           }),
         }}
       />

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
+import Dropdown from "./Dropdown";
 
 const AddPartsOrder = () => {
   const { vin } = useParams();  // Extract VIN from the URL
@@ -85,20 +86,26 @@ const AddPartsOrder = () => {
     }
   };
 
+  const handleGoBack = () => {
+    navigate(-1);  
+  };
+
   return (
     <div>
-      <h2>Add Parts Order</h2>
+      <div>
+        <h2 style={{ marginBottom: 0 }}>Add Parts Order</h2>
+        <button style={{ marginTop: 0, marginBottom: "1rem" }} onClick={handleGoBack}>Go Back</button>
+      </div>
       
       {/* Vendor Selection */}
-      <label>Select Vendor:</label>
-      <select value={vendor_name} onChange={(e) => setVendorName(e.target.value)}>
-        <option value="">Select a vendor</option>
-        {vendorList.map((vendor) => (
-          <option key={vendor.id} value={vendor.name}>
-            {vendor.name}
-          </option>
-        ))}
-      </select>
+      <Dropdown
+        label="Select Vendor"
+        name="vendor"
+        options={vendorList.map((vendor) => vendor.name)}
+        value={vendor_name}
+        onChange={(e) => setVendorName(e.target.value)}
+        placeholder="Select a vendor"
+      />
       <button type="button" onClick={() => setShowAddVendorForm(!showAddVendorForm)}>
         {showAddVendorForm ? "Cancel" : "Add New Vendor"}
       </button>
@@ -130,7 +137,7 @@ const AddPartsOrder = () => {
       <button type="button" onClick={addPartField}>Add Another Part</button>
 
       {/* Submit Order */}
-      <button onClick={handleSubmit}>Submit Parts Order</button>
+      <button type="submit" onClick={handleSubmit}>Submit Parts Order</button>
 
       {/* Success/Error Messages */}
       {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}

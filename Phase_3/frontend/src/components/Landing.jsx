@@ -6,6 +6,16 @@ import ReportLinks from "./ReportLinks";
 import SearchResults from "./SearchResults";
 import Notification from "./Notification";
 import { Link } from "react-router-dom";
+import Dropdown from "./Dropdown";
+
+const Field = ({ label, children }) => (
+  <div style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}>
+    <label style={{ marginRight: "10px", minWidth: "120px", flexShrink: 0 }}>
+      {label}
+    </label>
+    <div style={{ flexGrow: 1 }}>{children}</div>
+  </div>
+);
 
 const Landing = ({ loggedInUser }) => {
   const [searchOptions, setSearchOptions] = useState(null);
@@ -73,24 +83,24 @@ const Landing = ({ loggedInUser }) => {
           <form onSubmit={handleSubmit}>
             <div>
               {loggedInUser && (
-                <>
-                  <label>Vin: </label>
+                <Field label="Vin:">
                   <input
                     type="text"
+                    placeholder="Enter VIN"
                     value={searchParams.vin}
                     onChange={(e) =>
                       setSearchParams({ ...searchParams, vin: e.target.value })
                     }
                   />
-                </>
+                </Field>
               )}
             </div>
             {loggedInUser &&
               ["owner", "manager"].includes(loggedInUser.user_type) && (
-                <div>
-                  <label>Filter Type: </label>
-                  <select
-                    id="dropdown"
+                <Field label="Filter Type:">
+                  <Dropdown
+                    name="filter_type"
+                    options={["unsold", "sold", "both"]}
                     value={searchParams.filter_type}
                     onChange={(e) =>
                       setSearchParams({
@@ -98,17 +108,14 @@ const Landing = ({ loggedInUser }) => {
                         filter_type: e.target.value,
                       })
                     }
-                  >
-                    <option value="unsold">Unsold</option>
-                    <option value="sold">Sold</option>
-                    <option value="both">Both</option>
-                  </select>
-                </div>
+                  />
+                </Field>
               )}
-            <div>
-              <label>Vehicle Type: </label>
-              <select
-                id="dropdown"
+              
+            <Field label="Vehicle Type:">
+              <Dropdown
+                name="vehicle_type"
+                options={searchOptions.vehicle_types}
                 value={searchParams.vehicle_type}
                 onChange={(e) =>
                   setSearchParams({
@@ -116,20 +123,13 @@ const Landing = ({ loggedInUser }) => {
                     vehicle_type: e.target.value,
                   })
                 }
-              >
-                <option value=""></option>
-                {searchOptions.vehicle_types.map((option, index) => (
-                  <option key={index} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </div>
+              />
+            </Field>
 
-            <div>
-              <label>Manufacturer: </label>
-              <select
-                id="dropdown"
+            <Field label="Manufacturer:">
+              <Dropdown
+                name="manufacturer"
+                options={searchOptions.manufacturers}
                 value={searchParams.manufacturer}
                 onChange={(e) =>
                   setSearchParams({
@@ -137,20 +137,13 @@ const Landing = ({ loggedInUser }) => {
                     manufacturer: e.target.value,
                   })
                 }
-              >
-                <option value=""></option>
-                {searchOptions.manufacturers.map((option, index) => (
-                  <option key={index} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </div>
+              />
+            </Field>
 
-            <div>
-              <label>Year: </label>
-              <select
-                id="dropdown"
+            <Field label="Year:">
+              <Dropdown
+                name="model_year"
+                options={searchOptions.model_years}
                 value={searchParams.model_year}
                 onChange={(e) =>
                   setSearchParams({
@@ -158,20 +151,13 @@ const Landing = ({ loggedInUser }) => {
                     model_year: e.target.value,
                   })
                 }
-              >
-                <option value=""></option>
-                {searchOptions.model_years.map((option, index) => (
-                  <option key={index} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </div>
+              />
+            </Field>
 
-            <div>
-              <label>Fuel Type: </label>
-              <select
-                id="dropdown"
+            <Field label="Fuel Type:">
+              <Dropdown
+                name="fuel_type"
+                options={searchOptions.fuel_types}
                 value={searchParams.fuel_type}
                 onChange={(e) =>
                   setSearchParams({
@@ -179,20 +165,13 @@ const Landing = ({ loggedInUser }) => {
                     fuel_type: e.target.value,
                   })
                 }
-              >
-                <option value=""></option>
-                {searchOptions.fuel_types.map((option, index) => (
-                  <option key={index} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </div>
+              />
+            </Field>
 
-            <div>
-              <label>Color: </label>
-              <select
-                id="dropdown"
+            <Field label="Color:">
+              <Dropdown
+                name="color"
+                options={searchOptions.colors}
                 value={searchParams.color}
                 onChange={(e) =>
                   setSearchParams({
@@ -200,20 +179,13 @@ const Landing = ({ loggedInUser }) => {
                     color: e.target.value,
                   })
                 }
-              >
-                <option value=""></option>
-                {searchOptions.colors.map((option, index) => (
-                  <option key={index} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </div>
+              />
+            </Field>
 
-            <div>
-              <label>Keyword: </label>
+            <Field label="Keyword:">
               <input
                 type="text"
+                placeholder="Enter Keyword"
                 value={searchParams.keyword}
                 onChange={(e) =>
                   setSearchParams({
@@ -222,10 +194,10 @@ const Landing = ({ loggedInUser }) => {
                   })
                 }
               />
-            </div>
+            </Field>
 
             <div>
-              <input type="submit" value="Search" />
+              <input type="submit" value="Search" style={{cursor: "pointer"}} />
             </div>
           </form>
         </>

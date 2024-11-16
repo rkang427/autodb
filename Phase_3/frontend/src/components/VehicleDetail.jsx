@@ -332,17 +332,12 @@ const VehicleDetail = () => {
                               <td>Unit Price: </td>
                               <td>{formatter.formatUSD(part.unit_price)}</td>
                             </tr>
-                          </tbody>
-                        </table>
-                        <p>
+                        <tr><td colSpan="2">
                           <strong>Part Status: </strong>
                           {part.status}
-                        </p>
+                        </td></tr>
                         {part.status !== "installed" && (
-                          <div>
-                            <table>
-                              <tbody>
-                                {part.status == "ordered" ? (
+                                <>{part.status == "ordered" ? (
                                   <tr>
                                     <td>
                                       <button
@@ -376,10 +371,10 @@ const VehicleDetail = () => {
                                     </td>
                                   </tr>
                                 )}
-                              </tbody>
-                            </table>
-                          </div>
+                                </>
                         )}
+                          </tbody>
+                        </table>
                         <hr />
                       </div>
                     );

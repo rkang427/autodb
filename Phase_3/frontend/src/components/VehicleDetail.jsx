@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import auth from "../services/auth";
+import "../App.css";
 import { useState, useEffect } from "react";
 import detail from "../services/detail";
 import formatter from "../util/formatter";
@@ -332,54 +333,32 @@ const VehicleDetail = () => {
                               <td>Unit Price: </td>
                               <td>{formatter.formatUSD(part.unit_price)}</td>
                             </tr>
+                            <tr>
+                              <td>Part Status: </td>
+                              <td>{part.status}</td>
+                            </tr>
+                            {part.status !== "installed" && (
+                              <tr>
+                                <td colSpan="2">
+                                  <button
+                                    onClick={() =>
+                                      statusUpdate(part, "received")
+                                    }
+                                  >
+                                    Update Status to Received
+                                  </button>
+                                  <button
+                                    onClick={() =>
+                                      statusUpdate(part, "installed")
+                                    }
+                                  >
+                                    Update Status to Installed
+                                  </button>
+                                </td>
+                              </tr>
+                            )}
                           </tbody>
                         </table>
-                        <p>
-                          <strong>Part Status: </strong>
-                          {part.status}
-                        </p>
-                        {part.status !== "installed" && (
-                          <div>
-                            <table>
-                              <tbody>
-                                {part.status == "ordered" ? (
-                                  <tr>
-                                    <td>
-                                      <button
-                                        onClick={() =>
-                                          statusUpdate(part, "received")
-                                        }
-                                      >
-                                        Update Status to Received
-                                      </button>
-                                    </td>
-                                    <td>
-                                      <button
-                                        onClick={() =>
-                                          statusUpdate(part, "installed")
-                                        }
-                                      >
-                                        Update Status to Installed
-                                      </button>
-                                    </td>
-                                  </tr>
-                                ) : (
-                                  <tr>
-                                    <td>
-                                      <button
-                                        onClick={() =>
-                                          statusUpdate(part, "installed")
-                                        }
-                                      >
-                                        Update Status to Installed
-                                      </button>
-                                    </td>
-                                  </tr>
-                                )}
-                              </tbody>
-                            </table>
-                          </div>
-                        )}
                         <hr />
                       </div>
                     );

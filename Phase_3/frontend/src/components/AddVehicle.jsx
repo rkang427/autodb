@@ -207,15 +207,15 @@ const AddVehicle = () => {
     }
 
     // Horsepower validation
-    if (!vehicleDetails.horsepower) {
+    if (vehicleDetails.horsepower === undefined || vehicleDetails.horsepower === null || vehicleDetails.horsepower === "") {
       return alert("Please type a horsepower.");
-    } 
+    }
     if (vehicleDetails.horsepower <= 0 || vehicleDetails.horsepower > 32767 || !Number.isInteger(vehicleDetails.horsepower)) {
       return alert("Horsepower must be an integer between 1 and 32,767.");
     }
 
     // Purchase price validation
-    if (!vehicleDetails.purchase_price && vehicleDetails.purchase_price != 0) {
+    if (vehicleDetails.purchase_price === undefined || vehicleDetails.purchase_price === null || vehicleDetails.purchase_price === "") {
       return alert("Please type a purchase price.");
     }
     if (isNaN(vehicleDetails.purchase_price) || parseFloat(vehicleDetails.purchase_price) <= 0) {

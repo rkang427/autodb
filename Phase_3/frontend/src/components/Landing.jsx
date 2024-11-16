@@ -19,7 +19,7 @@ const Landing = ({ loggedInUser }) => {
     fuel_type: "",
     color: "",
     keyword: "",
-    filter_type: "",
+    filter_type: "unsold",
   });
 
   useEffect(() => {
@@ -99,7 +99,6 @@ const Landing = ({ loggedInUser }) => {
                       })
                     }
                   >
-                    <option value=""></option>
                     <option value="unsold">Unsold</option>
                     <option value="sold">Sold</option>
                     <option value="both">Both</option>

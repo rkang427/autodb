@@ -49,7 +49,7 @@ const MonthlySales = () => {
   return (
     <div>
       <h2>Monthly Sales</h2>
-      <button onClick={handleGoBack}>Go Back</button> 
+      <button style={{ marginTop: 0, marginBottom: "1rem", border: "1px solid black" }} onClick={handleGoBack}>Go Back</button>
 
       {error && <div style={{ color: 'red' }}>{error}</div>}  {/* Display error if any */}
 

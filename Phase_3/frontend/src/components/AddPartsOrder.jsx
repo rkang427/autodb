@@ -144,7 +144,7 @@ const AddPartsOrder = () => {
     <div>
       <div>
         <h2 style={{ marginBottom: 0 }}>Add Parts Order</h2>
-        <button style={{ marginTop: 0, marginBottom: "1rem" }} onClick={handleGoBack}>Go Back</button>
+        <button style={{ marginTop: 0, marginBottom: "1rem", border: "1px solid black" }} onClick={handleGoBack}>Go Back</button>
       </div>
       
       {/* Vendor Selection */}

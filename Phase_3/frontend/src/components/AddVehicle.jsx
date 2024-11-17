@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import buyService from "../services/buy";
 import axios from "axios";
 import AddCustomerModal from "./AddCustomerModal";
@@ -129,6 +129,10 @@ const AddVehicle = () => {
     }));
   };
 
+  const handleGoBack = () => {
+    navigate(-1);  
+  };
+
   const handleColorChange = (e) => {
     setVehicleDetails((prev) => ({
       ...prev,
@@ -252,7 +256,7 @@ const AddVehicle = () => {
       {loggedInUser && (loggedInUser.user_type === "inventory_clerk" || loggedInUser.user_type === "owner") ? (
         <div>
           <h2>Add Vehicle</h2>
-          <Link to="/">Go back to main page</Link>
+          <button style={{ marginTop: 0, marginBottom: "1rem", border: "1px solid black" }} onClick={handleGoBack}>Go Back</button>
 
           <div>
             {customerTaxId ? <p>Customer Tax ID: {customerTaxId}</p> : <p>No customer selected.</p>}

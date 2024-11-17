@@ -52,7 +52,7 @@ const MonthlySalesDrilldown = () => {
       <h2>Drilldown for {month}/{year}</h2>
 
       {error && <div style={{ color: 'red' }}>{error}</div>}
-      <button onClick={handleGoBack}>Go Back</button> 
+      <button style={{ marginTop: 0, marginBottom: "1rem", border: "1px solid black" }} onClick={handleGoBack}>Go Back</button>
 
       <table>
         <thead>

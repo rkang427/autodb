@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, useNavigate} from "react-router-dom";
 import auth from "../services/auth";
 import axios from "axios";
 import sellService from "../services/sell";
@@ -18,6 +18,7 @@ const SellVehicle = () => {
   const [isSellModalOpen, setIsSellModalOpen] = useState(false); // Controls modal visibility
   const [vehicleSold, setVehicleSold] = useState(false); // To track if vehicle is sold
   const [saleDate, setSaleDate] = useState(null); // To store the sale date
+  const navigate = useNavigate();
 
   useEffect(() => {
     const checkSession = async () => {
@@ -92,13 +93,18 @@ const SellVehicle = () => {
       setSaleStatus("Error: " + error.message); // Display the error message if sale fails
     }
   };
+  
+  const handleGoBack = () => {
+    navigate("/");  
+  };
+
 
   return (
     <>
       {loggedInUser && (loggedInUser.user_type === "sales_person" || loggedInUser.user_type === "owner") ? (
         <div>
           <h2>Sell Vehicle</h2>
-          <Link to={"/"}>Go back to main page</Link>
+          <button style={{ marginTop: 0, marginBottom: "1rem", border: "1px solid black" }} onClick={handleGoBack}>Go Back to Main Page</button>
           <h3>VIN: {vin}</h3>
 
           {/* Customer Tax ID */}
@@ -166,7 +172,7 @@ const SellVehicle = () => {
           )}
         </div>
       ) : (
-        <h2>Forbidden</h2>
+        <></>
       )}
     </>
   );

@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import ReportLinks from "./ReportLinks";
 import SearchResults from "./SearchResults";
 import Notification from "./Notification";
-import { Link } from "react-router-dom";
 import Dropdown from "./Dropdown";
 
 const Field = ({ label, children }) => (

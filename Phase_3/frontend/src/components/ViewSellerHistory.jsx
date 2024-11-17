@@ -32,7 +32,7 @@ const ViewSellerHistory = () => {
     <span style={{ display: 'inline-block', width: '20px', height: '20px', backgroundColor: 'lightcoral', marginRight: '5px' }}></span>
     Rows highlighted in red indicate sellers who have sold vehicles and average 5 or more parts OR average cost of parts is $500 or more.
   </div>
-      <button onClick={handleGoBack}>Go Back</button>
+      <button style={{ marginTop: 0, marginBottom: "1rem", border: "1px solid black" }} onClick={handleGoBack}>Go Back</button>
       {error && <div style={{ color: 'red' }}>{error}</div>}
       <table>
         <thead>

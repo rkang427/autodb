@@ -189,7 +189,7 @@ const partsOrderPostValidator = [
   body('parts', 'Parts must be an array').isArray(),
 
   // Custom validation for each part in the `parts` array
-  body('parts.*.part_number', 'Each part must have a valid name')
+  body('parts.*.part_number', 'Each part must have a valid part number')
     .isString()
     .notEmpty(),
   body('parts.*.description', 'Each part must have a valid description')

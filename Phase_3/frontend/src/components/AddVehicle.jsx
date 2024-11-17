@@ -169,6 +169,9 @@ const AddVehicle = () => {
     e.preventDefault();
 
     // VIN validation
+    if (!vehicleDetails.vin) {
+      return alert("Please type a VIN.");
+    }
     if (vehicleDetails.vin.length !== 17 || vehicleDetails.vin.includes(" ")) {
       return alert("VIN must be exactly 17 characters long and cannot contain spaces.");
     }
@@ -211,7 +214,7 @@ const AddVehicle = () => {
       return alert("Please type a horsepower.");
     }
     if (vehicleDetails.horsepower <= 0 || vehicleDetails.horsepower > 32767 || !Number.isInteger(vehicleDetails.horsepower)) {
-      return alert("Horsepower must be an integer between 1 and 32,767.");
+      return alert("Horsepower must be an integer between 1 and 32,767, inclusive of both limits.");
     }
 
     // Purchase price validation

@@ -29,7 +29,7 @@ const Landing = ({ loggedInUser }) => {
     fuel_type: "",
     color: "",
     keyword: "",
-    filter_type: "unsold",
+    filter_type: "",
   });
 
   useEffect(() => {

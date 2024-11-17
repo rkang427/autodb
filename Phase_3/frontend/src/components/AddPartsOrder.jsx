@@ -28,14 +28,45 @@ const AddPartsOrder = () => {
     fetchVendors();
   }, []);
 
+  const partsReady = () => {
+    for (let index = 0; index < parts.length; index++) {
+      const element = parts[index]
+      if (!element.description || element.description === ""){
+        return false;
+      }
+      if (!element.part_number || element.part_number === ""){
+        return false;
+      }
+    }
+    return true;
+  }
+
+  const popLastPart = () => {
+    if (parts.length > 1) {
+      const newParts = parts.slice(0, parts.length - 1);
+      setParts(newParts);
+    }
+  }; 
+
   const handlePartChange = (index, field, value) => {
     const updatedParts = [...parts];
+    console.log(`${index}, ${field}, ${value}`);
+    if (field === 'quantity'){
+      if (!value || value <= 0){
+        value = 1;
+      }
+    }
+    if (field === 'unit_price'){
+      if (!value || value <= 0){
+        value = 0.01;
+      }
+    }
     updatedParts[index][field] = value;
     setParts(updatedParts);
   };
 
   const addPartField = () => {
-    setParts([...parts, { part_number: "", description: "", quantity: 0, unit_price: 0 }]);
+    setParts([...parts, { part_number: "", description: "", quantity: 1, unit_price: 0.01 }]);
   };
 
   const handleNewVendorChange = (field, value) => {
@@ -130,15 +161,19 @@ const AddPartsOrder = () => {
         <div key={index}>
           <input type="text" placeholder="Part Number" value={part.part_number} onChange={(e) => handlePartChange(index, "part_number", e.target.value)} />
           <input type="text" placeholder="Description" value={part.description} onChange={(e) => handlePartChange(index, "description", e.target.value)} />
-          <input type="number" min = "1" placeholder="Quantity" value={part.quantity} onChange={(e) => handlePartChange(index, "quantity", parseInt(e.target.value))} />
-          <input type="number" min="0.01" placeholder="Unit Price" value={part.unit_price} onChange={(e) => handlePartChange(index, "unit_price", parseFloat(e.target.value))} />
+          <input type="number" min={1} placeholder="Quantity" value={part.quantity} onChange={(e) => handlePartChange(index, "quantity", parseInt(e.target.value))} />
+          <input type="number" min={0.01} placeholder="Unit Price" value={part.unit_price} onChange={(e) => handlePartChange(index, "unit_price", parseFloat(e.target.value))} />
         </div>
       ))}
       <button type="button" onClick={addPartField}>Add Another Part</button>
+      {parts.length > 1 &&
+      <button type="button" onClick={popLastPart}>Remove Last Part</button>
+      }
 
       {/* Submit Order */}
+      {vendor_name !== "" && partsReady() &&
       <button type="submit" onClick={handleSubmit}>Submit Parts Order</button>
-
+      }
       {/* Success/Error Messages */}
       {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
       {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}

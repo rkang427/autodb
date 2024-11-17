@@ -31,6 +31,8 @@ const PricePerCondition = () => {
   return (
     <div>
       <h2>Price Per Condition</h2>
+      <em>The average purchase price per condition and vehicle type.</em>
+      <br></br> 
       {error && <div style={{ color: 'red' }}>{error}</div>} {/* Display error if exists */}
       <button style={{ marginTop: 0, marginBottom: "1rem", border: "1px solid black" }} onClick={handleGoBack}>Go Back</button>
       <table style = {{margin:'auto'}}> 

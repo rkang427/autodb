@@ -21,6 +21,21 @@ router.get('/', async (req, res) => {
       req.session.user.user_type
     );
 
+  const userTypeToQueryMap = {
+    owner: `SELECT vin FROM VEHICLE;`,
+    manager: `SELECT vin FROM VEHICLE;`,
+    inventory_clerk: `SELECT vin FROM VEHICLE WHERE sale_date IS NULL;`,
+    sales_person: `SELECT DISTINCT(v.vin)
+                    FROM vehicle AS v
+                    LEFT JOIN (
+                      SELECT po.vin
+                      FROM parts_order AS po
+                      INNER JOIN part AS p ON po.parts_order_number = p.parts_order_number
+                      WHERE p.status <> 'installed'
+                    ) AS po_not_installed ON v.vin = po_not_installed.vin
+                    WHERE po_not_installed.vin IS NULL AND v.sale_date IS NULL;`
+  };
+
   const queries = {
     vehiclesReady: `
       SELECT COUNT(*)::int AS count
@@ -50,6 +65,7 @@ router.get('/', async (req, res) => {
     modelYears: `SELECT DISTINCT model_year FROM vehicle;`,
     manufacturers: `SELECT DISTINCT manufacturer FROM vehicle;`,
     vehicleTypes: `SELECT DISTINCT vehicle_type FROM vehicle;`,
+    vins: req.session && req.session.user ? userTypeToQueryMap[req.session.user.user_type] : "SELECT vin FROM vehicle WHERE vin IS NULL"
   };
 
   // Prepare the result object
@@ -61,6 +77,7 @@ router.get('/', async (req, res) => {
     manufacturers: [],
     model_years: [],
     vehicle_types: [],
+    vins: [],
   };
 
   try {
@@ -87,7 +104,9 @@ router.get('/', async (req, res) => {
     result.vehicle_types = (await executeQuery(queries.vehicleTypes)).map(
       (row) => row.vehicle_type
     );
-
+    result.vins = (await executeQuery(queries.vins)).map(
+      (row) => row.vin
+    );
     res.status(200).json(result);
   } catch (error) {
     res

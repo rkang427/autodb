@@ -84,12 +84,15 @@ const Landing = ({ loggedInUser }) => {
             <div>
               {loggedInUser && (
                 <Field label="Vin:">
-                  <input
-                    type="text"
-                    placeholder="Enter VIN"
+                  <Dropdown
+                    name="vin"
+                    options={searchOptions.vins}
                     value={searchParams.vin}
                     onChange={(e) =>
-                      setSearchParams({ ...searchParams, vin: e.target.value })
+                      setSearchParams({
+                        ...searchParams,
+                        vin: e.target.value,
+                      })
                     }
                   />
                 </Field>

@@ -108,6 +108,20 @@ const AddVehicle = () => {
   // Handle vehicle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    
+    // Validate model year to allow only up to 4 digits
+    if (name === "model_year") {
+      const yearValue = value.replace(/\D/g, ""); // Remove non-digit characters
+      if (yearValue.length > 4) {
+        return; // Prevent further input if more than 4 digits
+      }
+      setVehicleDetails((prev) => ({
+        ...prev,
+        [name]: yearValue, // Update with the valid year
+      }));
+      return;
+    }
+
     // Convert to numbers where required
     setVehicleDetails((prev) => ({
       ...prev,

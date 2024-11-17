@@ -265,7 +265,7 @@ const AddVehicle = () => {
 
           {/* Vehicle Details Form */}
           <form>
-            <div style={{ marginTop: "16px", fontFamily: "Arial, sans-serif" }}>
+            <div style={{ marginTop: "10px", marginBottom: "10px", fontFamily: "Arial, sans-serif" }}>
               <label 
                 htmlFor="vin" 
                 style={{ display: "block", fontWeight: "bold" }}
@@ -295,56 +295,64 @@ const AddVehicle = () => {
               onChange={handleInputChange}
             />
 
-            <Dropdown
-              label={
-                <>
-                  Manufacturer <span style={{ color: "red" }}>*</span>
-                </>
-              }
-              name="manufacturer"
-              options={manufacturers}
-              value={vehicleDetails.manufacturer}
-              onChange={handleInputChange}
-            />
+            <div style={{ marginBottom: "10px" }}>
+              <Dropdown
+                label={
+                  <>
+                    Manufacturer <span style={{ color: "red" }}>*</span>
+                  </>
+                }
+                name="manufacturer"
+                options={manufacturers}
+                value={vehicleDetails.manufacturer}
+                onChange={handleInputChange}
+              />
+            </div>
 
-            <Dropdown
-              label={
-                <>
-                  Fuel Type <span style={{ color: "red" }}>*</span>
-                </>
-              }
-              name="fuel_type"
-              options={fuelTypes}
-              value={vehicleDetails.fuel_type}
-              onChange={handleInputChange}
-            />
+            <div style={{ marginBottom: "10px" }}>
+              <Dropdown
+                label={
+                  <>
+                    Fuel Type <span style={{ color: "red" }}>*</span>
+                  </>
+                }
+                name="fuel_type"
+                options={fuelTypes}
+                value={vehicleDetails.fuel_type}
+                onChange={handleInputChange}
+              />
+            </div>
 
-            <Dropdown
-              label={
-                <>
-                  Condition <span style={{ color: "red" }}>*</span>
-                </>
-              }
-              name="condition"
-              options={conditions}
-              value={vehicleDetails.condition}
-              onChange={handleInputChange}
-            />
+            <div style={{ marginBottom: "10px" }}>
+              <Dropdown
+                label={
+                  <>
+                    Condition <span style={{ color: "red" }}>*</span>
+                  </>
+                }
+                name="condition"
+                options={conditions}
+                value={vehicleDetails.condition}
+                onChange={handleInputChange}
+              />
+            </div>
 
-            <Dropdown
-              label={
-                <>
-                  Color <span style={{ color: "red" }}>*</span>
-                </>
-              }
-              name="color"
-              options={colorsList}
-              value={vehicleDetails.colors}
-              onChange={handleColorChange}
-              isMulti={true}
-            />
+            <div style={{ marginBottom: "10px" }}>
+              <Dropdown
+                label={
+                  <>
+                    Color <span style={{ color: "red" }}>*</span>
+                  </>
+                }
+                name="color"
+                options={colorsList}
+                value={vehicleDetails.colors}
+                onChange={handleColorChange}
+                isMulti={true}
+              />
+            </div>
 
-            <div style={{ fontFamily: "Arial, sans-serif" }}>
+            <div style={{ marginBottom: "10px", fontFamily: "Arial, sans-serif" }}>
               <label 
                 htmlFor="model" 
                 style={{ display: "block", fontWeight: "bold" }}
@@ -361,7 +369,7 @@ const AddVehicle = () => {
               />
             </div>
 
-            <div style={{ fontFamily: "Arial, sans-serif" }}>
+            <div style={{ marginBottom: "10px", fontFamily: "Arial, sans-serif" }}>
               <label 
                 htmlFor="horsepower" 
                 style={{ display: "block", fontWeight: "bold" }}
@@ -379,7 +387,7 @@ const AddVehicle = () => {
               />
             </div>
 
-            <div style={{ fontFamily: "Arial, sans-serif" }}>
+            <div style={{ marginBottom: "10px", fontFamily: "Arial, sans-serif" }}>
               <label 
                 htmlFor="purchase_price" 
                 style={{ display: "block", fontWeight: "bold" }}
@@ -397,7 +405,7 @@ const AddVehicle = () => {
               />
             </div>
 
-            <div style={{ fontFamily: "Arial, sans-serif" }}>
+            <div style={{ marginBottom: "10px", fontFamily: "Arial, sans-serif" }}>
               <label 
                 htmlFor="description" 
                 style={{ display: "block", fontWeight: "bold" }}
@@ -414,7 +422,7 @@ const AddVehicle = () => {
               />
             </div>
 
-            <div style={{ fontFamily: "Arial, sans-serif" }}>
+            <div style={{ marginBottom: "10px", fontFamily: "Arial, sans-serif" }}>
               <label 
                 htmlFor="model_year" 
                 style={{ display: "block", fontWeight: "bold" }}

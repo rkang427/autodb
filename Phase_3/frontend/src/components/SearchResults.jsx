@@ -39,6 +39,10 @@ const SearchResults = ({ searchResults }) => {
                   <td>{car.model}</td>
                 </tr>
                 <tr>
+                  <td>Year:</td>
+                  <td>{car.model_year}</td>
+                </tr>
+                <tr>
                   <td>Fuel Type:</td>
                   <td>{car.fuel_type}</td>
                 </tr>

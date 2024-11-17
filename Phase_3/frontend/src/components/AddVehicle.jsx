@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import buyService from "../services/buy";
 import axios from "axios";
 import AddCustomerModal from "./AddCustomerModal";
 import useAddCustomerModal from "./useAddCustomerModal";
 import auth from "../services/auth";
-import Select from 'react-select';
+import Dropdown from "./Dropdown";
 
 const vehicleTypes = ["Sedan", "Coupe", "Convertible", "CUV", "Truck", "Van", "Minivan", "SUV", "Other"];
 const manufacturers = ["Acura", "FIAT", "Lamborghini", "Nio", "Alfa Romeo", "Ford", "Land Rover", "Porsche", "Aston Martin", "Geeley", "Lexus", "Ram", "Audi", "Genesis", "Lincoln", "Rivian", "Bentley", "GMC", "Lotus", "Rolls-Royce", "BMW", "Honda", "Maserati", "smart", "Buick", "Hyundai", "MAZDA", "Subaru", "Cadillac", "INFINITI", "McLaren", "Tesla", "Chevrolet", "Jaguar", "Mercedes-Benz", "Toyota", "Chrysler", "Jeep", "MINI", "Volkswagen", "Dodge", "Karma", "Mitsubishi", "Volvo", "Ferrari", "Kia", "Nissan", "XPeng"];
@@ -17,49 +17,6 @@ const colorsList = [
   'Pink', 'Purple', 'Red', 'Rose', 'Rust', 'Silver', 'Tan', 'Turquoise', 'White', 'Yellow'
 ];
 
-const Dropdown = ({ label, name, options, value, onChange, placeholder = "Select...", isMulti = false }) => {
-  const selectOptions = options.map((option) => ({ value: option, label: option }));
-
-  const selectedOption = isMulti
-    ? selectOptions.filter((option) => value?.includes(option.value))
-    : selectOptions.find((option) => option.value === value) || null; // Default to null
-
-  return (
-    <div style={{ marginBottom: '16px', fontFamily: 'Arial, sans-serif' }}>
-      <label 
-        htmlFor={name} 
-        style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}
-      >
-        {label}
-      </label>
-      <Select
-        inputId={name}
-        name={name}
-        value={selectedOption}
-        options={selectOptions}
-        onChange={(selected) => onChange({ 
-          target: { 
-            name, 
-            value: isMulti ? selected.map(opt => opt.value) : selected ? selected.value : "" 
-          } 
-        })}
-        placeholder={placeholder}
-        isClearable
-        isSearchable
-        isMulti={isMulti}
-        styles={{
-          control: (base) => ({
-            ...base,
-            borderColor: '#ccc',
-            borderRadius: '4px',
-            fontSize: '14px',
-            transition: 'border-color 0.3s ease',
-          }),
-        }}
-      />
-    </div>
-  );
-};
 
 const AddVehicle = () => {
   const { vin } = useParams();
@@ -83,6 +40,7 @@ const AddVehicle = () => {
   });
   const [purchaseStatus, setPurchaseStatus] = useState(null);  // Track purchase status
   const [vehicleBought, setVehicleBought] = useState(false);  // Track if vehicle is bought
+  const navigate = useNavigate();
 
   useEffect(() => {
     const checkSession = async () => {
@@ -257,24 +215,8 @@ const AddVehicle = () => {
       await buyService.addVehicleToInventory(updatedVehicleDetails);
       setPurchaseStatus("Vehicle successfully added to inventory.");
       setVehicleBought(true);
-
-      // Clear form inputs and reset states 
-      setVehicleDetails({
-        vin: vin || "",
-        vehicle_type: null,
-        manufacturer: null,
-        model: "",
-        fuel_type: null,
-        colors: [],
-        horsepower: "",
-        purchase_price: "",
-        description: "",
-        model_year: "",
-        condition: null,
-      });
-      setLookupCustomerTaxId("");
-      setCustomerTaxId(null);
-
+      // NAVIGATE TO DETAIL PAGE ON SUCCESS
+      navigate(`/vehicle_detail/${vehicleDetails.vin}`);  // Redirect upon successful submission
     } catch (error) {
       console.log("Error purchasing vehicle:", error);
       setPurchaseStatus("Failed to add vehicle to inventory.");

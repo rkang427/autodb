@@ -166,7 +166,7 @@ const AddPartsOrder = () => {
           
           <input 
             type="text"
-            placeholder="Vendor Name"
+            placeholder="Vendor Name *"
             value={newVendor.name}
             maxLength={120}
             minLength={1}
@@ -174,17 +174,17 @@ const AddPartsOrder = () => {
             />
           <input 
             type="text"
-            placeholder="Phone Number"
+            placeholder="Phone Number *"
             onInput={(e) => {
               e.target.value = e.target.value.replace(/\D/g, '');
             }}
             value={newVendor.phone_number} required pattern="\d{10}" maxLength={10} minLength={10} onChange={(e) => handleNewVendorChange("phone_number", e.target.value)} />
-          <input type="text" placeholder="Street" value={newVendor.street} maxLength={120} required minLength={1} onChange={(e) => handleNewVendorChange("street", e.target.value)} />
-          <input type="text" placeholder="City" value={newVendor.city} maxLength={120} required minLength={1} onChange={(e) => handleNewVendorChange("city", e.target.value)} />
-          <input type="text" placeholder="State" value={newVendor.state} maxLength={120} required minLength={1} onChange={(e) => handleNewVendorChange("state", e.target.value)} />
+          <input type="text" placeholder="Street *" value={newVendor.street} maxLength={120} required minLength={1} onChange={(e) => handleNewVendorChange("street", e.target.value)} />
+          <input type="text" placeholder="City *" value={newVendor.city} maxLength={120} required minLength={1} onChange={(e) => handleNewVendorChange("city", e.target.value)} />
+          <input type="text" placeholder="State *" value={newVendor.state} maxLength={120} required minLength={1} onChange={(e) => handleNewVendorChange("state", e.target.value)} />
           <input
             type="text"
-            placeholder="Postal Code"
+            placeholder="Postal Code *"
             onInput={(e) => {
               e.target.value = e.target.value.replace(/\D/g, '');
             }}

@@ -194,7 +194,7 @@ const AddVehicle = () => {
       return alert("Please type a model year.");
     }
     if (vehicleDetails.model_year > currentYear + 1) {
-      alert("Model year must be within the current year or the next year.");
+      alert(`Model year must be less than or equal to ${currentYear + 1}`);
       return;
     }
     if (vehicleDetails.model_year < 1000 || vehicleDetails.model_year > 9999) {
@@ -212,17 +212,23 @@ const AddVehicle = () => {
     };
   
     try {
-      await buyService.addVehicleToInventory(updatedVehicleDetails);
+      const response = await buyService.addVehicleToInventory(updatedVehicleDetails);
       setPurchaseStatus("Vehicle successfully added to inventory.");
       setVehicleBought(true);
       // NAVIGATE TO DETAIL PAGE ON SUCCESS
       navigate(`/vehicle_detail/${vehicleDetails.vin}`);  // Redirect upon successful submission
     } catch (error) {
-      console.log("Error purchasing vehicle:", error);
-      setPurchaseStatus("Failed to add vehicle to inventory.");
+      console.log("back in Add Vehicle page", error);
+      console.log(Object.values(error)[0]);
       if (error.response && error.response.data.errors) {
         // Display errors returned from the backend
+        setTimeout(() => {
+          setPurchaseStatus(null)
+        }, 3000);
+        setPurchaseStatus(error.response.data.errors.map((err) => err.msg).join(", "));
         alert(error.response.data.errors.map((err) => err.msg).join(", "));
+      } else {
+        setPurchaseStatus(Object.values(error)[0]);
       }
     }
   };

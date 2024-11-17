@@ -13,12 +13,8 @@ const addVehicleToInventory = async (vehicleDetails) => {
     console.log('Vehicle successfully added to inventory:', response.data);
     return response.data;
   } catch (error) {
-    console.log("Error adding vehicle to inventory:", error);
-    if (error.response) {
-      console.log("Error response:", error.response.data);
-      throw new Error(error.response?.data?.message || "Failed to add vehicle to inventory. Please try again.");
-    }
-    throw new Error("Failed to add vehicle to inventory. Please try again.");
+    console.log("Error adding vehicle to inventory:", error.response.data.errors[0].msg);
+    throw error;
   }
 };
 

@@ -163,6 +163,7 @@ const AddPartsOrder = () => {
       {showAddVendorForm && (
         <div style={{ marginTop: "1rem", border: "1px solid #ccc", padding: "1rem" }}>
           <h3>Add New Vendor</h3>
+          
           <input 
             type="text"
             placeholder="Vendor Name"
@@ -199,14 +200,19 @@ const AddPartsOrder = () => {
       {/* Parts Order Fields */}
       <h3>Parts</h3>
       {parts.map((part, index) => (
-        <div key={index}>
+        <div key={index} style={{ marginBottom: "1rem" }}>
+          <h4>Part {index + 1}:</h4>
+          <label>Part Number:<span style={{ color: "red" }}> *</span></label>
           <input type="text" placeholder="Part Number" value={part.part_number} onChange={(e) => handlePartChange(index, "part_number", e.target.value)} />
+          <label>Description:<span style={{ color: "red" }}> *</span></label>
           <input type="text" placeholder="Description" value={part.description} onChange={(e) => handlePartChange(index, "description", e.target.value)} />
+          <label>Quantity:<span style={{ color: "red" }}> *</span></label>
           <input type="number" min={1} placeholder="Quantity" value={part.quantity}
             onInput={(e) => {
               e.target.value = e.target.value.replace(/\D/g, '');
             }}
             onChange={(e) => handlePartChange(index, "quantity", parseInt(e.target.value))} />
+          <label>Unit Price:<span style={{ color: "red" }}> *</span></label>
           <input
             type="number"
             step="0.01"

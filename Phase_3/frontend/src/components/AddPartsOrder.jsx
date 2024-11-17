@@ -81,8 +81,15 @@ const AddPartsOrder = () => {
       setShowAddVendorForm(false); // Hide add vendor form
       setSuccessMessage("Vendor added successfully!");
     } catch (error) {
-      console.error("Error adding vendor:", error);
-      setErrorMessage("Failed to add vendor. Please try again.");
+      if (error.status == 409){
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 3000);
+        setErrorMessage("Vendor already exists!.");
+      } else {
+        console.error("Error adding vendor:", error);
+        setErrorMessage("Failed to add vendor. Please try again.");
+      }
     }
   };
 
@@ -157,19 +164,42 @@ const AddPartsOrder = () => {
         placeholder="Select a vendor"
       />
       <button type="button" onClick={() => setShowAddVendorForm(!showAddVendorForm)}>
-        {showAddVendorForm ? "Cancel" : "Add New Vendor"}
+        {showAddVendorForm ? "Cancel adding vendor" : "Add New Vendor"}
       </button>
 
       {/* Inline Add Vendor Form */}
       {showAddVendorForm && (
         <div style={{ marginTop: "1rem", border: "1px solid #ccc", padding: "1rem" }}>
           <h3>Add New Vendor</h3>
-          <input type="text" placeholder="Vendor Name" value={newVendor.name} maxLength={120} minLength={1} required onChange={(e) => handleNewVendorChange("name", e.target.value)} />
-          <input type="text" placeholder="Phone Number" value={newVendor.phone_number} required pattern="\d{10}" maxLength={10} minLength={10} onChange={(e) => handleNewVendorChange("phone_number", e.target.value)} />
+          <input 
+            type="text"
+            placeholder="Vendor Name"
+            value={newVendor.name}
+            maxLength={120}
+            minLength={1}
+            required onChange={(e) => handleNewVendorChange("name", e.target.value)}
+            />
+          <input 
+            type="text"
+            placeholder="Phone Number"
+            onInput={(e) => {
+              e.target.value = e.target.value.replace(/\D/g, '');
+            }}
+            value={newVendor.phone_number} required pattern="\d{10}" maxLength={10} minLength={10} onChange={(e) => handleNewVendorChange("phone_number", e.target.value)} />
           <input type="text" placeholder="Street" value={newVendor.street} maxLength={120} required minLength={1} onChange={(e) => handleNewVendorChange("street", e.target.value)} />
           <input type="text" placeholder="City" value={newVendor.city} maxLength={120} required minLength={1} onChange={(e) => handleNewVendorChange("city", e.target.value)} />
           <input type="text" placeholder="State" value={newVendor.state} maxLength={120} required minLength={1} onChange={(e) => handleNewVendorChange("state", e.target.value)} />
-          <input type="text" placeholder="Postal Code" value={newVendor.postal_code} required pattern="\d{5}" maxLength={5} minLength={5} onChange={(e) => handleNewVendorChange("postal_code", e.target.value)} />
+          <input
+            type="text"
+            placeholder="Postal Code"
+            onInput={(e) => {
+              e.target.value = e.target.value.replace(/\D/g, '');
+            }}
+            value={newVendor.postal_code}
+            required pattern="\d{5}"
+            maxLength={5} minLength={5}
+            onChange={(e) => handleNewVendorChange("postal_code", e.target.value)}
+          />
           {isVendorFormValid() && <button type="button" onClick={handleAddVendor}>Save Vendor</button>}
         </div>
       )}

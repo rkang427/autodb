@@ -94,6 +94,9 @@ const AddCustomerModal = ({
                   onChange={handleChange}
                   maxLength="9"
                   minLength="9"
+                  onInput={(e) => {
+                    e.target.value = e.target.value.replace(/\D/g, '');
+                  }}
                 />
               </div>
               <div>
@@ -157,6 +160,9 @@ const AddCustomerModal = ({
               title="Phone number must be 10 digits"
               maxLength="10"
               minLength="10"
+              onInput={(e) => {
+                e.target.value = e.target.value.replace(/\D/g, '');
+              }}
             />
           </div>
           <div>
@@ -213,6 +219,9 @@ const AddCustomerModal = ({
               maxLength="5"
               minLength="5"
               required
+              onInput={(e) => {
+                e.target.value = e.target.value.replace(/\D/g, '');
+              }}
             />
           </div>
           <div>

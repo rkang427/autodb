@@ -59,7 +59,7 @@ const AddCustomerModal = ({
           {form.customer_type === 'i' && (
             <>
               <div>
-                <label htmlFor="tax_id">SSN</label>
+                <label htmlFor="tax_id">SSN <span style={{ color: "red" }}>*</span></label>
                 <input
                   type="text"
                   id="tax_id"
@@ -76,7 +76,7 @@ const AddCustomerModal = ({
           {form.customer_type === 'b' && (
             <>
               <div>
-                <label htmlFor="tax_id">TIN</label>
+                <label htmlFor="tax_id">TIN <span style={{ color: "red" }}>*</span></label>
                 <input
                   type="text"
                   id="tax_id"
@@ -88,7 +88,7 @@ const AddCustomerModal = ({
                 />
               </div>
               <div>
-                <label htmlFor="bName">Business Name</label>
+                <label htmlFor="bName">Business Name <span style={{ color: "red" }}>*</span></label>
                 <input
                   type="text"
                   id="business_name"
@@ -99,7 +99,7 @@ const AddCustomerModal = ({
                 />
               </div>
               <div>
-                <label htmlFor="title">Primary Contact Title</label>
+                <label htmlFor="title">Primary Contact Title <span style={{ color: "red" }}>*</span></label>
                 <input
                   type="text"
                   id="title"
@@ -114,7 +114,7 @@ const AddCustomerModal = ({
 
           {/* Common fields */}
           <div>
-            <label htmlFor="first_name">First Name</label>
+            <label htmlFor="first_name">First Name <span style={{ color: "red" }}>*</span></label>
             <input
               type="text"
               id="first_name"
@@ -125,7 +125,7 @@ const AddCustomerModal = ({
             />
           </div>
           <div>
-            <label htmlFor="last_name">Last Name</label>
+            <label htmlFor="last_name">Last Name <span style={{ color: "red" }}>*</span></label>
             <input
               type="text"
               id="last_name"
@@ -136,7 +136,7 @@ const AddCustomerModal = ({
             />
           </div>
           <div>
-            <label htmlFor="phone">Phone</label>
+            <label htmlFor="phone">Phone <span style={{ color: "red" }}>*</span></label>
             <input
               type="text"
               id="phone_number"
@@ -151,7 +151,7 @@ const AddCustomerModal = ({
             />
           </div>
           <div>
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">Email <span style={{ color: "red" }}>*</span></label>
             <input
               type="email"
               id="email"
@@ -161,7 +161,7 @@ const AddCustomerModal = ({
             />
           </div>
           <div>
-            <label htmlFor="street">Street</label>
+            <label htmlFor="street">Street <span style={{ color: "red" }}>*</span></label>
             <input
               type="text"
               id="street"
@@ -172,7 +172,7 @@ const AddCustomerModal = ({
             />
           </div>
           <div>
-            <label htmlFor="city">City</label>
+            <label htmlFor="city">City <span style={{ color: "red" }}>*</span></label>
             <input
               type="text"
               id="city"
@@ -183,7 +183,7 @@ const AddCustomerModal = ({
             />
           </div>
           <div>
-            <label htmlFor="state">State</label>
+            <label htmlFor="state">State <span style={{ color: "red" }}>*</span></label>
             <input
               type="text"
               id="state"
@@ -194,7 +194,7 @@ const AddCustomerModal = ({
             />
           </div>
           <div>
-            <label htmlFor="postal_code">Postal Code</label>
+            <label htmlFor="postal_code">Postal Code <span style={{ color: "red" }}>*</span></label>
             <input
               type="postal_code"
               id="postal_code"

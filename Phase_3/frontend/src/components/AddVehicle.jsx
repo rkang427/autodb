@@ -270,7 +270,7 @@ const AddVehicle = () => {
                 htmlFor="vin" 
                 style={{ display: "block", marginBottom: "8px", fontWeight: "bold" }}
               >
-                VIN
+                VIN <span style={{ color: "red" }}>*</span>
               </label>
               <input
                 type="text"
@@ -284,7 +284,11 @@ const AddVehicle = () => {
             </div>
 
             <Dropdown
-              label="Vehicle Type"
+            label={
+              <>
+                Vehicle Type <span style={{ color: "red" }}>*</span>
+              </>
+            }
               name="vehicle_type"
               options={vehicleTypes}
               value={vehicleDetails.vehicle_type}
@@ -292,7 +296,11 @@ const AddVehicle = () => {
             />
 
             <Dropdown
-              label="Manufacturer"
+              label={
+                <>
+                  Manufacturer <span style={{ color: "red" }}>*</span>
+                </>
+              }
               name="manufacturer"
               options={manufacturers}
               value={vehicleDetails.manufacturer}
@@ -300,7 +308,11 @@ const AddVehicle = () => {
             />
 
             <Dropdown
-              label="Fuel Type"
+              label={
+                <>
+                  Fuel Type <span style={{ color: "red" }}>*</span>
+                </>
+              }
               name="fuel_type"
               options={fuelTypes}
               value={vehicleDetails.fuel_type}
@@ -308,7 +320,11 @@ const AddVehicle = () => {
             />
 
             <Dropdown
-              label="Condition"
+              label={
+                <>
+                  Condition <span style={{ color: "red" }}>*</span>
+                </>
+              }
               name="condition"
               options={conditions}
               value={vehicleDetails.condition}
@@ -316,7 +332,11 @@ const AddVehicle = () => {
             />
 
             <Dropdown
-              label="Color"
+              label={
+                <>
+                  Color <span style={{ color: "red" }}>*</span>
+                </>
+              }
               name="color"
               options={colorsList}
               value={vehicleDetails.colors}
@@ -329,7 +349,7 @@ const AddVehicle = () => {
                 htmlFor="model" 
                 style={{ display: "block", marginBottom: "8px", fontWeight: "bold" }}
               >
-                Model
+                Model <span style={{ color: "red" }}>*</span>
               </label>
               <input
                 type="text"
@@ -346,7 +366,7 @@ const AddVehicle = () => {
                 htmlFor="horsepower" 
                 style={{ display: "block", marginBottom: "8px", fontWeight: "bold" }}
               >
-                Horsepower
+                Horsepower <span style={{ color: "red" }}>*</span>
               </label>
               <input
                 type="number"
@@ -364,7 +384,7 @@ const AddVehicle = () => {
                 htmlFor="purchase_price" 
                 style={{ display: "block", marginBottom: "8px", fontWeight: "bold" }}
               >
-                Purchase Price
+                Purchase Price <span style={{ color: "red" }}>*</span>
               </label>
               <input
                 type="number"
@@ -399,7 +419,7 @@ const AddVehicle = () => {
                 htmlFor="model_year" 
                 style={{ display: "block", marginBottom: "8px", fontWeight: "bold" }}
               >
-                Model Year
+                Model Year <span style={{ color: "red" }}>*</span>
               </label>
               <input
                 type="number"

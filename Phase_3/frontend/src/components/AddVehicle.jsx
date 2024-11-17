@@ -265,10 +265,10 @@ const AddVehicle = () => {
 
           {/* Vehicle Details Form */}
           <form>
-            <div style={{ marginBottom: "16px", fontFamily: "Arial, sans-serif" }}>
+            <div style={{ marginTop: "16px", fontFamily: "Arial, sans-serif" }}>
               <label 
                 htmlFor="vin" 
-                style={{ display: "block", marginBottom: "8px", fontWeight: "bold" }}
+                style={{ display: "block", fontWeight: "bold" }}
               >
                 VIN <span style={{ color: "red" }}>*</span>
               </label>
@@ -344,10 +344,10 @@ const AddVehicle = () => {
               isMulti={true}
             />
 
-            <div style={{ marginBottom: "16px", fontFamily: "Arial, sans-serif" }}>
+            <div style={{ fontFamily: "Arial, sans-serif" }}>
               <label 
                 htmlFor="model" 
-                style={{ display: "block", marginBottom: "8px", fontWeight: "bold" }}
+                style={{ display: "block", fontWeight: "bold" }}
               >
                 Model <span style={{ color: "red" }}>*</span>
               </label>
@@ -361,10 +361,10 @@ const AddVehicle = () => {
               />
             </div>
 
-            <div style={{ marginBottom: "16px", fontFamily: "Arial, sans-serif" }}>
+            <div style={{ fontFamily: "Arial, sans-serif" }}>
               <label 
                 htmlFor="horsepower" 
-                style={{ display: "block", marginBottom: "8px", fontWeight: "bold" }}
+                style={{ display: "block", fontWeight: "bold" }}
               >
                 Horsepower <span style={{ color: "red" }}>*</span>
               </label>
@@ -379,10 +379,10 @@ const AddVehicle = () => {
               />
             </div>
 
-            <div style={{ marginBottom: "16px", fontFamily: "Arial, sans-serif" }}>
+            <div style={{ fontFamily: "Arial, sans-serif" }}>
               <label 
                 htmlFor="purchase_price" 
-                style={{ display: "block", marginBottom: "8px", fontWeight: "bold" }}
+                style={{ display: "block", fontWeight: "bold" }}
               >
                 Purchase Price <span style={{ color: "red" }}>*</span>
               </label>
@@ -397,10 +397,10 @@ const AddVehicle = () => {
               />
             </div>
 
-            <div style={{ marginBottom: "16px", fontFamily: "Arial, sans-serif" }}>
+            <div style={{ fontFamily: "Arial, sans-serif" }}>
               <label 
                 htmlFor="description" 
-                style={{ display: "block", marginBottom: "8px", fontWeight: "bold" }}
+                style={{ display: "block", fontWeight: "bold" }}
               >
                 Description
               </label>
@@ -414,10 +414,10 @@ const AddVehicle = () => {
               />
             </div>
 
-            <div style={{ marginBottom: "16px", fontFamily: "Arial, sans-serif" }}>
+            <div style={{ fontFamily: "Arial, sans-serif" }}>
               <label 
                 htmlFor="model_year" 
-                style={{ display: "block", marginBottom: "8px", fontWeight: "bold" }}
+                style={{ display: "block", fontWeight: "bold" }}
               >
                 Model Year <span style={{ color: "red" }}>*</span>
               </label>

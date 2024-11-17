@@ -28,18 +28,15 @@ const AddPartsOrder = () => {
     fetchVendors();
   }, []);
 
-  const partsReady = () => {
-    for (let index = 0; index < parts.length; index++) {
-      const element = parts[index]
-      if (!element.description || element.description === ""){
-        return false;
-      }
-      if (!element.part_number || element.part_number === ""){
-        return false;
-      }
-    }
-    return true;
-  }
+  const isPartsFormValid = () => {
+    return parts.every((part) => {
+      const partNumberValid = part.part_number.trim() !== "";
+      const descriptionValid = part.description.trim() !== "";
+      const quantityValid = part.quantity > 0;
+      const unitPriceValid = part.unit_price >= 0.01 && !isNaN(part.unit_price) && /^\d+(\.\d{1,2})?$/.test(part.unit_price);
+      return partNumberValid && descriptionValid && quantityValid && unitPriceValid;
+    });
+  };  
 
   const popLastPart = () => {
     if (parts.length > 1) {
@@ -52,13 +49,8 @@ const AddPartsOrder = () => {
     const updatedParts = [...parts];
     console.log(`${index}, ${field}, ${value}`);
     if (field === 'quantity'){
-      if (!value || value <= 0){
+      if (value <= 0){
         value = 1;
-      }
-    }
-    if (field === 'unit_price'){
-      if (!value || value <= 0){
-        value = 0.01;
       }
     }
     updatedParts[index][field] = value;
@@ -146,7 +138,7 @@ const AddPartsOrder = () => {
       postalCodeValid
     );
   };
-
+  
   return (
     <div>
       <div>
@@ -210,8 +202,18 @@ const AddPartsOrder = () => {
         <div key={index}>
           <input type="text" placeholder="Part Number" value={part.part_number} onChange={(e) => handlePartChange(index, "part_number", e.target.value)} />
           <input type="text" placeholder="Description" value={part.description} onChange={(e) => handlePartChange(index, "description", e.target.value)} />
-          <input type="number" min={1} placeholder="Quantity" value={part.quantity} onChange={(e) => handlePartChange(index, "quantity", parseInt(e.target.value))} />
-          <input type="number" min={0.01} placeholder="Unit Price" value={part.unit_price} onChange={(e) => handlePartChange(index, "unit_price", parseFloat(e.target.value))} />
+          <input type="number" min={1} placeholder="Quantity" value={part.quantity}
+            onInput={(e) => {
+              e.target.value = e.target.value.replace(/\D/g, '');
+            }}
+            onChange={(e) => handlePartChange(index, "quantity", parseInt(e.target.value))} />
+          <input
+            type="number"
+            step="0.01"
+            placeholder="Unit Price"
+            value={part.unit_price}
+            onChange={(e) => handlePartChange(index, "unit_price", e.target.value)}
+          /> 
         </div>
       ))}
       <button type="button" onClick={addPartField}>Add Another Part</button>
@@ -220,7 +222,7 @@ const AddPartsOrder = () => {
       }
 
       {/* Submit Order */}
-      {vendor_name !== "" && partsReady() &&
+      {vendor_name !== "" && isPartsFormValid() &&
       <button type="submit" onClick={handleSubmit}>Submit Parts Order</button>
       }
       {/* Success/Error Messages */}

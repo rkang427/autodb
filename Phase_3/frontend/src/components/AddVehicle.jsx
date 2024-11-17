@@ -453,8 +453,8 @@ const AddVehicle = () => {
                 type="number"
                 id="model_year"
                 name="model_year"
-                min="1000"
-                max={new Date().getFullYear()}
+                min={1000}
+                max={Number(new Date().getFullYear()+1)}
                 placeholder="Enter Model Year"
                 onChange={handleInputChange}
                 value={vehicleDetails.model_year}
@@ -468,7 +468,7 @@ const AddVehicle = () => {
           {purchaseStatus && <p>{purchaseStatus}</p>}
         </div>
       ) : (
-        <h2>Forbidden</h2>
+        <></>
       )}
     </>
   );

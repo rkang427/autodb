@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import formatter from '../util/formatter';
 
 const ViewSellerHistory = () => {
   const [data, setData] = useState([]);
@@ -52,9 +53,9 @@ const ViewSellerHistory = () => {
             >
               <td>{item.namebusiness}</td>
               <td>{item.vehiclecount}</td>
-              <td>{item.averagepurchaseprice}</td>
+              <td>{formatter.formatUSD(item.averagepurchaseprice)}</td>
               <td>{item.totalpartscount}</td>
-              <td>{item.averagepartscostpervehiclepurchased}</td>
+              <td>{formatter.formatUSD(item.averagepartscostpervehiclepurchased)}</td>
             </tr>
           ))}
         </tbody>

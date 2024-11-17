@@ -120,6 +120,25 @@ const AddPartsOrder = () => {
   const handleGoBack = () => {
     navigate(-1);  
   };
+  // Validation function to check if all required fields are filled and valid
+  const isVendorFormValid = () => {
+    const { name, phone_number, street, city, state, postal_code } = newVendor;
+
+    // Check for required fields and valid formats
+    const phoneValid = /^\d{10}$/.test(phone_number);
+    const postalCodeValid = /^\d{5}$/.test(postal_code);
+
+    return (
+      name &&
+      phone_number &&
+      phoneValid &&
+      street &&
+      city &&
+      state &&
+      postal_code &&
+      postalCodeValid
+    );
+  };
 
   return (
     <div>
@@ -145,13 +164,13 @@ const AddPartsOrder = () => {
       {showAddVendorForm && (
         <div style={{ marginTop: "1rem", border: "1px solid #ccc", padding: "1rem" }}>
           <h3>Add New Vendor</h3>
-          <input type="text" placeholder="Vendor Name" value={newVendor.name} onChange={(e) => handleNewVendorChange("name", e.target.value)} />
-          <input type="text" placeholder="Phone Number" value={newVendor.phone_number} onChange={(e) => handleNewVendorChange("phone_number", e.target.value)} />
-          <input type="text" placeholder="Street" value={newVendor.street} onChange={(e) => handleNewVendorChange("street", e.target.value)} />
-          <input type="text" placeholder="City" value={newVendor.city} onChange={(e) => handleNewVendorChange("city", e.target.value)} />
-          <input type="text" placeholder="State" value={newVendor.state} onChange={(e) => handleNewVendorChange("state", e.target.value)} />
-          <input type="text" placeholder="Postal Code" value={newVendor.postal_code} onChange={(e) => handleNewVendorChange("postal_code", e.target.value)} />
-          <button type="button" onClick={handleAddVendor}>Save Vendor</button>
+          <input type="text" placeholder="Vendor Name" value={newVendor.name} maxLength={120} minLength={1} required onChange={(e) => handleNewVendorChange("name", e.target.value)} />
+          <input type="text" placeholder="Phone Number" value={newVendor.phone_number} required pattern="\d{10}" maxLength={10} minLength={10} onChange={(e) => handleNewVendorChange("phone_number", e.target.value)} />
+          <input type="text" placeholder="Street" value={newVendor.street} maxLength={120} required minLength={1} onChange={(e) => handleNewVendorChange("street", e.target.value)} />
+          <input type="text" placeholder="City" value={newVendor.city} maxLength={120} required minLength={1} onChange={(e) => handleNewVendorChange("city", e.target.value)} />
+          <input type="text" placeholder="State" value={newVendor.state} maxLength={120} required minLength={1} onChange={(e) => handleNewVendorChange("state", e.target.value)} />
+          <input type="text" placeholder="Postal Code" value={newVendor.postal_code} required pattern="\d{5}" maxLength={5} minLength={5} onChange={(e) => handleNewVendorChange("postal_code", e.target.value)} />
+          {isVendorFormValid() && <button type="button" onClick={handleAddVendor}>Save Vendor</button>}
         </div>
       )}
 

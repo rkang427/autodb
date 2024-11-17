@@ -6,7 +6,7 @@ const {
   FUEL_TYPES,
   CONDITIONS,
 } = require('../config/constants');
-const sqlInjectionPattern = /['"\\;%-]/;
+const sqlInjectionPattern = /['"\\;%]/;
 
 const customerGetValidator = [
   query('tax_id')
@@ -88,49 +88,19 @@ const vehicleSearchValidator = [
     }),
   query('color')
     .optional()
-    .isIn(COLORS)
-    .custom((value) => {
-      if (sqlInjectionPattern.test(value)) {
-        throw new Error('Color contains invalid characters.');
-      }
-      return true;
-    }),
+    .isIn(COLORS),
   query('manufacturer')
     .optional()
-    .isIn(MANUFACTURERS)
-    .custom((value) => {
-      if (sqlInjectionPattern.test(value)) {
-        throw new Error('Manufacturer contains invalid characters.');
-      }
-      return true;
-    }),
+    .isIn(MANUFACTURERS),
   query('vehicle_type')
     .optional()
-    .isIn(VEHICLE_TYPES)
-    .custom((value) => {
-      if (sqlInjectionPattern.test(value)) {
-        throw new Error('Vehicle Type contains invalid characters.');
-      }
-      return true;
-    }),
+    .isIn(VEHICLE_TYPES),
   query('fuel_type')
     .optional()
-    .isIn(FUEL_TYPES)
-    .custom((value) => {
-      if (sqlInjectionPattern.test(value)) {
-        throw new Error('Fuel Type contains invalid characters.');
-      }
-      return true;
-    }),
+    .isIn(FUEL_TYPES),
   query('model_year')
     .optional()
     .isInt({ min: 1000, max: new Date().getFullYear() + 1 })
-    .custom((value) => {
-      if (sqlInjectionPattern.test(value)) {
-        throw new Error('Model Year contains invalid characters.');
-      }
-      return true;
-    }),
 ];
 
 const vendorGetValidator = [query('name').isLength({ min: 1, max: 120 })];

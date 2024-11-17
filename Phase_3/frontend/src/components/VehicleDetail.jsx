@@ -69,7 +69,7 @@ const VehicleDetail = () => {
     return (
       loggedInUser &&
       (loggedInUser.user_type === "inventory_clerk" ||
-        loggedInUser.user_type === "owner")
+        loggedInUser.user_type === "owner" || loggedInUser.user_type === "manager")
     );
   };
 
@@ -336,7 +336,7 @@ const VehicleDetail = () => {
                           <strong>Part Status: </strong>
                           {part.status}
                         </td></tr>
-                        {part.status !== "installed" && (
+                        {part.status !== "installed" && loggedInUser && loggedInUser.user_type !== 'manager' && (
                                 <>{part.status == "ordered" ? (
                                   <tr>
                                     <td>

@@ -68,6 +68,8 @@ const AddCustomerModal = ({
                   pattern="\d{9}"
                   value={form.tax_id}
                   onChange={handleChange}
+                  maxLength="9"
+                  minLength="9"
                 />
               </div>
             </>
@@ -85,6 +87,8 @@ const AddCustomerModal = ({
                   pattern="\d{9}"
                   value={form.tax_id}
                   onChange={handleChange}
+                  maxLength="9"
+                  minLength="9"
                 />
               </div>
               <div>
@@ -201,6 +205,8 @@ const AddCustomerModal = ({
               name="postal_code"
               value={form.postal_code}
               onChange={handleChange}
+              maxLength="5"
+              minLength="5"
               required
             />
           </div>

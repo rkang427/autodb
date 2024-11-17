@@ -36,17 +36,17 @@ const PricePerCondition = () => {
       <table style = {{margin:'auto'}}> 
         <thead>
           <tr>
-            <td>Vehicle Type</td>
-            <td>Fair</td>
-            <td>Good</td>
-            <td>Very Good</td>
-            <td>Excellent</td>
+            <th>Vehicle Type</th>
+            <th>Fair</th>
+            <th>Good</th>
+            <th>Very Good</th>
+            <th>Excellent</th>
           </tr>
         </thead>
         <tbody>
           {data.map((item, index) => (
             <tr key={index}>
-              <td>{item.vehicle_type}</td>
+              <td><strong>{item.vehicle_type}</strong></td>
               <td>{formatter.formatUSD(item.fairavgprice)}</td> 
               <td>{formatter.formatUSD(item.goodavgprice)}</td> 
               <td>{formatter.formatUSD(item.verygoodavgprice)}</td> 

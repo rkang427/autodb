@@ -29,7 +29,7 @@ const Landing = ({ loggedInUser }) => {
     fuel_type: "",
     color: "",
     keyword: "",
-    filter_type: "",
+    filter_type: loggedInUser && (loggedInUser.user_type === "owner" || loggedInUser.user_type === "manager") ? "both" : "",
   });
 
   useEffect(() => {

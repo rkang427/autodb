@@ -60,11 +60,11 @@ router.get('/', async (req, res) => {
       LEFT JOIN po_not_installed ON v.vin = po_not_installed.vin
       WHERE po_not_installed.vin IS NOT NULL AND v.sale_date IS NULL;`,
 
-    colors: `SELECT DISTINCT color FROM vehicle_color;`,
-    fuelTypes: `SELECT DISTINCT fuel_type FROM vehicle;`,
-    modelYears: `SELECT DISTINCT model_year FROM vehicle;`,
-    manufacturers: `SELECT DISTINCT manufacturer FROM vehicle;`,
-    vehicleTypes: `SELECT DISTINCT vehicle_type FROM vehicle;`,
+    colors: `SELECT DISTINCT color FROM vehicle_color ORDER BY color DESC;`,
+    fuelTypes: `SELECT DISTINCT fuel_type FROM vehicle ORDER BY fuel_type DESC;`,
+    modelYears: `SELECT DISTINCT model_year FROM vehicle ORDER BY model_year DESC;`,
+    manufacturers: `SELECT DISTINCT manufacturer FROM vehicle ORDER BY manufacturer DESC;`,
+    vehicleTypes: `SELECT DISTINCT vehicle_type FROM vehicle ORDER BY vehicle_type DESC;`,
     vins: req.session && req.session.user ? userTypeToQueryMap[req.session.user.user_type] : "SELECT vin FROM vehicle WHERE vin IS NULL"
   };
 

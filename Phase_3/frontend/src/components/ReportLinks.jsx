@@ -5,12 +5,12 @@ const ReportLinks = () => {
     <div>
       <h2>Reports</h2>
       <div>
-        <Link to="/average_time_in_inventory">
-          View Average Time in Inventory
-        </Link>
+        <Link to="/view_seller_history">Seller History</Link>
       </div>
       <div>
-        <Link to="/view_seller_history">View Seller History</Link>
+        <Link to="/average_time_in_inventory">
+          Average Time in Inventory
+        </Link>
       </div>
       <div>
         <Link to="/price_per_condition">Price Per Condition</Link>

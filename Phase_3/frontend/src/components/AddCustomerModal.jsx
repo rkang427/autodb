@@ -59,17 +59,22 @@ const AddCustomerModal = ({
           {form.customer_type === 'i' && (
             <>
               <div>
-                <label htmlFor="tax_id">SSN <span style={{ color: "red" }}>*</span></label>
+                <label htmlFor="tax_id">
+                  {form.customer_type === 'i' ? 'SSN' : 'TIN'} <span style={{ color: "red" }}>*</span>
+                </label>
                 <input
                   type="text"
                   id="tax_id"
                   name="tax_id"
                   required
                   pattern="\d{9}"
+                  title="Must be exactly 9 numeric digits"
+                  maxLength="9"
                   value={form.tax_id}
                   onChange={handleChange}
-                  maxLength="9"
-                  minLength="9"
+                  onInput={(e) => {
+                    e.target.value = e.target.value.replace(/\D/g, '');
+                  }}
                 />
               </div>
             </>

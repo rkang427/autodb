@@ -208,7 +208,7 @@ const Landing = ({ loggedInUser }) => {
 
 const styles = {
   searchSection: {
-    width: "80%",
+    width: "100%",
     padding: "30px",
     border: "1px solid #ddd",
     borderRadius: "10px",
@@ -216,6 +216,11 @@ const styles = {
     boxShadow: "0 8px 16px rgba(0, 0, 0, 0.1)",
     margin: "0 auto",
     textAlign: "center",
+  },
+  searchResults: {
+    width: "80%",
+    textAlign: "center",
+
   },
   stats: {
     marginBottom: "20px",

@@ -57,7 +57,6 @@ const Login = () => {
   if (loggedInUser) {
     return (
       <>
-        <hr style={styles.divider} />
         <NavBar loggedInUser={loggedInUser} handleLogout={handleLogout} />
         <Landing loggedInUser={loggedInUser} />
       </>

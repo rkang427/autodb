@@ -15,17 +15,14 @@ const VehicleDetail = () => {
     const checkSession = async () => {
       try {
         const response = await auth.checkSession();
-        console.log(response.data.user);
         if (response.data.user) {
           setLoggedInUser(response.data.user);
         }
       } catch (error) {
         console.error("Error checking session", error);
       } finally {
-        // loggedIn or Not, retrieve the vehicle detail info. After checking the loggedIn
         try {
           const detailResponse = await detail.getVehicleDetails(vin);
-          console.log(detailResponse.data);
           setVehicleDetails(detailResponse.data);
         } catch (e) {
           console.log(e);
@@ -74,7 +71,6 @@ const VehicleDetail = () => {
   };
 
   const statusUpdate = async (part, newStatus) => {
-    console.log(part, newStatus);
     try {
       const result = await partsOrder.updatePartStatus({
         part_number: part.part_number,
@@ -90,54 +86,53 @@ const VehicleDetail = () => {
             : p
         ),
       });
-      console.log(result.data);
     } catch (error) {
       console.log(error);
     }
   };
 
   return (
-    <div style={{ fontFamily: "Arial" }}>
-      <Link to={"/"}>Go back to main page</Link>
+    <div style={styles.container}>
+      <Link to={"/"} style={styles.link}>Go back to main page</Link>
       {vehicleDetails && (
         <div>
-          <h2>
+          <h2 style={styles.title}>
             {vehicleDetails.vehicle.manufacturer},{" "}
             {vehicleDetails.vehicle.model_year}
           </h2>
-          <table>
+          <table style={styles.table}>
             <tbody>
               <tr>
-                <td>VIN:</td>
+                <td style={styles.tableLabel}>VIN:</td>
                 <td>{vehicleDetails.vehicle.vin}</td>
               </tr>
               <tr>
-                <td>Vehicle Type:</td>
+                <td style={styles.tableLabel}>Vehicle Type:</td>
                 <td>{vehicleDetails.vehicle.vehicle_type}</td>
               </tr>
               <tr>
-                <td>Manufacturer:</td>
+                <td style={styles.tableLabel}>Manufacturer:</td>
                 <td>{vehicleDetails.vehicle.manufacturer}</td>
               </tr>
               <tr>
-                <td>Model:</td>
+                <td style={styles.tableLabel}>Model:</td>
                 <td>{vehicleDetails.vehicle.model}</td>
               </tr>
               <tr>
-                <td>Fuel Type:</td>
+                <td style={styles.tableLabel}>Fuel Type:</td>
                 <td>{vehicleDetails.vehicle.fuel_type}</td>
               </tr>
               <tr>
-                <td>Color(s):</td>
+                <td style={styles.tableLabel}>Color(s):</td>
                 <td>{vehicleDetails.vehicle.colors}</td>
               </tr>
               <tr>
-                <td>Horsepower:</td>
+                <td style={styles.tableLabel}>Horsepower:</td>
                 <td>{vehicleDetails.vehicle.horsepower}</td>
               </tr>
               {vehicleDetails.vehicle.purchase_price && (
                 <tr>
-                  <td>Purchase Price:</td>
+                  <td style={styles.tableLabel}>Purchase Price:</td>
                   <td>
                     {formatter.formatUSD(vehicleDetails.vehicle.purchase_price)}
                   </td>
@@ -148,7 +143,7 @@ const VehicleDetail = () => {
                   loggedInUser.user_type
                 ) && (
                   <tr>
-                    <td>Total Parts Price:</td>
+                    <td style={styles.tableLabel}>Total Parts Price:</td>
                     <td>
                       {formatter.formatUSD(
                         vehicleDetails.vehicle.total_parts_price
@@ -157,13 +152,13 @@ const VehicleDetail = () => {
                   </tr>
                 )}
               <tr>
-                <td>Sale Price:</td>
+                <td style={styles.tableLabel}>Sale Price:</td>
                 <td>
                   {formatter.formatUSD(vehicleDetails.vehicle.sale_price)}
                 </td>
               </tr>
               <tr>
-                <td>Description:</td>
+                <td style={styles.tableLabel}>Description:</td>
                 <td>{vehicleDetails.vehicle.description}</td>
               </tr>
               {loggedInUser &&
@@ -171,7 +166,7 @@ const VehicleDetail = () => {
                   loggedInUser.user_type
                 ) && vehicleDetails.vehicle.purchase_date && (
                   <tr>
-                    <td>Purchase Date:</td>
+                    <td style={styles.tableLabel}>Purchase Date:</td>
                     <td>
                       {formatter.formatDate(
                         vehicleDetails.vehicle.purchase_date
@@ -184,7 +179,7 @@ const VehicleDetail = () => {
                   loggedInUser.user_type
                 ) && vehicleDetails.vehicle.sale_date && (
                   <tr>
-                    <td>Sale Date:</td>
+                    <td style={styles.tableLabel}>Sale Date:</td>
                     <td>
                       {formatter.formatDate(
                         vehicleDetails.vehicle.sale_date
@@ -196,186 +191,117 @@ const VehicleDetail = () => {
           </table>
           {isOwnerOrManager() && (
             <div>
-              <h2>Vehicle Transaction Details</h2>
-              <p>
-                <strong>Inventory Clerk: </strong>
-                {vehicleDetails.inventory_clerk.name}
-              </p>
-              <p>
-                <strong>Customer Seller Contact Info</strong>
-              </p>
+              <h2 style={styles.subHeader}>Vehicle Transaction Details</h2>
+              <p><strong>Inventory Clerk: </strong>{vehicleDetails.inventory_clerk.name}</p>
+              <p><strong>Customer Seller Contact Info</strong></p>
               <ul>
                 {vehicleDetails.customer_seller.business_name ? (
                   <>
-                    <li>
-                      <strong>Business Name: </strong>
-                      {vehicleDetails.customer_seller.business_name}
-                    </li>
-                    <li>
-                      <strong>Title & Name: </strong>
-                      {vehicleDetails.customer_seller.contact}
-                    </li>
+                    <li><strong>Business Name: </strong>{vehicleDetails.customer_seller.business_name}</li>
+                    <li><strong>Title & Name: </strong>{vehicleDetails.customer_seller.contact}</li>
                   </>
                 ) : (
-                  <li>
-                    <strong>Name: </strong>
-                    {vehicleDetails.customer_seller.contact}
-                  </li>
+                  <li><strong>Name: </strong>{vehicleDetails.customer_seller.contact}</li>
                 )}
-                <li>
-                  <strong>Address: </strong>
-                  {vehicleDetails.customer_seller.address}
-                </li>
-                <li>
-                  <strong>Phone: </strong>
-                  {vehicleDetails.customer_seller.phone_number}
-                </li>
+                <li><strong>Address: </strong>{vehicleDetails.customer_seller.address}</li>
+                <li><strong>Phone: </strong>{vehicleDetails.customer_seller.phone_number}</li>
                 {vehicleDetails.customer_seller.email && (
-                  <li>
-                    <strong>Email: </strong>
-                    {vehicleDetails.customer_seller.email}
-                  </li>
+                  <li><strong>Email: </strong>{vehicleDetails.customer_seller.email}</li>
                 )}
               </ul>
             </div>
           )}
           {isOwnerOrManager() && vehicleDetails.salesperson && (
             <div>
-              <p>
-                <strong>Salesperson: </strong>
-                {vehicleDetails.salesperson.name}
-              </p>
-              <p>
-                <strong>Customer Buyer Contact Info</strong>
-              </p>
+              <p><strong>Salesperson: </strong>{vehicleDetails.salesperson.name}</p>
+              <p><strong>Customer Buyer Contact Info</strong></p>
               <ul>
                 {vehicleDetails.customer_buyer.business_name ? (
                   <>
-                    <li>
-                      <strong>Business Name: </strong>
-                      {vehicleDetails.customer_buyer.business_name}
-                    </li>
-                    <li>
-                      <strong>Title & Name: </strong>
-                      {vehicleDetails.customer_buyer.contact}
-                    </li>
+                    <li><strong>Business Name: </strong>{vehicleDetails.customer_buyer.business_name}</li>
+                    <li><strong>Title & Name: </strong>{vehicleDetails.customer_buyer.contact}</li>
                   </>
                 ) : (
-                  <li>
-                    <strong>Name: </strong>
-                    {vehicleDetails.customer_buyer.contact}
-                  </li>
+                  <li><strong>Name: </strong>{vehicleDetails.customer_buyer.contact}</li>
                 )}
-                <li>
-                  <strong>Address: </strong>
-                  {vehicleDetails.customer_buyer.address}
-                </li>
-                <li>
-                  <strong>Phone: </strong>
-                  {vehicleDetails.customer_buyer.phone_number}
-                </li>
+                <li><strong>Address: </strong>{vehicleDetails.customer_buyer.address}</li>
+                <li><strong>Phone: </strong>{vehicleDetails.customer_buyer.phone_number}</li>
                 {vehicleDetails.customer_buyer.email && (
-                  <li>
-                    <strong>Email: </strong>
-                    {vehicleDetails.customer_buyer.email}
-                  </li>
+                  <li><strong>Email: </strong>{vehicleDetails.customer_buyer.email}</li>
                 )}
               </ul>
             </div>
           )}
           {isAddPartAvailable() && (
             <Link to={`/parts_order/${vin}`}>
-              <button style={{border: "1px solid black"}}>Add parts order</button>
+              <button style={styles.button}>Add parts order</button>
             </Link>
           )}
-          {isSellVehicleAvailable() &&
-            vehicleDetails.parts.every(
-              (part) => part.status === "installed"
-            ) && (
-              <Link to={`/sell_vehicle/${vin}`}>
-                <button style={{border: "1px solid black"}}>Sell Vehicle</button>
-              </Link>
-            )}
+          {isSellVehicleAvailable() && (
+            <Link to={`/sell_vehicle/${vin}`}>
+              <button style={styles.button}>Sell Vehicle</button>
+            </Link>
+          )}
           {showPartsOrder() && (
             <div>
-              <h3>Parts Order</h3>
+              <h3 style={styles.subHeader}>Parts Order</h3>
               {vehicleDetails.parts.length === 0 ? (
                 <p>There are no ordered parts</p>
               ) : (
                 <div>
-                  <p>
-                    There are {vehicleDetails.parts.length} ordered part(s){" "}
-                  </p>
+                  <p>There are {vehicleDetails.parts.length} ordered part(s)</p>
                   {vehicleDetails.parts.map((part) => {
                     return (
                       <div key={part.parts_order_number + part.part_number}>
-                        <h4>{part.description}</h4>
-                        <table>
+                        <h4 style={styles.partTitle}>{part.description}</h4>
+                        <table style={styles.table}>
                           <tbody>
                             <tr>
-                              <td>Vendor: </td>
+                              <td style={styles.tableLabel}>Vendor: </td>
                               <td>{part.vendor_name}</td>
                             </tr>
                             <tr>
-                              <td>Parts Order #: </td>
+                              <td style={styles.tableLabel}>Parts Order #: </td>
                               <td>{part.parts_order_number}</td>
                             </tr>
                             <tr>
-                              <td>Part #: </td>
+                              <td style={styles.tableLabel}>Part #: </td>
                               <td>{part.part_number}</td>
                             </tr>
                             <tr>
-                              <td>Quantity: </td>
+                              <td style={styles.tableLabel}>Quantity: </td>
                               <td>{part.quantity}</td>
                             </tr>
                             <tr>
-                              <td>Unit Price: </td>
+                              <td style={styles.tableLabel}>Unit Price: </td>
                               <td>{formatter.formatUSD(part.unit_price)}</td>
                             </tr>
-                        <tr><td colSpan="2">
-                          <strong>Part Status: </strong>
-                          {part.status}
-                        </td></tr>
-                        {part.status !== "installed" && loggedInUser && loggedInUser.user_type !== 'manager' && (
-                                <>{part.status == "ordered" ? (
-                                  <tr>
-                                    <td>
-                                      <button style={{border: "1px solid black"}}
-                                        onClick={() =>
-                                          statusUpdate(part, "received")
-                                        }
-                                      >
-                                        Update Status to Received
-                                      </button>
-                                    </td>
-                                    <td>
-                                      <button style={{border: "1px solid black"}}
-                                        onClick={() =>
-                                          statusUpdate(part, "installed")
-                                        }
-                                      >
-                                        Update Status to Installed
-                                      </button>
-                                    </td>
-                                  </tr>
-                                ) : (
-                                  <tr>
-                                    <td>
-                                      <button style={{border: "1px solid black"}}
-                                        onClick={() =>
-                                          statusUpdate(part, "installed")
-                                        }
-                                      >
-                                        Update Status to Installed
-                                      </button>
-                                    </td>
-                                  </tr>
-                                )}
-                                </>
-                        )}
+                            <tr>
+                              <td colSpan="2"><strong>Part Status: </strong>{part.status}</td>
+                            </tr>
+                            {part.status !== "installed" && loggedInUser && loggedInUser.user_type !== 'manager' && (
+                              <tr>
+                                <td>
+                                  <button
+                                    style={styles.button}
+                                    onClick={() => statusUpdate(part, "received")}
+                                  >
+                                    Update Status to Received
+                                  </button>
+                                </td>
+                                <td>
+                                  <button
+                                    style={styles.button}
+                                    onClick={() => statusUpdate(part, "installed")}
+                                  >
+                                    Update Status to Installed
+                                  </button>
+                                </td>
+                              </tr>
+                            )}
                           </tbody>
                         </table>
-                        <hr />
+                        <hr style={styles.divider} />
                       </div>
                     );
                   })}
@@ -389,4 +315,63 @@ const VehicleDetail = () => {
   );
 };
 
+const styles = {
+  container: {
+    padding: "20px",
+    fontFamily: "Poppins, sans-serif",
+    color: "#333",
+  },
+  link: {
+    textDecoration: "none",
+    color: "#3498db",
+    fontSize: "1.2em",
+    marginBottom: "20px",
+    display: "inline-block",
+  },
+  title: {
+    fontSize: "2em",
+    fontWeight: "700",
+    color: "#2C3E50",
+    marginBottom: "15px",
+  },
+  table: {
+    width: "100%",
+    borderCollapse: "collapse",
+    marginBottom: "20px",
+  },
+  tableLabel: {
+    fontWeight: "600",
+    color: "#34495E",
+    padding: "10px",
+    borderBottom: "1px solid #ddd",
+  },
+  button: {
+    backgroundColor: "#28a745",
+    color: "#fff",
+    padding: "10px 20px",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+    margin: "10px 0",
+    fontSize: "14px",
+    transition: "background-color 0.3s",
+  },
+  subHeader: {
+    fontSize: "1.5em",
+    fontWeight: "600",
+    color: "#2C3E50",
+    marginTop: "20px",
+  },
+  partTitle: {
+    fontSize: "1.2em",
+    fontWeight: "500",
+    color: "#2C3E50",
+    marginBottom: "15px",
+  },
+  divider: {
+    border: "0",
+    borderTop: "2px solid #ddd",
+    margin: "20px 0",
+  },
+};
 export default VehicleDetail;

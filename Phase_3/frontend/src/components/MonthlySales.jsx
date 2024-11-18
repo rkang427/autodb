@@ -87,17 +87,17 @@ const styles = {
     fontFamily: 'Arial, sans-serif',
     padding: '20px',
     backgroundColor: '#f9f9f9',
+    textAlign: 'center',
   },
   heading: {
-    textAlign: 'center',
     fontSize: '28px',
     fontWeight: '700',
     marginBottom: '20px',
     color: '#2C3E50',
   },
   goBackButton: {
-    display: 'block',
-    margin: '0 auto 20px',
+    display: 'inline-block',
+    marginBottom: '20px',
     backgroundColor: '#3498db',
     color: 'white',
     border: 'none',
@@ -106,16 +106,13 @@ const styles = {
     cursor: 'pointer',
     transition: 'background-color 0.3s',
   },
-  goBackButtonHover: {
-    backgroundColor: '#2980b9',
-  },
   error: {
     color: 'red',
-    textAlign: 'center',
     marginBottom: '20px',
   },
   table: {
-    width: '100%',
+    width: '80%',
+    margin: '0 auto',
     borderCollapse: 'collapse',
     marginBottom: '20px',
   },
@@ -146,9 +143,6 @@ const styles = {
     borderRadius: '5px',
     cursor: 'pointer',
     transition: 'background-color 0.3s',
-  },
-  viewButtonHover: {
-    backgroundColor: '#218838',
   },
 };
 

@@ -85,9 +85,9 @@ const styles = {
     fontFamily: 'Arial, sans-serif',
     padding: '20px',
     backgroundColor: '#f9f9f9',
+    textAlign: 'center',
   },
   heading: {
-    textAlign: 'center',
     fontSize: '28px',
     fontWeight: '700',
     marginBottom: '20px',
@@ -106,7 +106,6 @@ const styles = {
   },
   error: {
     color: 'red',
-    textAlign: 'center',
     marginBottom: '20px',
   },
   table: {

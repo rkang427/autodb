@@ -17,10 +17,8 @@ const colorsList = [
   'Pink', 'Purple', 'Red', 'Rose', 'Rust', 'Silver', 'Tan', 'Turquoise', 'White', 'Yellow'
 ];
 
-
 const AddVehicle = () => {
   const { vin } = useParams();
-
   const [loggedInUser, setLoggedInUser] = useState(null);
   const [customerTaxId, setCustomerTaxId] = useState(null);
   const [lookupCustomerTaxId, setLookupCustomerTaxId] = useState("");
@@ -38,58 +36,35 @@ const AddVehicle = () => {
     model_year: "",
     condition: "",
   });
-  const [purchaseStatus, setPurchaseStatus] = useState(null);  // Track purchase status
-  const [vehicleBought, setVehicleBought] = useState(false);  // Track if vehicle is bought
+  const [purchaseStatus, setPurchaseStatus] = useState(null);
+  const [vehicleBought, setVehicleBought] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const checkSession = async () => {
       try {
         const response = await auth.checkSession();
-        console.log(response.data.user);
         if (response.data.user) {
           setLoggedInUser(response.data.user);
         }
-        try {
-          const response2 = await axios.get("http://localhost:3000/customer/list/", { withCredentials: true });
-          console.log(response2.data)
-          setCustomerList(response2.data);
-          console.log(customerList)
-        } catch (customerError) {
-          console.error("Error fetching customers:", customerError);
-          setErrorMessage("Could not load customers.");
-        }
+        const customerResponse = await axios.get("http://localhost:3000/customer/list/", { withCredentials: true });
+        setCustomerList(customerResponse.data);
       } catch (error) {
-        console.log("Error checking session", error);
+        console.log("Error checking session or fetching customers", error);
       }
     };
     checkSession();
   }, []);
 
-  const {
-    isAddCustomerModalOpen,
-    openAddCustomerModal,
-    closeAddCustomerModal,
-    form,
-    handleChange,
-    handleRadioChange,
-    handleSubmit,
-    error,
-  } = useAddCustomerModal();
+  const { isAddCustomerModalOpen, openAddCustomerModal, closeAddCustomerModal, form, handleChange, handleRadioChange, handleSubmit, error } = useAddCustomerModal();
 
-  const handleAddCustomerClick = () => {
-    openAddCustomerModal(); // Open add customer modal
-  };
-
+  const handleAddCustomerClick = () => openAddCustomerModal();
   const handleLookupCustomerClick = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.get("http://localhost:3000/customer", {
-        params: { tax_id: lookupCustomerTaxId },
-        withCredentials: true
-      });
+      const response = await axios.get("http://localhost:3000/customer", { params: { tax_id: lookupCustomerTaxId }, withCredentials: true });
       if (response.data && response.data.tax_id) {
-        setCustomerTaxId(response.data.tax_id); // Set customer tax ID received from the lookup
+        setCustomerTaxId(response.data.tax_id);
       } else {
         alert("Customer not found. Please add a new customer.");
       }
@@ -99,155 +74,67 @@ const AddVehicle = () => {
     }
   };
 
-  // Receive the customer tax ID from the modal
   const handleCustomerTaxIdReceived = (taxId) => {
-    console.log("Customer Tax ID received from modal:", taxId);
     setCustomerTaxId(taxId);
   };
 
-  // Handle vehicle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    
-    // Validate model year to allow only up to 4 digits
     if (name === "model_year") {
-      const yearValue = value.replace(/\D/g, ""); // Remove non-digit characters
-      if (yearValue.length > 4) {
-        return; // Prevent further input if more than 4 digits
-      }
-      setVehicleDetails((prev) => ({
-        ...prev,
-        [name]: yearValue, // Update with the valid year
-      }));
+      const yearValue = value.replace(/\D/g, "");
+      if (yearValue.length > 4) return;
+      setVehicleDetails((prev) => ({ ...prev, [name]: yearValue }));
       return;
     }
-
-    // Convert to numbers where required
     setVehicleDetails((prev) => ({
       ...prev,
       [name]: name === "horsepower" || name === "purchase_price" ? parseFloat(value) : value
     }));
   };
 
-  const handleGoBack = () => {
-    navigate(-1);  
-  };
+  const handleGoBack = () => navigate(-1);
 
   const handleColorChange = (e) => {
-    setVehicleDetails((prev) => ({
-      ...prev,
-      colors: e.target.value,
-    }));
+    setVehicleDetails((prev) => ({ ...prev, colors: e.target.value }));
   };
 
-  // Handle the buy vehicle operation
   const handleAddVehicle = async (e) => {
     e.preventDefault();
-
-    // VIN validation
-    if (!vehicleDetails.vin) {
-      return alert("Please type a VIN.");
-    }
-    if (vehicleDetails.vin.length !== 17 || vehicleDetails.vin.includes(" ")) {
-      return alert("VIN must be exactly 17 characters long and cannot contain spaces.");
-    }
-
-    // Vehicle type validation
-    if (!vehicleTypes.includes(vehicleDetails.vehicle_type)) {
-      return alert("Please select a vehicle type.");
-    }
-
-    // Manufacturer validation
-    if (!manufacturers.includes(vehicleDetails.manufacturer)) {
-      return alert("Please select a manufacturer.");
-    }
-
-    // Fuel type validation
-    if (!fuelTypes.includes(vehicleDetails.fuel_type)) {
-      return alert("Please select a fuel type.");
-    }
-
-    // Condition validation
-    if (!vehicleDetails.condition) {
-      return alert("Please select a vehicle condition.");
-    }
-
-    // Colors validation
-    if (!vehicleDetails.colors || vehicleDetails.colors.length === 0) {
-      return alert("Please select at least one color for the vehicle.");
-    }
-
-    // Model validation
-    if (!vehicleDetails.model) {
-      return alert("Please type a model.");
-    } 
-    if (vehicleDetails.model.length > 120) {
-      return alert("Model must be between 1 and 120 characters long.");
-    }
-
-    // Horsepower validation
-    if (vehicleDetails.horsepower === undefined || vehicleDetails.horsepower === null || vehicleDetails.horsepower === "") {
-      return alert("Please type a horsepower.");
-    }
-    if (vehicleDetails.horsepower <= 0 || vehicleDetails.horsepower > 32767 || !Number.isInteger(vehicleDetails.horsepower)) {
-      return alert("Horsepower must be an integer between 1 and 32,767, inclusive of both limits.");
-    }
-
-    // Purchase price validation
-    if (vehicleDetails.purchase_price === undefined || vehicleDetails.purchase_price === null || vehicleDetails.purchase_price === "") {
-      return alert("Please type a purchase price.");
-    }
-    if (isNaN(vehicleDetails.purchase_price) || parseFloat(vehicleDetails.purchase_price) <= 0) {
-      return alert("Purchase price must be a positive number.");
-    }
-
-    // Description validation
-    if (vehicleDetails.description && vehicleDetails.description.length > 280) {
-      return alert("Description must not exceed 280 characters.");
-    }
-  
-    // Model year validation
-    const currentYear = new Date().getFullYear();
-    if (!vehicleDetails.model_year) {
-      return alert("Please type a model year.");
-    }
-    if (vehicleDetails.model_year > currentYear + 1) {
-      alert(`Model year must be less than or equal to ${currentYear + 1}`);
-      return;
-    }
-    if (vehicleDetails.model_year < 1000 || vehicleDetails.model_year > 9999) {
-      alert("Model year must include the full century digits (e.g., 2020).");
-      return;
-    }
+    if (!vehicleDetails.vin) return alert("Please type a VIN.");
+    if (vehicleDetails.vin.length !== 17 || vehicleDetails.vin.includes(" ")) return alert("VIN must be exactly 17 characters long and cannot contain spaces.");
+    if (!vehicleTypes.includes(vehicleDetails.vehicle_type)) return alert("Please select a vehicle type.");
+    if (!manufacturers.includes(vehicleDetails.manufacturer)) return alert("Please select a manufacturer.");
+    if (!fuelTypes.includes(vehicleDetails.fuel_type)) return alert("Please select a fuel type.");
+    if (!vehicleDetails.condition) return alert("Please select a vehicle condition.");
+    if (!vehicleDetails.colors || vehicleDetails.colors.length === 0) return alert("Please select at least one color for the vehicle.");
+    if (!vehicleDetails.model) return alert("Please type a model.");
+    if (vehicleDetails.model.length > 120) return alert("Model must be between 1 and 120 characters long.");
+    if (vehicleDetails.horsepower <= 0 || vehicleDetails.horsepower > 32767 || !Number.isInteger(vehicleDetails.horsepower)) return alert("Horsepower must be an integer between 1 and 32,767.");
+    if (vehicleDetails.purchase_price <= 0 || isNaN(vehicleDetails.purchase_price)) return alert("Purchase price must be a positive number.");
+    if (vehicleDetails.description && vehicleDetails.description.length > 280) return alert("Description must not exceed 280 characters.");
     
-    // Customer Seller Tax ID validation
+    const currentYear = new Date().getFullYear();
+    if (!vehicleDetails.model_year) return alert("Please type a model year.");
+    if (vehicleDetails.model_year > currentYear + 1) return alert(`Model year must be less than or equal to ${currentYear + 1}`);
+    if (vehicleDetails.model_year < 1000 || vehicleDetails.model_year > 9999) return alert("Model year must include the full century digits (e.g., 2020).");
     if (!customerTaxId) return alert("Please add a customer before buying.");
-  
+
     const updatedVehicleDetails = {
       ...vehicleDetails,
       customer_seller: customerTaxId,
       inventory_clerk: loggedInUser?.username
     };
-  
+
     try {
       const response = await buyService.addVehicleToInventory(updatedVehicleDetails);
       setPurchaseStatus("Vehicle successfully added to inventory.");
       setVehicleBought(true);
-      // NAVIGATE TO DETAIL PAGE ON SUCCESS
-      navigate(`/vehicle_detail/${vehicleDetails.vin}`);  // Redirect upon successful submission
+      navigate(`/vehicle_detail/${vehicleDetails.vin}`);
     } catch (error) {
-      console.log("back in Add Vehicle page", error);
-      console.log(Object.values(error)[0]);
-      if (error.response && error.response.data.errors) {
-        // Display errors returned from the backend
-        setTimeout(() => {
-          setPurchaseStatus(null)
-        }, 3000);
-        setPurchaseStatus(error.response.data.errors.map((err) => err.msg).join(", "));
-        alert(error.response.data.errors.map((err) => err.msg).join(", "));
-      } else {
-        setPurchaseStatus(Object.values(error)[0]);
-      }
+      console.log(error);
+      const errorMessage = error.response?.data.errors?.map((err) => err.msg).join(", ") || error.message;
+      setPurchaseStatus(errorMessage);
+      alert(errorMessage);
     }
   };
 
@@ -256,7 +143,7 @@ const AddVehicle = () => {
       {loggedInUser && (loggedInUser.user_type === "inventory_clerk" || loggedInUser.user_type === "owner") ? (
         <div>
           <h2>Add Vehicle</h2>
-          <button style={{ marginTop: 0, marginBottom: "1rem", border: "1px solid black" }} onClick={handleGoBack}>Go Back</button>
+          <button onClick={handleGoBack} className="back-button">Go Back</button>
 
           <div>
             {customerTaxId ? <p>Customer Tax ID: {customerTaxId}</p> : <p>No customer selected.</p>}
@@ -270,9 +157,7 @@ const AddVehicle = () => {
           </div>
 
           <div>
-            <button style={{border: "1px solid black"}} onClick={handleAddCustomerClick}>Add New Customer</button>
-
-            {/* Conditionally render the Add Customer modal */}
+            <button onClick={handleAddCustomerClick}>Add New Customer</button>
             {isAddCustomerModalOpen && (
               <AddCustomerModal
                 closeAddCustomerModal={closeAddCustomerModal}
@@ -287,15 +172,9 @@ const AddVehicle = () => {
             )}
           </div>
 
-          {/* Vehicle Details Form */}
           <form>
-            <div style={{ marginTop: "10px", marginBottom: "10px", fontFamily: "Arial, sans-serif" }}>
-              <label 
-                htmlFor="vin" 
-                style={{ display: "block", fontWeight: "bold" }}
-              >
-                VIN <span style={{ color: "red" }}>*</span>
-              </label>
+            <div>
+              <label htmlFor="vin">VIN <span style={{ color: "red" }}>*</span></label>
               <input
                 type="text"
                 id="vin"
@@ -308,81 +187,44 @@ const AddVehicle = () => {
             </div>
 
             <Dropdown
-            label={
-              <>
-                Vehicle Type <span style={{ color: "red" }}>*</span>
-              </>
-            }
+              label="Vehicle Type *"
               name="vehicle_type"
               options={vehicleTypes}
               value={vehicleDetails.vehicle_type}
               onChange={handleInputChange}
             />
+            <Dropdown
+              label="Manufacturer *"
+              name="manufacturer"
+              options={manufacturers}
+              value={vehicleDetails.manufacturer}
+              onChange={handleInputChange}
+            />
+            <Dropdown
+              label="Fuel Type *"
+              name="fuel_type"
+              options={fuelTypes}
+              value={vehicleDetails.fuel_type}
+              onChange={handleInputChange}
+            />
+            <Dropdown
+              label="Condition *"
+              name="condition"
+              options={conditions}
+              value={vehicleDetails.condition}
+              onChange={handleInputChange}
+            />
+            <Dropdown
+              label="Color *"
+              name="color"
+              options={colorsList}
+              value={vehicleDetails.colors}
+              onChange={handleColorChange}
+              isMulti={true}
+            />
 
-            <div style={{ marginBottom: "10px" }}>
-              <Dropdown
-                label={
-                  <>
-                    Manufacturer <span style={{ color: "red" }}>*</span>
-                  </>
-                }
-                name="manufacturer"
-                options={manufacturers}
-                value={vehicleDetails.manufacturer}
-                onChange={handleInputChange}
-              />
-            </div>
-
-            <div style={{ marginBottom: "10px" }}>
-              <Dropdown
-                label={
-                  <>
-                    Fuel Type <span style={{ color: "red" }}>*</span>
-                  </>
-                }
-                name="fuel_type"
-                options={fuelTypes}
-                value={vehicleDetails.fuel_type}
-                onChange={handleInputChange}
-              />
-            </div>
-
-            <div style={{ marginBottom: "10px" }}>
-              <Dropdown
-                label={
-                  <>
-                    Condition <span style={{ color: "red" }}>*</span>
-                  </>
-                }
-                name="condition"
-                options={conditions}
-                value={vehicleDetails.condition}
-                onChange={handleInputChange}
-              />
-            </div>
-
-            <div style={{ marginBottom: "10px" }}>
-              <Dropdown
-                label={
-                  <>
-                    Color <span style={{ color: "red" }}>*</span>
-                  </>
-                }
-                name="color"
-                options={colorsList}
-                value={vehicleDetails.colors}
-                onChange={handleColorChange}
-                isMulti={true}
-              />
-            </div>
-
-            <div style={{ marginBottom: "10px", fontFamily: "Arial, sans-serif" }}>
-              <label 
-                htmlFor="model" 
-                style={{ display: "block", fontWeight: "bold" }}
-              >
-                Model <span style={{ color: "red" }}>*</span>
-              </label>
+            <div>
+              <label htmlFor="model">Model <span style={{ color: "red" }}>*</span></label>
               <input
                 type="text"
                 id="model"
@@ -393,13 +235,8 @@ const AddVehicle = () => {
               />
             </div>
 
-            <div style={{ marginBottom: "10px", fontFamily: "Arial, sans-serif" }}>
-              <label 
-                htmlFor="horsepower" 
-                style={{ display: "block", fontWeight: "bold" }}
-              >
-                Horsepower <span style={{ color: "red" }}>*</span>
-              </label>
+            <div>
+              <label htmlFor="horsepower">Horsepower <span style={{ color: "red" }}>*</span></label>
               <input
                 type="number"
                 id="horsepower"
@@ -411,13 +248,8 @@ const AddVehicle = () => {
               />
             </div>
 
-            <div style={{ marginBottom: "10px", fontFamily: "Arial, sans-serif" }}>
-              <label 
-                htmlFor="purchase_price" 
-                style={{ display: "block", fontWeight: "bold" }}
-              >
-                Purchase Price <span style={{ color: "red" }}>*</span>
-              </label>
+            <div>
+              <label htmlFor="purchase_price">Purchase Price <span style={{ color: "red" }}>*</span></label>
               <input
                 type="number"
                 id="purchase_price"
@@ -429,13 +261,8 @@ const AddVehicle = () => {
               />
             </div>
 
-            <div style={{ marginBottom: "10px", fontFamily: "Arial, sans-serif" }}>
-              <label 
-                htmlFor="description" 
-                style={{ display: "block", fontWeight: "bold" }}
-              >
-                Description
-              </label>
+            <div>
+              <label htmlFor="description">Description</label>
               <input
                 type="text"
                 id="description"
@@ -446,34 +273,56 @@ const AddVehicle = () => {
               />
             </div>
 
-            <div style={{ marginBottom: "10px", fontFamily: "Arial, sans-serif" }}>
-              <label 
-                htmlFor="model_year" 
-                style={{ display: "block", fontWeight: "bold" }}
-              >
-                Model Year <span style={{ color: "red" }}>*</span>
-              </label>
+            <div>
+              <label htmlFor="model_year">Model Year <span style={{ color: "red" }}>*</span></label>
               <input
                 type="number"
                 id="model_year"
                 name="model_year"
                 min={1000}
-                max={Number(new Date().getFullYear()+1)}
+                max={Number(new Date().getFullYear() + 1)}
                 placeholder="Enter Model Year"
                 onChange={handleInputChange}
                 value={vehicleDetails.model_year}
               />
             </div>
           </form>
-          {/* Buy Vehicle Button */}
-          <button style={{border: "1px solid black"}} type="submit" onClick={handleAddVehicle}>Add Vehicle to Inventory</button>
 
-          {/* Purchase Status Message */}
+          <button type="submit" onClick={handleAddVehicle}>Add Vehicle to Inventory</button>
+
           {purchaseStatus && <p>{purchaseStatus}</p>}
         </div>
       ) : (
         <></>
       )}
+
+      <style jsx>{`
+        button {
+          background-color: #45a049;
+          border: none;
+          color: white;
+          padding: 10px 22px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 16px;
+          margin: 4px 2px;
+          cursor: pointer;
+          border-radius: 5px;
+        }
+
+        button:hover {
+          background-color: #3498db;
+        }
+
+        .back-button {
+          background-color: #45a049;
+        }
+
+        .back-button:hover {
+          background-color: #3498db;
+        }
+      `}</style>
     </>
   );
 };

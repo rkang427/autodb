@@ -2,58 +2,47 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import formatter from '../util/formatter';
+
 const MonthlySales = () => {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // Fetch monthly sales data (only for the "origin" view)
   useEffect(() => {
     const fetchMonthlySales = async () => {
       try {
         const endpoint = 'http://localhost:3000/reports/monthly_sales';
-
-        console.log('Requesting data from:', endpoint); // Log the endpoint being requested
-
         const response = await axios.get(endpoint, { withCredentials: true });
 
-        console.log('API Response:', response.data);  // Log the response data
-
         if (Array.isArray(response.data)) {
-          setData(response.data);  // Set the data accordingly
+          setData(response.data);
         } else {
           throw new Error('Unexpected response format');
         }
       } catch (error) {
-        console.error('Error fetching monthly sales data:', error);
         setError(error.message || 'Failed to fetch data');
       }
     };
 
     fetchMonthlySales();
-  }, []); // Only fetch data once when the component is mounted
+  }, []);
 
   const handleGoBack = () => {
-    navigate(-1); 
+    navigate(-1);
   };
-  const handleViewDrilldown = async (year, month) => {
-    try {
-      // Redirect to the drilldown page with the year and month query parameters
-      navigate(`/monthly_sales/drilldown/${year}/${month}`);
-    } catch (error) {
-      console.error('Error navigating to drilldown:', error);
-      setError(error.message || 'Failed to navigate to drilldown');
-    }
+
+  const handleViewDrilldown = (year, month) => {
+    navigate(`/monthly_sales/drilldown/${year}/${month}`);
   };
 
   return (
-    <div>
-      <h2>Monthly Sales</h2>
-      <button style={{ marginTop: 0, marginBottom: "1rem", border: "1px solid black" }} onClick={handleGoBack}>Go Back</button>
+    <div style={styles.container}>
+      <h2 style={styles.heading}>Monthly Sales</h2>
+      <button style={styles.goBackButton} onClick={handleGoBack}>Go Back</button>
 
-      {error && <div style={{ color: 'red' }}>{error}</div>}  {/* Display error if any */}
+      {error && <div style={styles.error}>{error}</div>}
 
-      <table>
+      <table style={styles.table}>
         <thead>
           <tr>
             <th>Year Sold</th>
@@ -67,7 +56,7 @@ const MonthlySales = () => {
         <tbody>
           {data.length === 0 ? (
             <tr>
-              <td colSpan="6" style={{ textAlign: 'center' }}>
+              <td colSpan="6" style={styles.noData}>
                 No data available
               </td>
             </tr>
@@ -80,7 +69,7 @@ const MonthlySales = () => {
                 <td>{formatter.formatUSD(Number((item.grossincome || 0.0)).toFixed(2))}</td>
                 <td>{formatter.formatUSD(Number((item.netincome || 0.0)).toFixed(2))}</td>
                 <td>
-                  <button onClick={() => handleViewDrilldown(item.year_sold, item.month_sold)}>
+                  <button style={styles.viewButton} onClick={() => handleViewDrilldown(item.year_sold, item.month_sold)}>
                     View Drilldown
                   </button>
                 </td>
@@ -91,6 +80,76 @@ const MonthlySales = () => {
       </table>
     </div>
   );
+};
+
+const styles = {
+  container: {
+    fontFamily: 'Arial, sans-serif',
+    padding: '20px',
+    backgroundColor: '#f9f9f9',
+  },
+  heading: {
+    textAlign: 'center',
+    fontSize: '28px',
+    fontWeight: '700',
+    marginBottom: '20px',
+    color: '#2C3E50',
+  },
+  goBackButton: {
+    display: 'block',
+    margin: '0 auto 20px',
+    backgroundColor: '#3498db',
+    color: 'white',
+    border: 'none',
+    padding: '10px 20px',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s',
+  },
+  goBackButtonHover: {
+    backgroundColor: '#2980b9',
+  },
+  error: {
+    color: 'red',
+    textAlign: 'center',
+    marginBottom: '20px',
+  },
+  table: {
+    width: '100%',
+    borderCollapse: 'collapse',
+    marginBottom: '20px',
+  },
+  tableHeader: {
+    backgroundColor: '#2C3E50',
+    color: 'white',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    padding: '10px',
+  },
+  tableCell: {
+    padding: '8px 12px',
+    border: '1px solid #ddd',
+    textAlign: 'center',
+  },
+  noData: {
+    textAlign: 'center',
+    color: '#7f8c8d',
+    padding: '20px',
+    fontSize: '18px',
+  },
+  viewButton: {
+    backgroundColor: '#28a745',
+    color: 'white',
+    padding: '8px 16px',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s',
+  },
+  viewButtonHover: {
+    backgroundColor: '#218838',
+  },
 };
 
 export default MonthlySales;

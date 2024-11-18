@@ -17,8 +17,8 @@ const App = () => {
     <Router>
       <div style={{ fontFamily: 'Poppins, sans-serif' }}>
 
-        <h1>Team 006 - Dealership DB</h1>
-        <h2>North Avenue Automotive</h2>
+        <h1 style={styles.title}>Team 006 - Dealership DB</h1>
+        <h2 style={styles.subtitle}>North Avenue Automotive</h2>
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/view_seller_history" element={<ViewSellerHistory />} />
@@ -35,6 +35,43 @@ const App = () => {
       </div>
     </Router>
   );
+};
+
+const styles = {
+  title: {
+    fontFamily: "Poppins, sans-serif",
+    fontWeight: "700", 
+    textAlign: "center", 
+    letterSpacing: "2px", 
+    textTransform: "uppercase",
+    fontSize: "36px",
+    color: "#2C3E50", 
+    background: "linear-gradient(to right, #28a745, #4CAF50)", 
+    WebkitBackgroundClip: "text",
+    color: "transparent",
+    boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)", 
+    paddingBottom: "30px", 
+    marginTop: "40px",
+  },
+  subtitle: {
+    fontFamily: "Poppins, sans-serif",
+    fontWeight: "400", 
+    textAlign: "center",
+    letterSpacing: "1px", 
+    fontSize: "24px", 
+    color: "#34495E",
+    marginTop: "0", 
+    paddingBottom: "20px", 
+  },
+  spacer: {
+    height: "50px",
+  },
+  divider: {
+    width: "100%",
+    border: "0",
+    borderTop: "2px solid #28a745",
+    margin: "20px 0",
+  },
 };
 
 export default App;

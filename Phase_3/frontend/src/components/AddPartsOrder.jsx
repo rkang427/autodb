@@ -143,7 +143,18 @@ const AddPartsOrder = () => {
     <div>
       <div>
         <h2 style={{ marginBottom: 0 }}>Add Parts Order</h2>
-        <button style={{ marginTop: 0, marginBottom: "1rem", border: "1px solid black" }} onClick={handleGoBack}>Go Back</button>
+        <button style={{
+          marginTop: 0, 
+          marginBottom: "1rem", 
+          backgroundColor: "#28a745", 
+          color: "#fff",  
+          padding: "8px 10px",  
+          border: "none",  
+          borderRadius: "4px",  
+          cursor: "pointer",  
+          fontSize: "11px",  
+          transition: "background-color 0.3s",  
+          }} onClick={handleGoBack}>Go Back</button>
       </div>
       
       {/* Vendor Selection */}
@@ -161,7 +172,7 @@ const AddPartsOrder = () => {
 
       {/* Inline Add Vendor Form */}
       {showAddVendorForm && (
-        <div style={{ marginTop: "1rem", border: "1px solid #ccc", padding: "1rem" }}>
+        <div style={{ marginTop: "1rem", border: "1px solid #ccc", fontSize: "16px", padding: "1rem" }}>
           <h3>Add New Vendor</h3>
           
           <input 

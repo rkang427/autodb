@@ -66,7 +66,8 @@ p,
 input,
 button {
   font-family: 'Poppins', sans-serif;
-  font-weight: 300; /* Light */
+  font-weight: 300; /* Light */ 
+  font-size: "16px"; 
 }
 
 table {

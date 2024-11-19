@@ -6,6 +6,8 @@ ENCODING 'UTF8'
 LC_COLLATE = 'en_US.utf8'
 LC_CTYPE = 'en_US.utf8';
 
+ALTER DATABASE dealership SET log_statement = 'all';
+
 -- Connect to database
 \c dealership;
 

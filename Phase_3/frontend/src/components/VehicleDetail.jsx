@@ -352,20 +352,26 @@ const styles = {
     marginBottom: "15px",
   },
   table: {
-    width: "100%",
+    width: "40%",
     borderCollapse: "collapse",
-    marginBottom: "20px",
+    marginBottom: "15px",
   },
   tableLabel: {
+    width: "40%",
     fontWeight: "600",
     color: "#34495E",
-    padding: "10px",
-    borderBottom: "1px solid #ddd",
+    padding: "3px 6px",  
+    borderBottom: "1px solid #ddd",  
+  },
+  tableData: {
+    width: "40%",
+    padding: "3px 6px",  
+    borderBottom: "1px solid #ddd",  
   },
   button: {
     backgroundColor: "#28a745",
     color: "#fff",
-    padding: "10px 20px",
+    padding: "10px 5px",
     border: "none",
     borderRadius: "4px",
     cursor: "pointer",
@@ -391,4 +397,5 @@ const styles = {
     margin: "20px 0",
   },
 };
+
 export default VehicleDetail;

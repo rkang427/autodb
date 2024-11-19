@@ -280,25 +280,42 @@ const VehicleDetail = () => {
                               <td colSpan="2"><strong>Part Status: </strong>{part.status}</td>
                             </tr>
                             {part.status !== "installed" && loggedInUser && loggedInUser.user_type !== 'manager' && (
-                              <tr>
-                                <td>
-                                  <button
-                                    style={styles.button}
-                                    onClick={() => statusUpdate(part, "received")}
-                                  >
-                                    Update Status to Received
-                                  </button>
-                                </td>
-                                <td>
-                                  <button
-                                    style={styles.button}
-                                    onClick={() => statusUpdate(part, "installed")}
-                                  >
-                                    Update Status to Installed
-                                  </button>
-                                </td>
-                              </tr>
-                            )}
+                                <>{part.status == "ordered" ? (
+                                  <tr>
+                                    <td>
+                                      <button style={styles.button}
+                                        onClick={() =>
+                                          statusUpdate(part, "received")
+                                        }
+                                      >
+                                        Update Status to Received
+                                      </button>
+                                    </td>
+                                    <td>
+                                      <button style={styles.button}
+                                        onClick={() =>
+                                          statusUpdate(part, "installed")
+                                        }
+                                      >
+                                        Update Status to Installed
+                                      </button>
+                                    </td>
+                                  </tr>
+                                ) : (
+                                  <tr>
+                                    <td>
+                                      <button style={styles.button}
+                                        onClick={() =>
+                                          statusUpdate(part, "installed")
+                                        }
+                                      >
+                                        Update Status to Installed
+                                      </button>
+                                    </td>
+                                  </tr>
+                                )}
+                                </>
+                        )}
                           </tbody>
                         </table>
                         <hr style={styles.divider} />

@@ -32,8 +32,8 @@ const AddPartsOrder = () => {
     return parts.every((part) => {
       const partNumberValid = part.part_number.trim() !== "";
       const descriptionValid = part.description.trim() !== "";
-      const quantityValid = part.quantity > 0;
-      const unitPriceValid = part.unit_price >= 0.01 && !isNaN(part.unit_price) && /^\d+(\.\d{1,2})?$/.test(part.unit_price);
+      const quantityValid = part.quantity > 0 && part.quantity <= 1000000;
+      const unitPriceValid = part.unit_price >= 0.01 && part.unit_price <= 1000000.0 && !isNaN(part.unit_price) && /^\d+(\.\d{1,2})?$/.test(part.unit_price);
       return partNumberValid && descriptionValid && quantityValid && unitPriceValid;
     });
   };  

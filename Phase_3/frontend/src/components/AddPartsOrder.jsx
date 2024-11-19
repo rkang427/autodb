@@ -179,8 +179,8 @@ const AddPartsOrder = () => {
             type="text"
             placeholder="Vendor Name *"
             value={newVendor.name}
-            maxLength={120}
-            minLength={1}
+            maxLength="120"
+            minLength="1"
             required onChange={(e) => handleNewVendorChange("name", e.target.value)}
             />
           <input 
@@ -189,10 +189,10 @@ const AddPartsOrder = () => {
             onInput={(e) => {
               e.target.value = e.target.value.replace(/\D/g, '');
             }}
-            value={newVendor.phone_number} required pattern="\d{10}" maxLength={10} minLength={10} onChange={(e) => handleNewVendorChange("phone_number", e.target.value)} />
-          <input type="text" placeholder="Street *" value={newVendor.street} maxLength={120} required minLength={1} onChange={(e) => handleNewVendorChange("street", e.target.value)} />
-          <input type="text" placeholder="City *" value={newVendor.city} maxLength={120} required minLength={1} onChange={(e) => handleNewVendorChange("city", e.target.value)} />
-          <input type="text" placeholder="State *" value={newVendor.state} maxLength={120} required minLength={1} onChange={(e) => handleNewVendorChange("state", e.target.value)} />
+            value={newVendor.phone_number} required pattern="\d{10}" maxLength="10" minLength="10" onChange={(e) => handleNewVendorChange("phone_number", e.target.value)} />
+          <input type="text" placeholder="Street *" value={newVendor.street} maxLength="120" required minLength="1" onChange={(e) => handleNewVendorChange("street", e.target.value)} />
+          <input type="text" placeholder="City *" value={newVendor.city} maxLength="1" required minLength="1" onChange={(e) => handleNewVendorChange("city", e.target.value)} />
+          <input type="text" placeholder="State *" value={newVendor.state} maxLength="1" required minLength="1" onChange={(e) => handleNewVendorChange("state", e.target.value)} />
           <input
             type="text"
             placeholder="Postal Code *"
@@ -201,7 +201,7 @@ const AddPartsOrder = () => {
             }}
             value={newVendor.postal_code}
             required pattern="\d{5}"
-            maxLength={5} minLength={5}
+            maxLength="5" minLength="5"
             onChange={(e) => handleNewVendorChange("postal_code", e.target.value)}
           />
           {isVendorFormValid() && <button type="button" onClick={handleAddVendor}>Save Vendor</button>}
@@ -214,11 +214,11 @@ const AddPartsOrder = () => {
         <div key={index} style={{ marginBottom: "1rem" }}>
           <h4>Part {index + 1}:</h4>
           <label>Part Number:<span style={{ color: "red" }}> *</span></label>
-          <input type="text" placeholder="Part Number" value={part.part_number} onChange={(e) => handlePartChange(index, "part_number", e.target.value)} />
+          <input type="text" maxLength="120" minLength="1" placeholder="Part Number" value={part.part_number} onChange={(e) => handlePartChange(index, "part_number", e.target.value)} />
           <label>Description:<span style={{ color: "red" }}> *</span></label>
-          <input type="text" placeholder="Description" value={part.description} onChange={(e) => handlePartChange(index, "description", e.target.value)} />
+          <input type="text" maxLength="120" minLength="1" placeholder="Description" value={part.description} onChange={(e) => handlePartChange(index, "description", e.target.value)} />
           <label>Quantity:<span style={{ color: "red" }}> *</span></label>
-          <input type="number" min={1} placeholder="Quantity" value={part.quantity}
+          <input type="number" min="1" max="100000" placeholder="Quantity" value={part.quantity}
             onInput={(e) => {
               e.target.value = e.target.value.replace(/\D/g, '');
             }}
@@ -227,6 +227,8 @@ const AddPartsOrder = () => {
           <input
             type="number"
             step="0.01"
+            min="0.01"
+            max="1000000.0"
             placeholder="Unit Price"
             value={part.unit_price}
             onChange={(e) => handlePartChange(index, "unit_price", e.target.value)}

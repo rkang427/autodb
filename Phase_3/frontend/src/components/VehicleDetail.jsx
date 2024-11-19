@@ -374,7 +374,7 @@ const styles = {
     border: "none",
     borderRadius: "4px",
     cursor: "pointer",
-    margin: "10px 0",
+    margin: "10px 5px",
     fontSize: "16px", 
     transition: "background-color 0.3s",
   },

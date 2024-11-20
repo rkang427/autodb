@@ -191,8 +191,8 @@ const AddPartsOrder = () => {
             }}
             value={newVendor.phone_number} required pattern="\d{10}" maxLength="10" minLength="10" onChange={(e) => handleNewVendorChange("phone_number", e.target.value)} />
           <input type="text" placeholder="Street *" value={newVendor.street} maxLength="120" required minLength="1" onChange={(e) => handleNewVendorChange("street", e.target.value)} />
-          <input type="text" placeholder="City *" value={newVendor.city} maxLength="1" required minLength="1" onChange={(e) => handleNewVendorChange("city", e.target.value)} />
-          <input type="text" placeholder="State *" value={newVendor.state} maxLength="1" required minLength="1" onChange={(e) => handleNewVendorChange("state", e.target.value)} />
+          <input type="text" placeholder="City *" value={newVendor.city} maxLength="120" required minLength="1" onChange={(e) => handleNewVendorChange("city", e.target.value)} />
+          <input type="text" placeholder="State *" value={newVendor.state} maxLength="120" required minLength="1" onChange={(e) => handleNewVendorChange("state", e.target.value)} />
           <input
             type="text"
             placeholder="Postal Code *"

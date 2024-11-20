@@ -75,6 +75,7 @@ const AddVehicle = () => {
   };
 
   const handleCustomerTaxIdReceived = (taxId) => {
+    console.log(taxId)
     setCustomerTaxId(taxId);
   };
 
@@ -152,7 +153,7 @@ const AddVehicle = () => {
               name="customer"
               options={customerList.map((customer) => (`${customer.tax_id} -- ${customer.name}`))}
               value={customerTaxId}
-              onChange={(e) => setCustomerTaxId(e.target.value.split(' ')[0])}
+              onChange={(e) => e.target.value.split(' ')[0] && setCustomerTaxId(e.target.value.split(' ')[0])}
             />
           </div>
 

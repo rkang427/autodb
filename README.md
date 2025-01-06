@@ -339,9 +339,8 @@ curl -X PATCH http://localhost:3000/partsorder/updateStatus \
   "status": "received"
 }' -b cookies.txt
 ```
-
-
 Sell vehicle (note this is the one we created in earlier example)
 ```
 curl -s -X PATCH http://localhost:3000/vehicle -d '{"vin": "1HGCM82633A123456", "customer_buyer": "444555666"}' -H 'Content-Type: application/json' -b cookies.txt
 ```
+### Contributors List (rkang33 is me, Rhee Kang). Please see Contributors image. 
